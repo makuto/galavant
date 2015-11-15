@@ -1,0 +1,35 @@
+# depslib dependency file v1.0
+1445721187 source:/home/macoy/devCollab/galavant/src/main.cpp
+	<iostream>
+	"objectComponent/Component.hpp"
+
+1447565212 /home/macoy/devCollab/galavant/src/objectComponent/Component.hpp
+	"ObjectID.hpp"
+	"ObjectType.hpp"
+
+1447564622 /home/macoy/devCollab/galavant/src/objectComponent/ObjectID.hpp
+
+1447563871 /home/macoy/devCollab/galavant/src/objectComponent/ObjectType.hpp
+	"ComponentTypes.hpp"
+
+1445722684 /home/macoy/devCollab/galavant/src/objectComponent/ComponentTypes.hpp
+
+1447562600 source:/home/macoy/devCollab/galavant/src/objectComponent/Component.cpp
+	"Component.hpp"
+	"ObjectType.hpp"
+	"Object.hpp"
+
+1447565426 /home/macoy/devCollab/galavant/src/objectComponent/Object.hpp
+	"ObjectID.hpp"
+	"ObjectType.hpp"
+	"ComponentTypes.hpp"
+
+1445724601 source:/home/macoy/devCollab/galavant/src/objectComponent/ObjectType.cpp
+
+1447565050 source:/home/macoy/devCollab/galavant/src/objectComponent/Object.cpp
+	"Object.hpp"
+	"Component.hpp"
+
+1447565116 source:/home/macoy/devCollab/galavant/src/objectComponent/ObjectID.cpp
+	"ObjectID.hpp"
+
