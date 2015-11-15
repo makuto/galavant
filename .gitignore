@@ -43,6 +43,3 @@ docs/
 
 # Ignore anything with the LOCAL prefix
 LOCAL*
-
-# Codeblocks output files
-*CppCheckResults.xml
