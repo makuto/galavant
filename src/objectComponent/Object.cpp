@@ -1,6 +1,8 @@
 #ifndef OBJECT_CPP
 #define OBJECT_CPP
 
+#include <assert.h>
+
 #include "Object.hpp"
 #include "Component.hpp"
 
@@ -9,14 +11,25 @@ const int COMPONENTHANDLE_NULL = -1;
 
 Object::Object()
 {
+    initialize();
+}
+
+Object::~Object()
+{
+
+}
+
+void Object::initialize()
+{
     shouldDestroy = false;
     numActiveComponents = 0;
     id = OBJECT_ID_NONE;
     type = nullptr;
 }
-Object::~Object()
-{
 
+ObjectID Object::getObjectID()
+{
+    return id;
 }
 
 // Provides a layer of abstraction around the internal storage of Component pointers
@@ -83,5 +96,74 @@ bool Object::shouldDestroyObject()
 void Object::requestObjectDestruction()
 {
     shouldDestroy = true;
+}
+
+void Object::setObjectID(ObjectID newObjectID)
+{
+    id = newObjectID;
+}
+
+void Object::setObjectType(ObjectType* newObjectType)
+{
+    type = newObjectType;
+}
+
+void Object::addComponent(Component* newComponent)
+{
+    if (numActiveComponents < OBJECT_MAX_COMPONENTS)
+    {
+        components[numActiveComponents] = newComponent;
+        numActiveComponents++;
+    }
+    else
+    {
+        // Tried to add more than OBJECT_MAX_COMPONENTS
+        assert(0);
+    }
+}
+
+int Object::getNumActiveComponents()
+{
+    return numActiveComponents;
+}
+
+// Run postInitialize on all components
+bool Object::postInitializeComponents()
+{
+    // For each active component
+    for (int i = 0; i < numActiveComponents; i++)
+    {
+        Component* currentComponent = getComponentAtIndex(i);
+
+        if (currentComponent)
+        {
+            // Run postInitialize on the component
+            if (!currentComponent->postInitialize())
+                return false;
+        }
+    }
+    return true;
+}
+
+// Run preDestroy on all components
+void Object::preDestroyComponents()
+{
+    // For each active component
+    for (int i = 0; i < numActiveComponents; i++)
+    {
+        Component* currentComponent = getComponentAtIndex(i);
+
+        if (currentComponent)
+        {
+            currentComponent->preDestroy();
+        }
+    }
+}
+
+// Resets components[] by changing numActiveComponents to 0; this is
+// only used if a partially initialized Object's component failed to initialize
+void Object::resetComponentsArray()
+{
+    numActiveComponents = 0;
 }
 #endif

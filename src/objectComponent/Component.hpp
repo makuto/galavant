@@ -4,15 +4,15 @@
 #include "ObjectID.hpp"
 #include "ObjectType.hpp"
 
-enum ComponentType;
-struct ComponentUpdateParams;
-class Object;
-
 /* --Component--
  * Components are modular bits of logic and data designed to work with other
  * modular components. Objects are collections of components. Component is an abstract
  * class.
 */
+enum ComponentType;
+struct ComponentUpdateParams;
+class Object;
+class ComponentManager;
 class Component
 {
     public:
@@ -26,11 +26,16 @@ class Component
         ObjectType getOwnerType();
         ObjectID getOwnerID();
 
+        // This function should NEVER return NULL on a valid initialized Component.
+        // This function is used by ComponentManagers when moving Components in memory
+        // Make SURE you set your parentObject pointer in initialize()!
+        Object* getParentObject();
+
         // Initialize the component. Components should be able to be reused after initialize is called.
         // Components should store their parent object's address for later use
         // Return false if initialization failed for any reason, and the object creation will
         // be aborted
-        virtual bool initialize(Object* parentObject);
+        virtual bool initialize(Object* newParentObject);
 
         // Once all sibling components in an object have been initialize, postInitialize is executed.
         // Use this function to find all sibling components that your component is dependent on, as well
@@ -49,15 +54,35 @@ class Component
         // Perform all logic for your component here
         virtual void update(ComponentUpdateParams& updateParams);
 
+        // Output or render as much helpful information as you can about your component in this
+        // function.
+        virtual void debugPrint();
+
+        // Copy all data needed to make an exact replica of the current component to the
+        // new component. This function will be used when an entire Object or Component is moved.
+        // Return false if there was an error copying (or it is impossible to copy)
+        // The new component has already been initialized, but not postInitialized (should it be?)
+        // You should NOT set the current Component's parentObject pointer to the newComponent's
+        virtual bool copyComponent(Object* newParentObject, Component* newComponent);
+
         // TODO: Component save and load functions
         //virtual bool save(SaveBuffer *saveBuffer);
         //virtual bool load(LoadBuffer *loadBuffer);
 
+    friend class ComponentManager;
     protected:
+        // This value can be used by the ComponentManager to find a component
+        // in a Pool, array, list, etc
+        int                 componentIndex;
+        
     private:
         ComponentType       type;
         ObjectType          ownerType;
         ObjectID            ownerID;
+
+        // The parent object of this component. This value should always be
+        // valid and set as the ComponentManager will use it
+        Object*             parentObject;
 };
 
 #endif // COMPONENT_HPP

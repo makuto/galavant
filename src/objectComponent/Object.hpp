@@ -16,11 +16,18 @@
 */
 class Component;
 struct ObjectType;
+class ObjectComponentManager;
 class Object
 {
     public:
         Object();
         ~Object();
+
+        // Initialize the object
+        // Objects should work completely after initialize, even if the constructor isn't called
+        void initialize();
+
+        ObjectID getObjectID();
 
         // A handle to a Component this Object has
         // Components (and all other external users of an Object's components) should
@@ -60,13 +67,37 @@ class Object
         // Destruction will not happen immediately - it is up to the object's manager
         void requestObjectDestruction();
 
+    friend class ObjectComponentManager;
+    protected:
+        // Functions for ObjectComponentManager
+        void setObjectID(ObjectID newObjectID);
+        void setObjectType(ObjectType* newObjectType);
+
+        // Add a new, initialized component to this object
+        void addComponent(Component* newComponent);
+
+        int getNumActiveComponents();
+
+        // Run postInitialize on all components
+        bool postInitializeComponents();
+
+        // Run preDestroy on all components
+        void preDestroyComponents();
+
+        // Provides a layer of abstraction around the internal storage of Component pointers
+        Component* getComponentAtIndex(int i);
+
+        // Resets components[] by changing numActiveComponents to 0; this is
+        // only used if a partially initialized Object's component failed to initialize
+        void resetComponentsArray();
+
     private:
         // A list of pointers to Components the Object currently has (up to numActiveComponents)
         // OBJECT_MAX_COMPONENTS is defined in ObjectType.hpp
         Component*      components[OBJECT_MAX_COMPONENTS];
         int             numActiveComponents;
 
-        ObjectType*      type;
+        ObjectType*     type;
         ObjectID        id;
 
         // shouldDestroy indicates whether or not the Object should be
@@ -77,9 +108,6 @@ class Object
 
         // The NULL value for ComponentHandles
         static const int COMPONENTHANDLE_NULL = -1;
-
-        // Provides a layer of abstraction around the internal storage of Component pointers
-        Component* getComponentAtIndex(int i);
 };
 
 #endif

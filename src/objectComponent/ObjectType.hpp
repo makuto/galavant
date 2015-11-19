@@ -5,6 +5,14 @@
 
 #define OBJECT_MAX_COMPONENTS 10
 
+// ObjectTypeIDs are not tied to ObjectTypes automatically. This association
+// happens in ObjectComponentManager
+enum class ObjectTypeID : int
+{
+    NONE = 0,
+    TEST
+};
+
 struct ObjectType
 {
     // An array of ComponentTypes that this ObjectType requires

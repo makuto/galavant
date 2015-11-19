@@ -3,33 +3,55 @@
 	<iostream>
 	"objectComponent/Component.hpp"
 
-1447565212 /home/macoy/devCollab/galavant/src/objectComponent/Component.hpp
+1447620789 /home/macoy/devCollab/galavant/src/objectComponent/Component.hpp
 	"ObjectID.hpp"
 	"ObjectType.hpp"
 
 1447564622 /home/macoy/devCollab/galavant/src/objectComponent/ObjectID.hpp
 
-1447563871 /home/macoy/devCollab/galavant/src/objectComponent/ObjectType.hpp
+1447619548 /home/macoy/devCollab/galavant/src/objectComponent/ObjectType.hpp
 	"ComponentTypes.hpp"
 
 1445722684 /home/macoy/devCollab/galavant/src/objectComponent/ComponentTypes.hpp
 
-1447562600 source:/home/macoy/devCollab/galavant/src/objectComponent/Component.cpp
+1447620492 source:/home/macoy/devCollab/galavant/src/objectComponent/Component.cpp
 	"Component.hpp"
 	"ObjectType.hpp"
 	"Object.hpp"
 
-1447565426 /home/macoy/devCollab/galavant/src/objectComponent/Object.hpp
+1447907908 /home/macoy/devCollab/galavant/src/objectComponent/Object.hpp
 	"ObjectID.hpp"
 	"ObjectType.hpp"
 	"ComponentTypes.hpp"
 
 1445724601 source:/home/macoy/devCollab/galavant/src/objectComponent/ObjectType.cpp
 
-1447565050 source:/home/macoy/devCollab/galavant/src/objectComponent/Object.cpp
+1447908015 source:/home/macoy/devCollab/galavant/src/objectComponent/Object.cpp
+	<assert.h>
 	"Object.hpp"
 	"Component.hpp"
 
 1447565116 source:/home/macoy/devCollab/galavant/src/objectComponent/ObjectID.cpp
+	"ObjectID.hpp"
+
+1447618062 source:/home/macoy/devCollab/galavant/src/objectComponent/ComponentManager.cpp
+	"ComponentManager.hpp"
+
+1447627637 /home/macoy/devCollab/galavant/src/objectComponent/ComponentManager.hpp
+	"ComponentTypes.hpp"
+
+1447911784 source:/home/macoy/devCollab/galavant/src/objectComponent/ObjectComponentManager.cpp
+	<assert.h>
+	<iostream>
+	"ObjectComponentManager.hpp"
+	"ComponentManager.hpp"
+	"Component.hpp"
+
+1447911875 /home/macoy/devCollab/galavant/src/objectComponent/ObjectComponentManager.hpp
+	<base2.0/dataStructures/pool.hpp>
+	<map>
+	"Object.hpp"
+	"ObjectType.hpp"
+	"ComponentTypes.hpp"
 	"ObjectID.hpp"
 

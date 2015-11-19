@@ -18,4 +18,12 @@ ObjectID Component::getOwnerID()
     return ownerID;
 }
 
+// This function should NEVER return NULL on a valid initialized Component.
+// This function is used by ComponentManagers when moving Components in memory
+// Make SURE you set your parentObject pointer in initialize()!
+Object* Component::getParentObject()
+{
+    return parentObject;
+}
+
 #endif

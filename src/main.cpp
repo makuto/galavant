@@ -1,5 +1,4 @@
 #include <iostream>
-#include "objectComponent/Component.hpp"
 
 int main()
 {
