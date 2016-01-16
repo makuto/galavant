@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<results>
+    <error file="../../objectComponent/Component.hpp" line="16" id="noConstructor" severity="style" msg="The class &apos;Component&apos; does not have a constructor although it has private member variables. Member variables of builtin types are left uninitialized when the class is instanciated. That may cause bugs or undefined behavior." />
+    <error file="../../objectComponent/ComponentManager.hpp" line="15" id="noConstructor" severity="style" msg="The class &apos;ComponentManager&apos; does not have a constructor although it has private member variables. Member variables of builtin types are left uninitialized when the class is instanciated. That may cause bugs or undefined behavior." />
+    <error file="../../objectComponent/Object.cpp" line="12" id="uninitMemberVar" severity="style" msg="Member variable &apos;Object::components&apos; is not initialized in the constructor." />
+    <error file="../../objectComponent/ObjectType.hpp" line="19" id="unusedStructMember" severity="style" msg="struct or union member &apos;ObjectType::components&apos; is never used." />
+    <error file="../../objectComponent/ObjectType.hpp" line="22" id="unusedStructMember" severity="style" msg="struct or union member &apos;ObjectType::totalUsedComponents&apos; is never used." />
+</results>

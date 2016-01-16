@@ -29,6 +29,11 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="Object Component Testing">
+				<Option output="galavantCodeblocks" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Weffc++" />
@@ -38,18 +43,30 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="../../main.cpp" />
+		<Unit filename="../../main.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="../../objectComponent/Component.cpp" />
 		<Unit filename="../../objectComponent/Component.hpp" />
+		<Unit filename="../../objectComponent/ComponentManager.cpp" />
+		<Unit filename="../../objectComponent/ComponentManager.hpp" />
 		<Unit filename="../../objectComponent/ComponentTypes.hpp" />
 		<Unit filename="../../objectComponent/Object.cpp" />
 		<Unit filename="../../objectComponent/Object.hpp" />
+		<Unit filename="../../objectComponent/ObjectComponentManager.cpp" />
+		<Unit filename="../../objectComponent/ObjectComponentManager.hpp" />
+		<Unit filename="../../objectComponent/ObjectID.cpp" />
 		<Unit filename="../../objectComponent/ObjectID.hpp" />
 		<Unit filename="../../objectComponent/ObjectType.cpp" />
 		<Unit filename="../../objectComponent/ObjectType.hpp" />
+		<Unit filename="../../unitTesting/ObjectComponent_test.cpp">
+			<Option target="Object Component Testing" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

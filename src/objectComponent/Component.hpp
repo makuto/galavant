@@ -16,6 +16,8 @@ class ComponentManager;
 class Component
 {
     public:
+        Component();
+
         // Note that the constructor and destructor shouldn't have to be executed
         // every time a Component is created. Initialize and Deinitalize should do everything
         // necessary for a component to be reused
@@ -69,20 +71,19 @@ class Component
         //virtual bool save(SaveBuffer *saveBuffer);
         //virtual bool load(LoadBuffer *loadBuffer);
 
-    friend class ComponentManager;
-    protected:
         // This value can be used by the ComponentManager to find a component
         // in a Pool, array, list, etc
-        int                 componentIndex;
-        
-    private:
-        ComponentType       type;
-        ObjectType          ownerType;
-        ObjectID            ownerID;
+        int                 localID;
+    protected:
 
         // The parent object of this component. This value should always be
         // valid and set as the ComponentManager will use it
         Object*             parentObject;
+
+        ComponentType       type;
+    private:
+        ObjectType          ownerType;
+        ObjectID            ownerID;
 };
 
 #endif // COMPONENT_HPP

@@ -1,9 +1,8 @@
 # depslib dependency file v1.0
-1445721187 source:/home/macoy/devCollab/galavant/src/main.cpp
+1447912055 source:/home/macoy/devCollab/galavant/src/main.cpp
 	<iostream>
-	"objectComponent/Component.hpp"
 
-1447620789 /home/macoy/devCollab/galavant/src/objectComponent/Component.hpp
+1448147823 /home/macoy/devCollab/galavant/src/objectComponent/Component.hpp
 	"ObjectID.hpp"
 	"ObjectType.hpp"
 
@@ -14,7 +13,8 @@
 
 1445722684 /home/macoy/devCollab/galavant/src/objectComponent/ComponentTypes.hpp
 
-1447620492 source:/home/macoy/devCollab/galavant/src/objectComponent/Component.cpp
+1448146312 source:/home/macoy/devCollab/galavant/src/objectComponent/Component.cpp
+	<iostream>
 	"Component.hpp"
 	"ObjectType.hpp"
 	"Object.hpp"
@@ -34,13 +34,13 @@
 1447565116 source:/home/macoy/devCollab/galavant/src/objectComponent/ObjectID.cpp
 	"ObjectID.hpp"
 
-1447618062 source:/home/macoy/devCollab/galavant/src/objectComponent/ComponentManager.cpp
+1448147243 source:/home/macoy/devCollab/galavant/src/objectComponent/ComponentManager.cpp
 	"ComponentManager.hpp"
 
-1447627637 /home/macoy/devCollab/galavant/src/objectComponent/ComponentManager.hpp
+1448147008 /home/macoy/devCollab/galavant/src/objectComponent/ComponentManager.hpp
 	"ComponentTypes.hpp"
 
-1447911784 source:/home/macoy/devCollab/galavant/src/objectComponent/ObjectComponentManager.cpp
+1448147274 source:/home/macoy/devCollab/galavant/src/objectComponent/ObjectComponentManager.cpp
 	<assert.h>
 	<iostream>
 	"ObjectComponentManager.hpp"
@@ -54,4 +54,12 @@
 	"ObjectType.hpp"
 	"ComponentTypes.hpp"
 	"ObjectID.hpp"
+
+1448148029 source:/home/macoy/devCollab/galavant/src/unitTesting/ObjectComponent_test.cpp
+	<iostream>
+	<base2.0/dataStructures/pool.hpp>
+	"../objectComponent/ObjectComponentManager.hpp"
+	"../objectComponent/ObjectType.hpp"
+	"../objectComponent/Component.hpp"
+	"../objectComponent/ComponentManager.hpp"
 
