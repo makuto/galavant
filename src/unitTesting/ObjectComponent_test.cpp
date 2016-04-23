@@ -15,7 +15,7 @@ class TestComponent : public Component
     public:
         TestComponent()
         {
-            std::cout << "+++ TestComponent constructed\n";
+            std::cout << "+++ TestComponent constructed!\n";
         }
         virtual ~TestComponent()
         {

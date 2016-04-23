@@ -1,0 +1,41 @@
+{
+    "folders":
+    [
+        {
+            "path": "../../../src",
+            "name": "Source",
+            "folder_exclude_patterns": ["project"],
+            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt"]
+        },
+        {
+            "path": "../../../gamedata",
+            "name": "Game Data"
+        },
+        {
+            "path": "../../../data",
+            "name": "Data"
+        },
+        {
+            "path": "../../../assets",
+            "name": "Assets"
+        }
+    ],
+    "build_systems":
+    [
+        {
+            "name": "List",
+            "shell_cmd": "ls -l"
+        },
+        {
+        	"name": "Compile C++11 File",
+		    "cmd": ["g++", "-c", "-std=c++11", "-g", "-Os", "-Wall", "$file"],
+		    "file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
+		    "selector": "source.c++"
+        },
+        {
+            "name": "Build All Experiments",
+            "shell_cmd": "make",
+            "working_dir": "../../../src/experiments"
+        }
+    ]
+}

@@ -1,0 +1,6 @@
+CC = gcc ;
+C++ = g++ ;
+LINK = g++ ;
+C++FLAGS = -std=c++11 ;
+OBJECTC++FLAGS = -std=c++11 ;
+Main multithreading : multithreading.cpp ;
