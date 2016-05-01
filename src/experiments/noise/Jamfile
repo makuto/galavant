@@ -1,0 +1,7 @@
+CC = gcc ;
+C++ = g++ ;
+LINK = g++ ;
+C++FLAGS = -std=c++11 ;
+OBJECTC++FLAGS = -std=c++11 ;
+Main simple2dNoiseTest : simple2dNoiseTest.cpp ;
+LinkLibraries simple2dNoiseTest : ../../thirdPartyWrapper/thirdPartyWrapper.a ;

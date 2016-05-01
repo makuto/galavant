@@ -36,6 +36,10 @@
             "name": "Build All Experiments",
             "shell_cmd": "make",
             "working_dir": "../../../src/experiments"
+        },
+        {
+            "name": "Jam",
+            "shell_cmd": "jam"
         }
     ]
 }
