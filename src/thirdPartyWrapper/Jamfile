@@ -1,6 +1,6 @@
 CC = gcc ;
 C++ = g++ ;
 LINK = g++ ;
-C++FLAGS = -std=c++11 ;
+C++FLAGS = -std=c++11 -fPIC ; 	# fPIC = position independent code. This is so the thirdPartyWrapper can be linked in other libs/executables
 OBJECTC++FLAGS = -std=c++11 ;
 Library thirdPartyWrapper : noise/noise.cpp ;

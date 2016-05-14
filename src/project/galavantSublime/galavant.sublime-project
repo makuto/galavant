@@ -8,6 +8,11 @@
             "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt"]
         },
         {
+            "path": "../../../../galavant-unreal/GalavantUnreal/Source",
+            "name": "Source - Galavant Unreal",
+            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "*.cs"]
+        },
+        {
             "path": "../../../gamedata",
             "name": "Game Data"
         },
