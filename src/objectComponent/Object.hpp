@@ -76,13 +76,13 @@ class Object
         // Add a new, initialized component to this object
         void addComponent(Component* newComponent);
 
-        int getNumActiveComponents();
-
         // Run postInitialize on all components
         bool postInitializeComponents();
 
         // Run preDestroy on all components
         void preDestroyComponents();
+
+        int getNumActiveComponents();
 
         // Provides a layer of abstraction around the internal storage of Component pointers
         Component* getComponentAtIndex(int i);

@@ -70,6 +70,7 @@ class TestComponentManager : public ComponentManager
         virtual ~TestComponentManager()
         {
             std::cout << "--- TestComponentManager destructor\n";
+            destroy();
         }
         virtual bool initialize()
         {
@@ -82,6 +83,13 @@ class TestComponentManager : public ComponentManager
         }
         virtual void destroy()
         {
+            for (int i = 0; i < 100; i++)
+            {
+                if (activeComponents[i])
+                {
+                    destroyComponent(activeComponents[i]);
+                }
+            }
             std::cout << "TestComponentManager destroyed\n";
         }
         virtual void updateAllComponents(ComponentUpdateParams& componentUpdateParams)

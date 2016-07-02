@@ -5,7 +5,7 @@
             "path": "../../../src",
             "name": "Source",
             "folder_exclude_patterns": ["project"],
-            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt"]
+            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "Jam*"]
         },
         {
             "path": "../../../../galavant-unreal/GalavantUnreal/Source",
