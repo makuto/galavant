@@ -1,0 +1,8 @@
+namespace Galavant.Test;
+
+table HelloReply
+{
+	message:string;
+}
+
+root_type HelloReply;

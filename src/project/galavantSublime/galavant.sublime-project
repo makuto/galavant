@@ -2,8 +2,8 @@
     "folders":
     [
         {
-            "path": "../../../src",
-            "name": "Source",
+            "path": "../../../../galavant",
+            "name": "Galavant",
             "folder_exclude_patterns": ["project"],
             "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "Jam*"]
         },

@@ -1,7 +1,7 @@
-CC = gcc ;
-C++ = g++ ;
-LINK = g++ ;
-C++FLAGS = -std=c++11 ;
-OBJECTC++FLAGS = -std=c++11 ;
+SubDir . src experiments noise ;
+
 Main simple2dNoiseTest : simple2dNoiseTest.cpp ;
-LinkLibraries simple2dNoiseTest : ../../thirdPartyWrapper/lib/libGalaThirdPartyWrapper.a ;
+
+LinkLibraries simple2dNoiseTest : libGalaThirdPartyWrapper ;
+
+MakeLocate simple2dNoiseTest : bin ;

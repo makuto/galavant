@@ -1,6 +1,5 @@
-CC = gcc ;
-C++ = g++ ;
-LINK = g++ ;
-C++FLAGS = -std=c++11 ;
-OBJECTC++FLAGS = -std=c++11 ;
+SubDir . src experiments threading ;
+
 Main multithreading : multithreading.cpp ;
+
+MakeLocate multithreading : bin ;

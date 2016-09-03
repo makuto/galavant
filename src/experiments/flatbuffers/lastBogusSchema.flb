@@ -1,0 +1,10 @@
+include "bogusSchema.flb";
+
+namespace Galavant.Test;
+
+table HelloDict
+{
+	helloArray:[Hello];
+}
+
+root_type HelloDict;

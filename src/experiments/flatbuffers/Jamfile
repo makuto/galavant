@@ -1,0 +1,5 @@
+SubDir . src experiments flatbuffers ;
+
+Main testFlatbuffers : testFlatbuffers.cpp ;
+
+MakeLocate testFlatbuffers : bin ;

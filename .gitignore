@@ -30,6 +30,7 @@
 # Codeblocks folder ignores
 bin/
 obj/
+lib/
 
 # Codeblocks file ignores
 *.layout

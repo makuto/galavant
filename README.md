@@ -15,10 +15,18 @@ There is a lot to the design of Galavant that does not fit in this readme. If yo
 
 License
 --------
-The code is MIT licensed. I intend on keeping all data (images, sprites, gameplay/design data) private, following the Doom/Quake model. 
+The code is MIT licensed. I intend on keeping all data (images, sprites, gameplay/design data) private, following the Doom/Quake model, but for now, consider those to be MIT Licensed.
 
 Technical
 ----------
 I am writing Galavant in C++ (C++11, to be specific). I rely on SFML2 for sound, graphics, input, and networking. SFML is wrapped in my personal game library, [Base2.0](https://github.com/makuto/base2.0) (also MIT licensed), which also has other useful game-agnostic code. 
 
-Horizon used a makefile for its build process (which I hand wrote). I have decided to abandon this method because I think it wasted a lot of my time updating it. I plan on using Codeblocks with GCC to make this process more automatic. It should also make compiling on Windows much simpler.
+Jam is used as the build system for Galavant. I used to use makefiles in the Horizon iteration of this project, and I hated them. Jam is much easier to use and takes much less work to get a project set up. If people actually become interested in this project, I can invest some time in cmake-ifying it for more standard building. If you're willing to try building using jam, you may have to edit Jamrules to set your preferred compiler.
+
+Dependencies
+--------------
+Galavant uses features of C++11.
+
+The following libraries are required by Galavant and included in /thirdParty:
+- [OpenSimplexNoise](https://gist.github.com/tombsar/716134ec71d1b8c1b530), created by Arthur Tombs (public domain)
+- [Flatbuffers](https://github.com/google/flatbuffers), created by Google/Fun Propulsion Labs (Apache License, v2.0)

@@ -1,9 +1,12 @@
-CC = gcc ;
-C++ = g++ ;
-LINK = g++ ;
-C++FLAGS = -std=c++11 -fPIC ; 	# fPIC = position independent code. This is so the lib can be linked in other libs/executables
-OBJECTC++FLAGS = -std=c++11 ;
+SubDir . src ;
+
+Library libGalavant : GalavantMain.cpp ;
+
+LinkLibraries libGalavant : libGalaThirdPartyWrapper ;
 
 MakeLocate libGalavant.a : lib ;
 
-Library libGalavant : GalavantMain.cpp ;
+SubInclude . src thirdPartyWrapper ;
+
+# Experiments (feel free to remove this if desired)
+SubInclude . src experiments ;

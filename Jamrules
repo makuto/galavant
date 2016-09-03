@@ -1,0 +1,6 @@
+CC = gcc ;
+C++ = g++ ;
+LINK = g++ ;
+C++FLAGS = -std=c++11 -fPIC ; 	# fPIC = position independent code. This is so the lib can be linked in other libs/executables
+OBJECTC++FLAGS = -std=c++11 ;
+HDRS = thirdParty/flatbuffers/include ;

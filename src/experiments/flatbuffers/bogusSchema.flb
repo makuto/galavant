@@ -1,0 +1,14 @@
+include "anotherBogusSchema.flb";
+
+namespace Galavant.Test;
+
+enum FuckYou:byte { FuckYou = 0, FuckYouToo  }
+
+table Hello
+{
+	status:FuckYou = FuckYou;
+	value:int = 1232;
+	message:HelloReply;
+}
+
+root_type Hello;
