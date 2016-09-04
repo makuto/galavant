@@ -1,0 +1,5 @@
+SubDir . src entityComponentSystem ;
+
+Library libGalaEntityComponent : EntityTypes.cpp EntityComponentManager.cpp ComponentManager.cpp ;
+
+MakeLocate libGalaEntityComponent.a : lib ;
