@@ -6,6 +6,16 @@
 #include "EntityTypes.hpp"
 #include "ComponentManager.hpp"
 
+/* --EntityComponentManager--
+EntityComponentManager is intended to be a very minimal managing class for the Entity Component
+System. Its primary task is to facilitate the creation and destruction of Entities.
+
+Note that EntityComponentManager does not track nor handle subscribing of entities to
+ComponentManagers - that is handled directly by ComponentManagers. This means that when an Entity is
+destroyed, the EntityComponentManager must send the entire list of all unsubscribing entities to
+every ComponentManager which is registered with this ECM. This is less than optimal, but
+permissable.
+*/
 class EntityComponentManager
 {
 private:
@@ -31,16 +41,17 @@ public:
 
 	// Sets the ComponentManager for a ComponentType. Returns false if there is already a manager
 	// for that type (it will not be set)
-	// Maybe this shouldn't take a type - just get it from the manager?
 	bool AddComponentManagerOfType(ComponentType type, ComponentManager *manager);
+
+	bool AddComponentManager(ComponentManager *manager);
 
 	// Returns the ComponentManager assigned to the provided type, or nullptr if there isn't one
 	// assigned. If your ComponentManager needs another, it is preferable to get its dependencies
 	// directly (i.e. passed in during a initialize() function) rather than using this function
 	ComponentManager *GetComponentManagerForType(ComponentType type);
 
-	// Creates the given number of entities and adds them to the ActiveEntities list as well as the
-	// provided list
+	// Creates the given number of entities, adds them to the ActiveEntities list, and appends them
+	// to the provided list
 	void GetNewEntities(EntityList &list, int count);
 
 	// Mark Entities for destruction. They are not destroyed immediately; rather, they is destroyed

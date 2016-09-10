@@ -14,7 +14,7 @@ EntityComponentManager::~EntityComponentManager()
 // Sets the ComponentManager for a ComponentType. Returns false if there is already a manager
 // for that type (it will not be set)
 bool EntityComponentManager::AddComponentManagerOfType(ComponentType type,
-													   ComponentManager *manager)
+                                                       ComponentManager *manager)
 {
 	if (manager)
 	{
@@ -25,6 +25,11 @@ bool EntityComponentManager::AddComponentManagerOfType(ComponentType type,
 	}
 
 	return false;
+}
+
+bool EntityComponentManager::AddComponentManager(ComponentManager *manager)
+{
+	return AddComponentManagerOfType(manager->GetType(), manager);
 }
 
 // Returns the ComponentManager assigned to the provided type, or nullptr if there isn't one
@@ -54,7 +59,7 @@ void EntityComponentManager::GetNewEntities(EntityList &list, int count)
 void EntityComponentManager::MarkDestroyEntities(EntityList &entities)
 {
 	EntitiesPendingDestruction.insert(EntitiesPendingDestruction.end(), entities.begin(),
-									  entities.end());
+	                                  entities.end());
 }
 
 void EntityComponentManager::UnsubscribeEntitiesFromAllManagers(EntityList &entitiesToUnsubscribe)
@@ -63,7 +68,7 @@ void EntityComponentManager::UnsubscribeEntitiesFromAllManagers(EntityList &enti
 	// Some component managers will not actually have the Entity being destroyed subscribed, but
 	// that's fine
 	for (EntityComponentManager::ComponentManagerMapIterator it = ComponentManagers.begin();
-		 it != ComponentManagers.end(); ++it)
+	     it != ComponentManagers.end(); ++it)
 	{
 		ComponentManager *currentComponentManager = it->second;
 

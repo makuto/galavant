@@ -8,3 +8,6 @@ C++FLAGS = -std=c++11 -fPIC -g ;
 OBJECTC++FLAGS = -std=c++11 ;
 
 HDRS = thirdParty/flatbuffers/include ;
+
+# TODO: add project-specific filetype rules for things like flatbuffer .json compilation (see "UserObject rule":
+# 	https://swarm.workshop.perforce.com/view/guest/perforce_software/jam/src/Jamfile.html ) ?

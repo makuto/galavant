@@ -50,7 +50,7 @@ private:
 	unsigned int totalActiveData;			   // The number of active data in the pool
 
 	// Prepare the data pointers as a linked list
-	void resetPool()
+	void ResetPool()
 	{
 		// Iterate through all data, resetting pointers and isActive status
 		firstFreeData = &pool[0];
@@ -80,7 +80,7 @@ public:
 		firstFreeData = NULL;
 		firstUsedData = NULL;
 		pool.resize(size);
-		resetPool();
+		ResetPool();
 	}
 	// Resets the pool. Note that this isn't cheap because it must fix up the linked list
 	// that underlies the FragmentedPool structure
@@ -158,6 +158,11 @@ public:
 	unsigned int GetTotalActiveData()
 	{
 		return totalActiveData;
+	}
+
+	int GetPoolSize()
+	{
+		return size;
 	}
 };
 #endif

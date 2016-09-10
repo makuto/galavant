@@ -9,6 +9,11 @@ bool EntityComparator(Entity a, Entity b)
 	return a < b;
 }
 
+void EntityListAppendList(EntityList& list, const EntityList& listToAdd)
+{
+	list.insert(list.begin(), listToAdd.begin(), listToAdd.end());
+}
+
 void EntityListSort(EntityList& list)
 {
 	std::sort(list.begin(), list.end(), EntityComparator);
@@ -39,11 +44,11 @@ void EntityListSortAndRemoveDuplicates(EntityList& list)
 }
 
 // Remove all entities from suspectList which are already in list
-void EntityListRemoveNonUniqueEntitiesInSuspect(EntityList& list, EntityList& suspectList)
+void EntityListRemoveNonUniqueEntitiesInSuspect(const EntityList& list, EntityList& suspectList)
 {
-	for (EntityListIterator it = list.begin(); it != list.end(); ++it)
+	for (EntityListConstIterator it = list.begin(); it != list.end(); ++it)
 	{
-		Entity currentEntity = (*it);
+		const Entity currentEntity = (*it);
 		for (EntityListIterator sIt = suspectList.begin(); sIt != suspectList.end();)
 		{
 			Entity suspectEntity = (*sIt);
@@ -59,4 +64,42 @@ void EntityListRemoveNonUniqueEntitiesInSuspect(EntityList& list, EntityList& su
 				++sIt;
 		}
 	}
+}
+
+// Remove all entities from suspectList which are not already in list
+void EntityListRemoveUniqueEntitiesInSuspect(const EntityList& list, EntityList& suspectList)
+{
+	for (EntityListIterator it = suspectList.begin(); it != suspectList.end();)
+	{
+		bool found = false;
+		Entity suspectEntity = (*it);
+		for (EntityListConstIterator sIt = list.begin(); sIt != list.end();)
+		{
+			const Entity currentEntity = (*sIt);
+
+			if (currentEntity == suspectEntity)
+			{
+				found = true;
+				break;
+			}
+			else
+				++sIt;
+		}
+
+		if (found)
+			it++;
+		else
+			suspectList.erase(it);
+	}
+}
+
+bool EntityListFindEntity(EntityList& list, Entity entity)
+{
+	for (EntityListIterator it = list.begin(); it != list.end(); ++it)
+	{
+		Entity currentEntity = (*it);
+		if (currentEntity == entity)
+			return true;
+	}
+	return false;
 }

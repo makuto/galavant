@@ -4,6 +4,7 @@
 #include "../entityComponentSystem/EntityTypes.hpp"
 #include "../entityComponentSystem/EntityComponentManager.hpp"
 #include "../entityComponentSystem/ComponentManager.hpp"
+#include "../entityComponentSystem/PooledComponentManager.hpp"
 
 void TestEntityLists(void)
 {
@@ -41,7 +42,7 @@ void TestEntityCreationAndDestruction(void)
 			{
 				EntityList unsubscribeList;
 				unsubscribeList.insert(unsubscribeList.end(), Subscribers.begin(),
-									   Subscribers.end());
+				                       Subscribers.end());
 				UnsubscribeEntities(unsubscribeList);
 			}
 		};
@@ -50,13 +51,13 @@ void TestEntityCreationAndDestruction(void)
 		{
 			EntityList entitiesToSubscribe;
 			entitiesToSubscribe.insert(entitiesToSubscribe.begin(), entities.begin(),
-									   entities.end());
+			                           entities.end());
 			// Ensure that we don't resubscribe any entities by removing anything in entities which
 			// is already in Subscribers
 			EntityListRemoveNonUniqueEntitiesInSuspect(Subscribers, entitiesToSubscribe);
 
 			for (EntityListIterator it = entitiesToSubscribe.begin();
-				 it != entitiesToSubscribe.end(); ++it)
+			     it != entitiesToSubscribe.end(); ++it)
 			{
 				Entity currentEntity = (*it);
 
@@ -112,7 +113,7 @@ void TestEntityCreationAndDestruction(void)
 	std::cout << "Testing Entity Creation and Destruction...\n";
 
 	entityComponentManager.AddComponentManagerOfType(testComponentManager.GetType(),
-													 &testComponentManager);
+	                                                 &testComponentManager);
 
 	EntityList newEntities;
 
@@ -148,10 +149,95 @@ void TestEntityCreationAndDestruction(void)
 	std::cout << "Done\n\n";
 }
 
+void TestEntityComponentTypes(void)
+{
+	struct TestComponent
+	{
+		int value;
+	};
+	class TestPooledComponentManager : public PooledComponentManager<TestComponent>
+	{
+	public:
+		TestPooledComponentManager() : PooledComponentManager<TestComponent>(1000)
+		{
+		}
+		virtual ~TestPooledComponentManager()
+		{
+		}
+		virtual void Update(float ms)
+		{
+			std::cout << "\tUpdating TestPooledComponentManager...\n";
+			PooledComponentManager::FragmentedPoolIterator it =
+			    PooledComponentManager::NULL_POOL_ITERATOR;
+			for (PooledComponent<TestComponent>* currentComponent = ActivePoolBegin(it);
+			     currentComponent != nullptr && it != PooledComponentManager::NULL_POOL_ITERATOR;
+			     currentComponent = GetNextActivePooledComponent(it))
+			{
+				std::cout << "\t\t" << currentComponent->entity
+				          << " value: " << currentComponent->data.value << "\n";
+			}
+			std::cout << "\tDone\n";
+		}
+		virtual void UnsubscribeEntity(PooledComponent<TestComponent>& component)
+		{
+			std::cout << "\t\tUnsubscribing " << component.entity << "\n";
+		}
+	};
+
+	std::cout << "\nTesting Entity Component Types...\n";
+
+	EntityList newEntities;
+	EntityComponentManager entityComponentManager;
+	TestPooledComponentManager testComponentManager;
+
+	entityComponentManager.GetNewEntities(newEntities, 10);
+
+	// Simulate a game loop (poorly)
+	EntityList createList;
+	for (int i = 0; i < 100; i++)
+	{
+		testComponentManager.Update(i);
+
+		// Do some weird creation/destruction of entities
+		if (rand() % 4 && !createList.empty())
+		{
+			EntityList destroyList;
+			destroyList.push_back(createList[i]);
+
+			entityComponentManager.MarkDestroyEntities(destroyList);
+		}
+		else
+		{
+			std::vector<PooledComponent<TestComponent> > newComponents;
+
+			// Note that I'm resubscribing entities here. The ComponentManager needs to know how to
+			// handle this (maybe by using EntityListRemoveNonUniqueEntitiesInSuspect() etc.)
+			entityComponentManager.GetNewEntities(createList, rand() % 10);
+
+			newComponents.resize(createList.size());
+
+			int i = 0;
+			for (EntityListIterator it = createList.begin(); it != createList.end(); ++it)
+			{
+				PooledComponent<TestComponent>* newComponent = &newComponents[i++];
+				newComponent->entity = (*it);
+				newComponent->data.value = rand() % 10000;
+			}
+			std::cout << "\tAttempting to subscribe " << newComponents.size()
+			          << " components (some duplicates)\n";
+			testComponentManager.SubscribeEntities(newComponents);
+		}
+
+		entityComponentManager.DestroyEntitiesPendingDestruction();
+	}
+	std::cout << "Done\n\n";
+}
+
 int main()
 {
 	TestEntityLists();
 	TestEntityCreationAndDestruction();
+	TestEntityComponentTypes();
 
 	return 1;
 }

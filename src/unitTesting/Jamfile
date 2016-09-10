@@ -4,8 +4,10 @@ Main objectComponentTest : ObjectComponent_test.cpp ../objectComponent/Component
 
 Main entityComponentTest : EntityComponentSystem_test.cpp ;
 
+Main objectPoolTest : ObjectPoolTest.cpp ;
+
 LinkLibraries entityComponentTest : libGalaEntityComponent ;
 
-MakeLocate objectComponentTest entityComponentTest : bin ;
+MakeLocate objectComponentTest entityComponentTest objectPoolTest : bin ;
 
 SubInclude . src entityComponentSystem ;

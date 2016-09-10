@@ -13,7 +13,7 @@ void printHello(const Galavant::Test::Hello *hello)
 	{
 		std::string message = hello->message() ? hello->message()->message()->str() : "";
 		std::cout << "From buffer:\n\tstatus: " << Galavant::Test::EnumNameFuckYou(hello->status())
-				  << " value: " << hello->value() << " message: \"" << message << "\"\n";
+		          << " value: " << hello->value() << " message: \"" << message << "\"\n";
 	}
 }
 
@@ -64,18 +64,18 @@ char *readBuffer()
 }
 
 void createPlaceholderHelloArray(std::vector<flatbuffers::Offset<Galavant::Test::Hello> > &array,
-								 flatbuffers::FlatBufferBuilder &builder, int count)
+                                 flatbuffers::FlatBufferBuilder &builder, int count)
 {
 	for (int i = 0; i < count; i++)
 	{
 		flatbuffers::Offset<flatbuffers::String> messageString =
-			builder.CreateString("This is the message!!!1 hello codegomad, mckenna and 123ran");
+		    builder.CreateString("This is the message!!!1 hello codegomad, mckenna and 123ran");
 
 		flatbuffers::Offset<Galavant::Test::HelloReply> message =
-			Galavant::Test::CreateHelloReply(builder, messageString);
+		    Galavant::Test::CreateHelloReply(builder, messageString);
 
 		flatbuffers::Offset<Galavant::Test::Hello> testHello = Galavant::Test::CreateHello(
-			builder, Galavant::Test::FuckYou::FuckYou_FuckYouToo, i, message);
+		    builder, Galavant::Test::FuckYou::FuckYou_FuckYouToo, i, message);
 
 		array.push_back(testHello);
 	}
@@ -86,13 +86,13 @@ void testHellos()
 	flatbuffers::FlatBufferBuilder builder;
 
 	flatbuffers::Offset<flatbuffers::String> messageString =
-		builder.CreateString("This is the message!!!1 hello codegomad and 123ran");
+	    builder.CreateString("This is the message!!!1 hello codegomad and 123ran");
 
 	flatbuffers::Offset<Galavant::Test::HelloReply> message =
-		Galavant::Test::CreateHelloReply(builder, messageString);
+	    Galavant::Test::CreateHelloReply(builder, messageString);
 
 	flatbuffers::Offset<Galavant::Test::Hello> testHello = Galavant::Test::CreateHello(
-		builder, Galavant::Test::FuckYou::FuckYou_FuckYouToo, 58008, message);
+	    builder, Galavant::Test::FuckYou::FuckYou_FuckYouToo, 58008, message);
 
 	builder.Finish(testHello);
 
@@ -119,7 +119,7 @@ void testHelloDict()
 	createPlaceholderHelloArray(helloArray, builder, 10000);
 
 	flatbuffers::Offset<Galavant::Test::HelloDict> helloDict =
-		Galavant::Test::CreateHelloDictDirect(builder, &helloArray);
+	    Galavant::Test::CreateHelloDictDirect(builder, &helloArray);
 
 	builder.Finish(helloDict);
 
@@ -133,7 +133,7 @@ void testHelloDict()
 		if (readInHelloDict)
 		{
 			const flatbuffers::Vector<flatbuffers::Offset<Galavant::Test::Hello> > *helloArray =
-				readInHelloDict->helloArray();
+			    readInHelloDict->helloArray();
 
 			if (helloArray)
 			{
