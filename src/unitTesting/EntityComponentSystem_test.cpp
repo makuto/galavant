@@ -107,8 +107,8 @@ void TestEntityCreationAndDestruction(void)
 		}
 	};
 
-	TestComponentManager testComponentManager;
 	EntityComponentManager entityComponentManager;
+	TestComponentManager testComponentManager;
 
 	std::cout << "Testing Entity Creation and Destruction...\n";
 
@@ -177,10 +177,6 @@ void TestEntityComponentTypes(void)
 				          << " value: " << currentComponent->data.value << "\n";
 			}
 			std::cout << "\tDone\n";
-		}
-		virtual void UnsubscribeEntity(PooledComponent<TestComponent>& component)
-		{
-			std::cout << "\t\tUnsubscribing " << component.entity << "\n";
 		}
 	};
 

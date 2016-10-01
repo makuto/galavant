@@ -46,5 +46,13 @@
             "name": "Jam",
             "shell_cmd": "jam"
         }
-    ]
+    ],
+
+    "settings":
+    {
+         //"sublimegdb_workingdir": "${folder:${project_path:your_executable_name}}",
+         "sublimegdb_workingdir": "../../../../galavant/bin/entityComponentTest",
+         
+         "sublimegdb_commandline": "gdb --interpreter=mi ./entityComponentTest"
+    }
 }

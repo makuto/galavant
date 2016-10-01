@@ -5,8 +5,6 @@
 #include <cassert>
 #include <vector>
 
-#include <iostream>
-
 // TODO: Replace FragmentedPool with a better pool
 #include "../util/FragmentedPool.hpp"
 #include "EntityTypes.hpp"
@@ -112,17 +110,15 @@ protected:
 		return nullptr;
 	}
 
-	// This function is executed once for each entity which is being subscribed
-	// This should only be used if your manager must do something per-component - otherwise, you
-	// should write a custom solution
-	// The component is already in the pool.
-	virtual void SubscribeEntity(PooledComponent<T>& component)
+	// Do whatever your custom manager does for subscribing here.
+	// The components are already in the pool.
+	virtual void SubscribeEntitiesInternal(std::vector<PooledComponent<T>*>& components)
 	{
 	}
 
-	// Do whatever your custom manager does for unsubscribing here. Don't implement if you don't
-	// have to
-	virtual void UnsubscribeEntity(PooledComponent<T>& component)
+	// Do whatever your custom manager does for unsubscribing here.
+	// The components are still in the subscription list and pool
+	virtual void UnsubscribeEntitiesInternal(std::vector<PooledComponent<T>*>& components)
 	{
 	}
 
@@ -139,6 +135,8 @@ public:
 	// If the entity is already subscribed, the input component will be tossed out
 	void SubscribeEntities(const std::vector<PooledComponent<T> >& components)
 	{
+		std::vector<PooledComponent<T>*> newSubscribers(components.size());
+
 		for (typename std::vector<PooledComponent<T> >::const_iterator it = components.begin();
 		     it != components.end(); ++it)
 		{
@@ -148,19 +146,21 @@ public:
 			if (EntityListFindEntity(Subscribers, currentPooledComponent.entity))
 				continue;
 
-			FragmentedPoolData<PooledComponent<T> >* newPooledComponentPooled =
+			FragmentedPoolData<PooledComponent<T> >* newPooledComponent =
 			    PooledComponents.GetNewData();
 
 			// Pool is full!
 			// TODO: handle this elegantly
-			assert(newPooledComponentPooled);
+			assert(newPooledComponent);
 
-			newPooledComponentPooled->data = currentPooledComponent;
+			newPooledComponent->data = currentPooledComponent;
 
 			Subscribers.push_back(currentPooledComponent.entity);
 
-			SubscribeEntity(newPooledComponentPooled->data);
+			newSubscribers.push_back(&newPooledComponent->data);
 		}
+
+		SubscribeEntitiesInternal(newSubscribers);
 	}
 
 	virtual void UnsubscribeEntities(const EntityList& entities)
@@ -171,6 +171,10 @@ public:
 		// Ensure that we only unsubscribe entities which are actually Subscribers
 		EntityListRemoveUniqueEntitiesInSuspect(Subscribers, entitiesToUnsubscribe);
 
+		std::vector<PooledComponent<T>*> unsubscribers(entitiesToUnsubscribe.size());
+
+		// Build the list of components we are going to be unsubscribing for the
+		//  child of this class. We can probably make this one loop, but we'll save that for later
 		for (EntityListConstIterator it = entitiesToUnsubscribe.begin();
 		     it != entitiesToUnsubscribe.end(); ++it)
 		{
@@ -182,10 +186,26 @@ public:
 				    PooledComponents.GetActiveDataAtIndex(i);
 
 				if (currentPooledComponent && currentPooledComponent->data.entity == currentEntity)
-				{
-					UnsubscribeEntity(currentPooledComponent->data);
+					unsubscribers.push_back(&currentPooledComponent->data);
+			}
+		}
+
+		// Let child do whatever it needs to unsubscribe the given entities
+		UnsubscribeEntitiesInternal(unsubscribers);
+
+		// Remove the entities from pool (freeing memory)
+		for (EntityListConstIterator it = entitiesToUnsubscribe.begin();
+		     it != entitiesToUnsubscribe.end(); ++it)
+		{
+			Entity currentEntity = (*it);
+
+			for (int i = 0; i < PooledComponents.GetPoolSize(); i++)
+			{
+				FragmentedPoolData<PooledComponent<T> >* currentPooledComponent =
+				    PooledComponents.GetActiveDataAtIndex(i);
+
+				if (currentPooledComponent && currentPooledComponent->data.entity == currentEntity)
 					PooledComponents.RemoveData(currentPooledComponent);
-				}
 			}
 		}
 
