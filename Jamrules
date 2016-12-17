@@ -1,11 +1,15 @@
 CC = gcc ;
 C++ = g++ ;
 LINK = g++ ;
+#C++ = clang++ ;
+#LINK = clang++ ;
 
 # Galavant requires C++11
 # fPIC = position independent code. This is so the lib can be linked in other libs/executables
-C++FLAGS = -std=c++11 -fPIC -g ;
-OBJECTC++FLAGS = -std=c++11 ;
+# g = debug symbols
+# lstdc++ = standard library
+C++FLAGS = -std=c++11 -fPIC -g -Wall -Wextra ;
+OBJECTC++FLAGS = -std=c++11 -lstdc++ ;
 
 HDRS = thirdParty/flatbuffers/include ;
 

@@ -45,6 +45,11 @@
         {
             "name": "Jam",
             "shell_cmd": "jam"
+        },
+        // Assume GalavantUnreal is cloned as a submodule or linked (I can't remember if I actually made it a submodule)
+        {
+            "name": "Jam",
+            "shell_cmd": "jam"
         }
     ],
 

@@ -8,6 +8,7 @@ MakeLocate libGalavant.a : lib ;
 
 SubInclude . src thirdPartyWrapper ;
 SubInclude . src entityComponentSystem ;
+SubInclude . src ai ;
 
 # Experiments and Testing (feel free to remove these if you don't want them built)
 SubInclude . src experiments ;

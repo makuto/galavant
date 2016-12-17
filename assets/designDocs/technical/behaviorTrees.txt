@@ -1,0 +1,34 @@
+
+Behavior Trees
+====================
+- Leaf: Cannot have children
+	- Conditional: returns success or failure immediately
+	- Action: can return running
+- Composite: Has one or more children
+	- Parallel: runs multiple children at once
+	- Sequence: runs children in order, aborts on child failure
+	- Selector: runs children in order, continues on child failure
+	- Random: runs one of its children at random
+- Decorator: Has exactly one child
+	- Inverter
+	- Succeeder: always return success
+	- Failer: always return failure
+	- Repeat X times
+	- Repeat until failure
+	- Repeat until success
+
+
+Behavior Tree
+	ReceiveStatuses(Node, (TreeInstances, Statuses))
+
+	RunChildren(TreeInstances, ChildNodes)
+
+	Update
+		loopCounter
+		do
+			update trees which have nodes which aren't running
+
+
+		while there are trees which aren't running and not at max number loops
+
+		tick running nodes
