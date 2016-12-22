@@ -20,209 +20,353 @@ bool DecomposeCompoundTask(TaskList& taskList, Task* task, const TaskArguments& 
 	return false;
 }
 
-struct DecomposeTaskState
+struct TaskCall
 {
-	Task* DecomposedTask;
+	Task* TaskToCall;
 	ParameterList Parameters;
 };
 
-typedef std::vector<DecomposeTaskState> DecomposedTaskList;
+typedef std::vector<TaskCall> TaskCallList;
+typedef TaskCallList::iterator TaskCallListIterator;
 
-struct TaskDecomposition
+struct GoalDecomposition
 {
-	Task* DecomposedTask;
-	unsigned int DecompositionIndex;
-	DecomposedTaskList* Decomposition;
+	// The GoalTask this decomposition came from
+	GoalTask* DecomposedGoalTask;
+
+	// The index to the Method used for the current decomposition
+	int MethodIndex;
+
+	// The tasks themselves created by the Method
+	TaskCallList CallList;
+
+	// The state and parameters at the time this decomposition took place
+	WorldState State;
+	ParameterList Parameters;
 };
 
-typedef std::vector<TaskDecomposition> TaskDecompositionStack;
+typedef std::vector<GoalDecomposition> GoalDecompositionStack;
 
 enum class PlanStepStatus
 {
-	Failed = 0,  // generic failure
+	Failed_BadData = 0,
 
-	FailedDecomposition,
+	Failed_NoPossiblePlan,
+
 	SuccessfulDecomposition,
-
-	FailedToMeetPrecondtions,
-	StateMeetsPreconditions,
+	SuccessfulPrimitive,
 
 	NoTasks,
 
 	PlanComplete
 };
 
-/*
-Goal Task // Set Agent StateA and StateB = true
-	Method1 = Compound1(AgentState and Params from initial call)
-	Method2 = Compound2
-	Method3 = Compound3
-
-Compound1
-	StateMeetsPrecondtion(AgentState, Params from Goal) then 
-		return {primitiveA(paramA, paramB), primitiveB(ParamA, ParamB, ParamC)}
-
-primitiveA
-	StateMeetsPrecondition(AgentState, paramA, paramB)
-		then AgentState.StateA = true
-
-primitiveB
-	StateMeetsPrecondition(AgentState, paramA, paramB, paramC)
-		then AgentState.StateB = true
-
-PlanStep(stack, taskList)
-if not stack
- 	// startup
-	stack.push(decompose(taskList[0]))
-
-else
-	decomposition = stack.pop()
-	allPrimitives = true
-	for task in decomposition
-		if task == primitive
-			task.StateMeetsPrecondition then
-				modify currentState
-				// don't break here
-			else
-				goto fail
-
-		if task == compound
-			allPrimitives = false
-			task.StateMeetsPrecondition then
-				stack.push(decompose(task))
-				break
-			else
-				goto fail
-
-		if task == goal
-			allPrimitives = false
-			methodIndex = 0
-			decomposedTasks = task.GetMethodAtIndex(0), currentState
-			stack.push(decomposition)
-			break
-
-	fail:
-		
-
-*/
-
-PlanStepStatus PlanStep(TaskDecompositionStack& stack, TaskList& taskList,
-                        const TaskArguments& taskArguments)
+struct PlanState
 {
-	if (!stack.empty())
+	WorldState State;
+
+	TaskCallList InitialCallList;
+
+	// Filled out by PlanStep(); Should only be used once PlanStep returns PlanComplete
+	TaskCallList FinalCallList;
+
+	//
+	// Settings to tweak how long you want a single PlanStep() to be
+	//
+	// Break immediately after a new method has been chosen for a goal
+	bool BreakOnStackPush = true;
+	// Break immediately after a method has failed to be decomposed
+	bool BreakOnStackPop = true;
+	// Break immediately after a compound task has been decomposed
+	bool BreakOnCompoundDecomposition = false;
+	bool BreakOnPrimitiveApply = false;
+
+	//
+	// Used by PlanStep() only
+	//
+	GoalDecompositionStack DecompositionStack;
+
+	// Used for when all goals have been decomposed to manage mutable state
+	WorldState StacklessState;
+
+	// Copy of InitialCallList that PlanState can fuck with
+	TaskCallList WorkingCallList;
+};
+
+PlanStepStatus PlanStep(PlanState& PlanState)
+{
+	if (InitialCallList.empty())
+		return PlanStepStatus::NoTasks;
+	else if (PlanState.WorkingCallList.empty())
+		PlanState.WorkingCallList = InitialCallList;
+
+	if (PlanState.DecompositionStack.empty())
 	{
-		// Check to see if the current stack item is all primitive tasks with met preconditions. If
-		// 	so, we can add them to the tasklist and walk all the way back up
-		// TODO: naming
-		TaskDecomposition currentDecomposition = stack.end();
-		bool onlyPrimitiveTasksRemain = true;
-		bool failedToDecompose = false;
-		for (DecomposeTaskState* currentTaskState : currentDecomposition.Decomposition)
+		TaskCallList compoundDecompositions;
+		// When the stack is empty, find a goal task to push onto the task or add tasks as per usual
+		// If any Decompositions or Preconditions fail, we must fail the entire plan because we have
+		//  no alternate methods
+		for (TaskCallListIterator currentTaskCallIter = PlanState.WorkingCallList.begin();
+		     currentTaskCallIter != PlanState.WorkingCallList.end();
+		     currentTaskCallIter = PlanState.WorkingCallList.erase(currentTaskCallIter);)
 		{
-			if (!currentTaskState || !currentTaskState->DecomposeTask)
+			TaskCall currentTaskCall = (*currentTaskCallIter)Task* currentTask =
+			    currentTaskCall.TaskToCall;
+			if (!currentTask)
 				continue;
-			Task* currentTask = currentTaskState->DecomposeTask;
 			TaskType currentTaskType = currentTask->GetType();
-			TaskArguments& currentTaskArguments = currentDecomposition->Arguments;
-			
-			if (currentTaskType == TaskType::Primitive) 
+			TaskArguments taskArguments = {PlanState.StacklessState, currentTaskCall.Parameters};
+
+			switch (currentTaskType)
 			{
-				PrimitiveTask* primitiveTask = static_cast<PrimitiveTask*>(currentTask);
-
-				if (!primitiveTask->StateMeetsPreconditions(currentTaskArguments))
+				case TaskType::Goal:
 				{
-					failedToDecompose = true;
-					break;
-				}
+					GoalTask* goalTask = static_cast<GoalTask*>(currentTask);
+					GoalDecomposition decomposition;
+					decomposition.DecomposedGoalTask = goalTask;
+					decomposition.MethodIndex = 0;  // -- CHANGE for stacked
+					// How the hell are parameters off of goals used? Fuck
+					decomposition.Parameters = currentTaskCall.Parameters;
+					decomposition.State = PlanState.StacklessState;  // -- CHANGE for stacked
 
-				// Modify state
+					// Perform the decomposition
+					goalTask->DecomposeMethodAtIndex(decomposition.CallList,
+					                                 decomposition.MethodIndex);
 
-			}
-			else
-			{
-				onlyPrimitiveTasksRemain = false;
-				// TODO
-				//failedToDecompose = DecomposeTask()
-			}
-		}
+					PlanState.Stack.push_back(decomposition);
 
-		// TODO: Goal tasks trying new decompositions
-		if (failedToDecompose)
-		{
-			stack.pop_back();
-			delete currentDecomposition;
-			return PlanStepStatus::FailedDecomposition;
-		}
-	}
-	else if (!taskList.empty())
-	{
-		// No stack; we must be just starting
-		Task* currentTask = *taskList.data();
-
-		if (!currentTask)
-			return PlanStepStatus::Failed;
-
-		TaskType currentTaskType = currentTask->GetType();
-
-		// What if taskList just has primitives? Multiple goals?
-		if (currentTaskType == TaskType::Goal)
-		{
-			GoalTask* goalTask = static_cast<GoalTask*>(currentTask);
-			int numMethods = goalTask->GetNumMethods();
-			TaskDecomposition newDecomposition;
-			newDecomposition.DecomposedTask = currentTask;
-			newDecomposition.DecompositionIndex = 0;
-			newDecomposition.Decomposition = nullptr;
-
-			// Goal tasks are decomposed via methods. Methods are Tasks which can be used to achieve
-			//  the goal. Goal tasks do not have conditonals - they just blindly pick methods in
-			//  order until they find one which works
-			for (int methodIndex = newDecomposition.DecompositionIndex;
-			     !newDecomposition.Decomposition && methodIndex < numMethods; methodIndex++)
-			{
-				Task* method = goalTask->GetMethodAtIndex(newDecomposition.DecompositionIndex);
-				if (!method)
-					continue;
-				TaskType methodType = method->GetType();
-
-				if (methodType == TaskType::GoalTask)
-				{
-					newDecomposition.newDecomposition = new TaskList(1);
-					newDecomposition.Decomposition->push_back(method);
-					newDecomposition.DecompositionIndex = methodIndex;
-				}
-				else if (methodType == TaskType::Primitive)
-				{
-					PrimitiveTask* primitiveTask = static_cast<PrimitiveTask*>(method);
-					if (primitiveTask->StateMeetsPreconditions(taskArguments))
+					if (PlanState.BreakOnStackPush)
 					{
-						newDecomposition.newDecomposition = new TaskList(1);
-						newDecomposition.Decomposition->push_back(method);
-						newDecomposition.DecompositionIndex = methodIndex;
+						WorkingCallList.erase(currentTaskCallIter);
+						return PlanStepStatus::SuccessfulDecomposition;
 					}
+					// TODO: IMPORTANT! This code will collapse horribly if I don't now start
+					// processing the stack
+					return PlanStepStatus::SuccessfulDecomposition;
 				}
-				else if (methodType == TaskType::CompoundTask)
+				break;
+				case TaskType::Primitive:
 				{
-					CompoundTask* compoundTask = static_cast<CompoundTask*>(method);
-					if (compoundTask->StateMeetsPreconditions(taskArguments))
+					PrimitiveTask* primitiveTask = static_cast<PrimitiveTask*>(currentTask);
+					if (!primitiveTask.StateMeetsPreconditions(taskArguments))
+						return PlanStepStatus::Failed_NoPossiblePlan;
+
+					primitiveTask->ApplyStateChange(taskArguments) PlanState.StacklessState =
+					    taskArguments.State;
+
+					FinalCallList.push_back(currentTaskCall);
+
+					if (PlanState.BreakOnPrimitiveApply)
 					{
-						newDecomposition.newDecomposition = new TaskList();
-						compoundTask->Decompose(&newDecomposition.newDecomposition, taskArguments);
-						newDecomposition.DecompositionIndex = methodIndex;
+						WorkingCallList.erase(currentTaskCallIter);
+						return PlanStepStatus::SuccessfulPrimitive;
 					}
+					// Keep processing tasks otherwise
 				}
-				else
-					// We got something we don't know how to handle
-					return PlanStepStatus::Failed;
+				break;
+				case TaskType::Compound:
+				{
+					CompoundTask* compoundTask = static_cast<CompoundTask*>(currentTask);
+					if (!compoundTask->StateMeetsPreconditions(taskArguments))
+						return PlanStepStatus::Failed_NoPossiblePlan;
+
+					compoundTask->Decompose(compoundDecompositions, taskArguments);
+					// we need to push our decomposition to our call list, but we're iterating on
+					// 	it. Break out of the loop and tack it on there
+				}
+				break;
+				default:
+					return PlanStepStatus::Failed_BadData;
 			}
 
-			stack.push_back(newDecomposition);
-			return PlanStepStatus::SuccessfulDecomposition;
+			if (compoundDecompositions.size())
+			{
+				PlanState.WorkingCallList.insert(PlanState.WorkingCallList.begin(),
+				                                 compoundDecompositions.begin(),
+				                                 compoundDecompositions.end());
+				// We have to break here because we are adding things to the list we're iterating
+				//  on; We'll process the tasks next Step
+				break;
+			}
 		}
 	}
 	else
-		return PlanStepStatus::NoTasks;
+	{
+		// Remember: If goal fails to decompose and goal is bottom of stack, fail
+	}
 }
+
+/*
+Goal Task // Set Agent StateA and StateB = true
+    Method1 = Compound1(AgentState and Params from initial call)
+    Method2 = Compound2
+    Method3 = Compound3
+
+Compound1
+    StateMeetsPrecondtion(AgentState, Params from Goal) then
+        return {primitiveA(paramA, paramB), primitiveB(ParamA, ParamB, ParamC)}
+
+primitiveA
+    StateMeetsPrecondition(AgentState, paramA, paramB)
+        then AgentState.StateA = true
+
+primitiveB
+    StateMeetsPrecondition(AgentState, paramA, paramB, paramC)
+        then AgentState.StateB = true
+
+PlanStep(stack, taskList)
+if not stack
+    // startup
+    stack.push(decompose(taskList[0]))
+
+else
+    decomposition = stack.pop()
+    allPrimitives = true
+    for task in decomposition
+        if task == primitive
+            task.StateMeetsPrecondition then
+                modify currentState
+                // don't break here
+            else
+                goto fail
+
+        if task == compound
+            allPrimitives = false
+            task.StateMeetsPrecondition then
+                stack.push(decompose(task))
+                break
+            else
+                goto fail
+
+        if task == goal
+            allPrimitives = false
+            methodIndex = 0
+            decomposedTasks = task.GetMethodAtIndex(0), currentState
+            stack.push(decomposition)
+            break
+
+    fail:
+
+
+*/
+
+/*PlanStepStatus PlanStep(TaskDecompositionStack& stack, TaskList& taskList,
+                        const TaskArguments& taskArguments)
+{
+    if (!stack.empty())
+    {
+        // Check to see if the current stack item is all primitive tasks with met preconditions. If
+        // 	so, we can add them to the tasklist and walk all the way back up
+        // TODO: naming
+        TaskDecomposition currentDecomposition = stack.end();
+        bool onlyPrimitiveTasksRemain = true;
+        bool failedToDecompose = false;
+        for (DecomposeTaskState* currentTaskState : currentDecomposition.Decomposition)
+        {
+            if (!currentTaskState || !currentTaskState->DecomposeTask)
+                continue;
+            Task* currentTask = currentTaskState->DecomposeTask;
+            TaskType currentTaskType = currentTask->GetType();
+            TaskArguments& currentTaskArguments = currentDecomposition->Arguments;
+
+            if (currentTaskType == TaskType::Primitive)
+            {
+                PrimitiveTask* primitiveTask = static_cast<PrimitiveTask*>(currentTask);
+
+                if (!primitiveTask->StateMeetsPreconditions(currentTaskArguments))
+                {
+                    failedToDecompose = true;
+                    break;
+                }
+
+                // Modify state
+
+            }
+            else
+            {
+                onlyPrimitiveTasksRemain = false;
+                // TODO
+                //failedToDecompose = DecomposeTask()
+            }
+        }
+
+        // TODO: Goal tasks trying new decompositions
+        if (failedToDecompose)
+        {
+            stack.pop_back();
+            delete currentDecomposition;
+            return PlanStepStatus::FailedDecomposition;
+        }
+    }
+    else if (!taskList.empty())
+    {
+        // No stack; we must be just starting
+        Task* currentTask = *taskList.data();
+
+        if (!currentTask)
+            return PlanStepStatus::Failed;
+
+        TaskType currentTaskType = currentTask->GetType();
+
+        // What if taskList just has primitives? Multiple goals?
+        if (currentTaskType == TaskType::Goal)
+        {
+            GoalTask* goalTask = static_cast<GoalTask*>(currentTask);
+            int numMethods = goalTask->GetNumMethods();
+            TaskDecomposition newDecomposition;
+            newDecomposition.DecomposedTask = currentTask;
+            newDecomposition.DecompositionIndex = 0;
+            newDecomposition.Decomposition = nullptr;
+
+            // Goal tasks are decomposed via methods. Methods are Tasks which can be used to achieve
+            //  the goal. Goal tasks do not have conditonals - they just blindly pick methods in
+            //  order until they find one which works
+            for (int methodIndex = newDecomposition.DecompositionIndex;
+                 !newDecomposition.Decomposition && methodIndex < numMethods; methodIndex++)
+            {
+                Task* method = goalTask->GetMethodAtIndex(newDecomposition.DecompositionIndex);
+                if (!method)
+                    continue;
+                TaskType methodType = method->GetType();
+
+                if (methodType == TaskType::GoalTask)
+                {
+                    newDecomposition.newDecomposition = new TaskList(1);
+                    newDecomposition.Decomposition->push_back(method);
+                    newDecomposition.DecompositionIndex = methodIndex;
+                }
+                else if (methodType == TaskType::Primitive)
+                {
+                    PrimitiveTask* primitiveTask = static_cast<PrimitiveTask*>(method);
+                    if (primitiveTask->StateMeetsPreconditions(taskArguments))
+                    {
+                        newDecomposition.newDecomposition = new TaskList(1);
+                        newDecomposition.Decomposition->push_back(method);
+                        newDecomposition.DecompositionIndex = methodIndex;
+                    }
+                }
+                else if (methodType == TaskType::CompoundTask)
+                {
+                    CompoundTask* compoundTask = static_cast<CompoundTask*>(method);
+                    if (compoundTask->StateMeetsPreconditions(taskArguments))
+                    {
+                        newDecomposition.newDecomposition = new TaskList();
+                        compoundTask->Decompose(&newDecomposition.newDecomposition, taskArguments);
+                        newDecomposition.DecompositionIndex = methodIndex;
+                    }
+                }
+                else
+                    // We got something we don't know how to handle
+                    return PlanStepStatus::Failed;
+            }
+
+            stack.push_back(newDecomposition);
+            return PlanStepStatus::SuccessfulDecomposition;
+        }
+    }
+    else
+        return PlanStepStatus::NoTasks;
+}*/
 
 /*PlanStepStatus PlanStep(TaskDecompositionStack& stack, TaskList& taskList,
                         const TaskArguments& taskArguments)

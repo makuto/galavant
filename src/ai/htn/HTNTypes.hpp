@@ -39,11 +39,12 @@ typedef std::vector<Parameter>::const_iterator ParameterListConstIterator;
 typedef std::vector<Parameter>::reverse_iterator ParameterListReverseIterator;
 
 // The arguments passed to most all Task functions
+typedef int WorldState; // TODO
 struct TaskArguments
 {
 	Entity Agent;
 	// AgentState* AgentState;
-	// WorldState* WorldState;
+	WorldState worldState;
 	ParameterList Parameters;
 };
 }

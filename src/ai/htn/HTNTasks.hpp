@@ -4,7 +4,7 @@
 
 namespace Htn
 {
-enum class TaskType
+/*enum class TaskType
 {
 	None = 0,
 	Goal,
@@ -24,7 +24,7 @@ public:
 protected:
 	// This is set by the constructors of each different Task
 	TaskType Type;
-};
+};*/
 
 typedef std::vector<Task*> TaskList;
 
@@ -32,7 +32,7 @@ typedef std::vector<Task*> TaskList;
 // Different types of tasks
 //
 
-class GoalTask : public Task
+class GoalTask //: public Task
 {
 private:
 	TaskList* Methods;
@@ -46,7 +46,7 @@ public:
 	void SetMethods(TaskList* newMethods);
 };
 
-class CompoundTask : public Task
+class CompoundTask //: public Task
 {
 public:
 	CompoundTask(void);
@@ -59,6 +59,7 @@ class PrimitiveTask : public Task
 public:
 	PrimitiveTask(void);
 	virtual bool StateMeetsPreconditions(const TaskArguments& arguments) = 0;
+	virtual void ApplyStateChange(TaskArguments& arguments) = 0;
 	// Returns whether or not starting the task was successful (NOT whether the task completed)
 	virtual bool Execute(const TaskArguments& arguments) = 0;
 };

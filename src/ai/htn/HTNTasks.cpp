@@ -2,7 +2,7 @@
 
 namespace Htn
 {
-Task::Task(void)
+/*Task::Task(void)
 {
 	Type = TaskType::None;
 }
@@ -10,7 +10,7 @@ Task::Task(void)
 TaskType Task::GetType(void)
 {
 	return Type;
-}
+}*/
 
 int GoalTask::GetNumMethods(void)
 {
@@ -32,11 +32,11 @@ void GoalTask::SetMethods(TaskList* newMethods)
 
 CompoundTask::CompoundTask(void)
 {
-	Type = TaskType::Compound;
+	//Type = TaskType::Compound;
 }
 
 PrimitiveTask::PrimitiveTask(void)
 {
-	Type = TaskType::Primitive;
+	//Type = TaskType::Primitive;
 }
 }
