@@ -26,6 +26,15 @@ protected:
 	TaskType Type;
 };*/
 
+// Instead of the commented code, just use a simple struct which stores all types of tasks but 
+//  only hope to allow only one thing to be filled in for it
+struct Task
+{
+	GoalTask* Goal;
+	CompoundTask* Compound;
+	PrimitiveTask* Primitive;
+};
+
 typedef std::vector<Task*> TaskList;
 
 //

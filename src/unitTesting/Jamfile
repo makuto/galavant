@@ -1,7 +1,5 @@
 SubDir . src unitTesting ;
 
-Main objectComponentTest : ObjectComponent_test.cpp ../objectComponent/Component.cpp ../objectComponent/ComponentManager.cpp ../objectComponent/Object.cpp ../objectComponent/ObjectComponentManager.cpp ../objectComponent/ObjectID.cpp ../objectComponent/ObjectType.cpp ;
-
 Main entityComponentTest : EntityComponentSystem_test.cpp ;
 LinkLibraries entityComponentTest : libGalaEntityComponent ;
 
