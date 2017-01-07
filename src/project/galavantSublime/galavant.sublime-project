@@ -55,9 +55,18 @@
 
     "settings":
     {
-         //"sublimegdb_workingdir": "${folder:${project_path:your_executable_name}}",
-         "sublimegdb_workingdir": "../../../../galavant/bin/entityComponentTest",
-         
-         "sublimegdb_commandline": "gdb --interpreter=mi ./entityComponentTest"
+        "sublimegdb_executables":
+        {
+            "htnTest":
+            {
+                "workingdir": "/home/macoy/Development/code/repositories/galavant/src/unitTesting/bin",
+                "commandline": "gdb --interpreter=mi ./htnTest"
+            },
+//            "second_executable_name":
+//            {
+//                "workingdir": "${folder:${project_path:second_executable_name}}",
+//                "commandline": "gdb --interpreter=mi ./second_executable"
+//            }
+        }
     }
 }

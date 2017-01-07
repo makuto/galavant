@@ -8,8 +8,9 @@ LINK = g++ ;
 # fPIC = position independent code. This is so the lib can be linked in other libs/executables
 # g = debug symbols
 # lstdc++ = standard library
-C++FLAGS = -std=c++11 -fPIC -g -Wall -Wextra ;
-OBJECTC++FLAGS = -std=c++11 -lstdc++ ;
+# Og = compile without optimizations for debugging
+C++FLAGS = -std=c++11 -fPIC -g -Og -Wall -Wextra ;
+OBJECTC++FLAGS = -std=c++11 -lstdc++ -g -Og ;
 
 HDRS = thirdParty/flatbuffers/include ;
 
