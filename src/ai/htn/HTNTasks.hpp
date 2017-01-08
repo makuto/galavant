@@ -2,6 +2,8 @@
 
 #include "HTNTypes.hpp"
 
+#include <iostream>
+
 namespace Htn
 {
 struct Task;
@@ -20,13 +22,13 @@ typedef TaskCallList::iterator TaskCallListIterator;
 // Different types of tasks
 //
 
-class GoalTask //: public Task
+class GoalTask  //: public Task
 {
 private:
 	TaskList* Methods;
 
 public:
-	GoalTask(void)=default;
+	GoalTask(void) = default;
 
 	int GetNumMethods(void);
 	Task* GetMethodAtIndex(int index);
@@ -36,7 +38,7 @@ public:
 	void SetMethods(TaskList* newMethods);
 };
 
-class CompoundTask //: public Task
+class CompoundTask  //: public Task
 {
 public:
 	CompoundTask(void);
@@ -45,7 +47,7 @@ public:
 	virtual bool Decompose(TaskCallList& taskCallList, const TaskArguments& arguments) = 0;
 };
 
-class PrimitiveTask //: public Task
+class PrimitiveTask  //: public Task
 {
 public:
 	PrimitiveTask(void);
@@ -68,17 +70,17 @@ enum class TaskType
 class Task
 {
 public:
-	Task(void);
+    Task(void);
 
-	// Type is used to know what to cast this Task to
-	TaskType GetType(void);
+    // Type is used to know what to cast this Task to
+    TaskType GetType(void);
 
 protected:
-	// This is set by the constructors of each different Task
-	TaskType Type;
+    // This is set by the constructors of each different Task
+    TaskType Type;
 };*/
 
-// Instead of the commented code, just use a simple struct which stores all types of tasks but 
+// Instead of the commented code, just use a simple struct which stores all types of tasks but
 //  only hope to allow only one thing to be filled in for it
 struct Task
 {
@@ -86,6 +88,11 @@ struct Task
 	CompoundTask* Compound = nullptr;
 	PrimitiveTask* Primitive = nullptr;
 
-	TaskType GetType(void);
+	TaskType GetType(void) const;
 };
+
+std::ostream& operator<<(std::ostream& os, const Task& task);
+
+void printTaskList(const TaskList& tasks);
+void printTaskCallList(const TaskCallList& tasks);
 }

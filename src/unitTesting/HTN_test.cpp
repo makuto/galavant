@@ -96,7 +96,7 @@ int main()
 	nestedGoalTask.SetMethods(&nestedMethods);
 	Htn::Task nestedGoalTaskTask;
 	nestedGoalTaskTask.Goal = &nestedGoalTask;
-	Htn::TaskCall nestedGoalTaskCall = {&nestedGoalTaskTask, params};	
+	Htn::TaskCall nestedGoalTaskCall = {&nestedGoalTaskTask, params};
 
 	// Compounds and primitives, but no goals
 	{
@@ -115,8 +115,8 @@ int main()
 				break;
 		}
 
-		std::cout << "Final Plan length: " << testPlan.FinalCallList.size()
-		          << (testPlan.FinalCallList.size() == 3 ? " (Pass)" : " (Fail)") << "\n";
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
+		          << (testPlan.FinalCallList.size() == 3 ? " (Pass)" : " (Fail)") << "\n\n";
 	}
 
 	// One goal (one stack frame)
@@ -132,16 +132,17 @@ int main()
 				break;
 		}
 
-		std::cout << "Final Plan length: " << testPlan.FinalCallList.size()
-		          << (testPlan.FinalCallList.size() == 1 ? " (Pass)" : " (Fail)") << "\n";
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
+		          << (testPlan.FinalCallList.size() == 1 ? " (Pass)" : " (Fail)") << "\n\n";
 	}
 
 	// Nested goal (two stack frames)
 	{
 		Htn::PlanState testPlan;
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
+		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 12; i++)
 		{
 			Htn::PlanStepStatus status = Htn::PlanStep(testPlan);
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
@@ -149,8 +150,9 @@ int main()
 				break;
 		}
 
-		std::cout << "Final Plan length: " << testPlan.FinalCallList.size()
-		          << (testPlan.FinalCallList.size() == 1 ? " (Pass)" : " (Fail)") << "\n";
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
+		          << (testPlan.FinalCallList.size() == 2 ? " (Pass)" : " (Fail)") << "\n\n";
+		printTaskCallList(testPlan.FinalCallList);
 	}
 
 	return 0;
