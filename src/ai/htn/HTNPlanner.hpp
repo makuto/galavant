@@ -29,25 +29,9 @@ struct GoalDecomposition
 
 typedef std::vector<GoalDecomposition> GoalDecompositionStack;
 
-enum class PlanStepStatus
+class Planner
 {
-	// Bad
-	Failed_BadData = 0,
-	Failed_NoPossiblePlan,
-	NoTasks,
-
-	// Running
-	SuccessfulDecomposition,
-	SuccessfulPrimitive,
-	FailedMethodDecomposition,
-	FailedGoalDecomposition,
-
-	// Done
-	PlanComplete
-};
-
-struct PlanState
-{
+public:
 	WorldState State;
 
 	TaskCallList InitialCallList;
@@ -64,21 +48,36 @@ struct PlanState
 	bool BreakOnStackPop = true;
 	// Break immediately after a compound task has been decomposed
 	bool BreakOnCompoundDecomposition = false;
+	// Break immediately after a primitive task has been applied
 	bool BreakOnPrimitiveApply = false;
 
 	bool DebugPrint = false;
 
-	//
-	// Used by PlanStep() only
-	//
+	enum class Status
+	{
+		// Bad
+		Failed_BadData = 0,
+		Failed_NoPossiblePlan,
+		Failed_NoTasks,
+
+		Running_SuccessfulDecomposition,
+		Running_SuccessfulPrimitive,
+		Running_FailedMethodDecomposition,
+		Running_FailedGoalDecomposition,
+
+		// Done
+		PlanComplete
+	};
+
+	Status PlanStep(void);
+
+private:
 	GoalDecompositionStack DecompositionStack;
 
 	// Used for when all goals have been decomposed to manage mutable state
 	WorldState StacklessState;
 
-	// Copy of InitialCallList that PlanState can fuck with
+	// Copy of InitialCallList that Planner can fuck with
 	TaskCallList WorkingCallList;
 };
-
-PlanStepStatus PlanStep(PlanState& PlanState);
 };

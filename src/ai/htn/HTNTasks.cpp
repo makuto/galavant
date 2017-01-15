@@ -60,6 +60,19 @@ PrimitiveTask::~PrimitiveTask(void)
 {
 }
 
+Task::Task(GoalTask* goal)
+{
+	Goal = goal;
+}
+Task::Task(CompoundTask* compound)
+{
+	Compound = compound;
+}
+Task::Task(PrimitiveTask* primitive)
+{
+	Primitive = primitive;
+}
+
 TaskType Task::GetType(void) const
 {
 	if (Goal)

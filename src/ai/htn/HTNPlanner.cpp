@@ -7,52 +7,35 @@
 
 namespace Htn
 {
-/*bool DecomposeGoalTask(TaskList& taskList, Task* task, const TaskArguments& taskArguments)
-{
-    GoalTask* goalTask = task->Goal;
-    return false;  // TODO
-}
-
-bool DecomposeCompoundTask(TaskList& taskList, Task* task, const TaskArguments& taskArguments)
-{
-    CompoundTask* compoundTask = task->Compound;
-
-    if (compoundTask->StateMeetsPreconditions(taskArguments))
-        // Decomposition is determined by the task itself
-        return compoundTask->Decompose(taskList, taskArguments);
-
-    return false;
-}*/
-
-PlanStepStatus PlanStep(PlanState& planState)
+Planner::Status Planner::PlanStep(void)
 {
 	// When the stack is empty, find a goal task to push onto the task or add tasks as per usual
 	// If any Decompositions or Preconditions fail, we must fail the entire plan because we have
 	//  no alternate methods
-	if (planState.DecompositionStack.empty())
+	if (DecompositionStack.empty())
 	{
-		if (planState.InitialCallList.empty())
-			return PlanStepStatus::NoTasks;
-		else if (planState.WorkingCallList.empty() && planState.FinalCallList.empty())
+		if (InitialCallList.empty())
+			return Status::Failed_NoTasks;
+		else if (WorkingCallList.empty() && FinalCallList.empty())
 		{
-			planState.WorkingCallList = planState.InitialCallList;
-			planState.StacklessState = planState.State;
+			WorkingCallList = InitialCallList;
+			StacklessState = State;
 		}
-		else if (planState.WorkingCallList.empty() && !planState.FinalCallList.empty())
-			return PlanStepStatus::PlanComplete;
+		else if (WorkingCallList.empty() && !FinalCallList.empty())
+			return Status::PlanComplete;
 
 		TaskCallList compoundDecompositions;
 
-		if (planState.DebugPrint)
+		if (DebugPrint)
 		{
-			std::cout << "\nPlanStep()\nplanState.WorkingCallList.size() = "
-			          << planState.WorkingCallList.size() << "\n";
-			printTaskCallList(planState.WorkingCallList);
+			std::cout << "\nPlanStep()\nWorkingCallList.size() = " << WorkingCallList.size()
+			          << "\n";
+			printTaskCallList(WorkingCallList);
 		}
 
-		for (TaskCallListIterator currentTaskCallIter = planState.WorkingCallList.begin();
-		     currentTaskCallIter != planState.WorkingCallList.end();
-		     currentTaskCallIter = planState.WorkingCallList.erase(currentTaskCallIter))
+		for (TaskCallListIterator currentTaskCallIter = WorkingCallList.begin();
+		     currentTaskCallIter != WorkingCallList.end();
+		     currentTaskCallIter = WorkingCallList.erase(currentTaskCallIter))
 		{
 			TaskCall currentTaskCall = (*currentTaskCallIter);
 			Task* currentTask = currentTaskCall.TaskToCall;
@@ -60,16 +43,16 @@ PlanStepStatus PlanStep(PlanState& planState)
 				continue;
 			TaskType currentTaskType = currentTask->GetType();
 			// NullEntity = TODO
-			TaskArguments taskArguments = {0, planState.StacklessState, currentTaskCall.Parameters};
+			TaskArguments taskArguments = {0, StacklessState, currentTaskCall.Parameters};
 
-			if (planState.DebugPrint)
+			if (DebugPrint)
 				std::cout << "TaskType currentTaskType = " << (int)currentTaskType << "\n";
 
 			switch (currentTaskType)
 			{
 				case TaskType::Goal:
 				{
-					if (planState.DebugPrint)
+					if (DebugPrint)
 						std::cout << "Goal\n";
 					GoalTask* goalTask = currentTask->Goal;
 					GoalDecomposition decomposition;
@@ -79,120 +62,118 @@ PlanStepStatus PlanStep(PlanState& planState)
 					// Well, a method could be restricted to a single Primitive Task or a
 					// CompoundTask
 					decomposition.Parameters = currentTaskCall.Parameters;
-					decomposition.InitialState = planState.StacklessState;  // -- CHANGE for stacked
+					decomposition.InitialState = StacklessState;  // -- CHANGE for stacked
 
 					// Perform the decomposition
 					if (!goalTask->DecomposeMethodAtIndex(decomposition.CallList,
 					                                      decomposition.MethodIndex,
 					                                      decomposition.Parameters))
-						return PlanStepStatus::Failed_NoPossiblePlan;
+						return Status::Failed_NoPossiblePlan;
 
-					planState.DecompositionStack.push_back(decomposition);
-					if (planState.DebugPrint)
-						std::cout << "planState.DecompositionStack.push_back(decomposition);\n";
+					DecompositionStack.push_back(decomposition);
+					if (DebugPrint)
+						std::cout << "DecompositionStack.push_back(decomposition);\n";
 
-					if (planState.BreakOnStackPush)
+					if (BreakOnStackPush)
 					{
-						planState.WorkingCallList.erase(currentTaskCallIter);
-						return PlanStepStatus::SuccessfulDecomposition;
+						WorkingCallList.erase(currentTaskCallIter);
+						return Status::Running_SuccessfulDecomposition;
 					}
 					// TODO: IMPORTANT! This code will collapse horribly if I don't now start
 					// processing the stack
-					planState.WorkingCallList.erase(currentTaskCallIter);
-					return PlanStepStatus::SuccessfulDecomposition;
+					WorkingCallList.erase(currentTaskCallIter);
+					return Status::Running_SuccessfulDecomposition;
 				}
 				break;
 				case TaskType::Primitive:
 				{
-					if (planState.DebugPrint)
+					if (DebugPrint)
 						std::cout << "Primitive\n";
 					PrimitiveTask* primitiveTask = currentTask->Primitive;
 					if (!primitiveTask->StateMeetsPreconditions(taskArguments))
-						return PlanStepStatus::Failed_NoPossiblePlan;
+						return Status::Failed_NoPossiblePlan;
 
 					// If at top level, apply primitive tasks immediately to the stackless state
 					primitiveTask->ApplyStateChange(taskArguments);
-					planState.StacklessState = taskArguments.worldState;
+					StacklessState = taskArguments.worldState;
 
-					planState.FinalCallList.push_back(currentTaskCall);
+					FinalCallList.push_back(currentTaskCall);
 
-					if (planState.BreakOnPrimitiveApply)
+					if (BreakOnPrimitiveApply)
 					{
-						planState.WorkingCallList.erase(currentTaskCallIter);
-						return PlanStepStatus::SuccessfulPrimitive;
+						WorkingCallList.erase(currentTaskCallIter);
+						return Status::Running_SuccessfulPrimitive;
 					}
 					// Keep processing tasks otherwise
 				}
 				break;
 				case TaskType::Compound:
 				{
-					if (planState.DebugPrint)
+					if (DebugPrint)
 						std::cout << "Compound\n";
 					CompoundTask* compoundTask = currentTask->Compound;
 					if (!compoundTask->StateMeetsPreconditions(taskArguments))
-						return PlanStepStatus::Failed_NoPossiblePlan;
+						return Status::Failed_NoPossiblePlan;
 
 					if (!compoundTask->Decompose(compoundDecompositions, taskArguments))
-						return PlanStepStatus::Failed_NoPossiblePlan;
+						return Status::Failed_NoPossiblePlan;
 
-					currentTaskCallIter = planState.WorkingCallList.erase(currentTaskCallIter);
+					currentTaskCallIter = WorkingCallList.erase(currentTaskCallIter);
 
 					// we need to push our decomposition to our call list, but we're iterating on
 					// 	it. Break out of the loop and tack it on there
 				}
 				break;
 				default:
-					return PlanStepStatus::Failed_BadData;
+					return Status::Failed_BadData;
 			}
 
 			if (compoundDecompositions.size())
 			{
-				if (planState.DebugPrint)
+				if (DebugPrint)
 				{
 					std::cout << "compoundDecompositions.size() = " << compoundDecompositions.size()
 					          << "\n";
 				}
-				planState.WorkingCallList.insert(planState.WorkingCallList.begin(),
-				                                 compoundDecompositions.begin(),
-				                                 compoundDecompositions.end());
+				WorkingCallList.insert(WorkingCallList.begin(), compoundDecompositions.begin(),
+				                       compoundDecompositions.end());
 				// We have to break here because we are adding things to the list we're iterating
 				//  on; We'll process the tasks next Step
 				// break; // UPDATE: Eventually we'll need a way to start over the loop if the
 				// caller wants whole plan in one call
-				if (planState.DebugPrint)
+				if (DebugPrint)
 					std::cout << "PlanStep Done\n";
 
-				return PlanStepStatus::SuccessfulDecomposition;
+				return Status::Running_SuccessfulDecomposition;
 			}
 
-			if (planState.DebugPrint)
+			if (DebugPrint)
 				std::cout << "Loop Done\n";
 		}
 	}
 	else
 	{
 		// Remember: If goal fails to decompose and goal is bottom of stack, fail
-		GoalDecompositionStack::iterator currentStackFrameIter =
-		    planState.DecompositionStack.end() - 1;
+		GoalDecompositionStack::iterator currentStackFrameIter = DecompositionStack.end() - 1;
 		GoalDecomposition& currentStackFrame = *currentStackFrameIter;
 
-		if (planState.DebugPrint)
+		if (DebugPrint)
 		{
 			std::cout << "\nPlanStep()\ncurrentStackFrame.CallList.size() = "
 			          << currentStackFrame.CallList.size() << "\n";
 			printTaskCallList(currentStackFrame.CallList);
 
 			std::cout << "Stack Depth: ";
-			for (int i = 0; i < planState.DecompositionStack.size(); i++)
+			for (unsigned int i = 0; i < DecompositionStack.size(); i++)
 				std::cout << "=";
 			std::cout << "\n";
 
 			{
 				std::cout << "----Fullstack working lists\n";
 				std::cout << "[0]\n";
-				printTaskCallList(planState.WorkingCallList);
+				printTaskCallList(WorkingCallList);
 				int i = 1;
-				for (GoalDecomposition& stackFrame : planState.DecompositionStack)
+				for (GoalDecomposition& stackFrame : DecompositionStack)
 				{
 					std::cout << "[" << i++ << "]\n";
 					printTaskCallList(stackFrame.CallList);
@@ -217,14 +198,14 @@ PlanStepStatus PlanStep(PlanState& planState)
 			TaskArguments taskArguments = {0, currentStackFrame.WorkingState,
 			                               currentTaskCall.Parameters};
 
-			if (planState.DebugPrint)
+			if (DebugPrint)
 				std::cout << "TaskType currentTaskType = " << (int)currentTaskType << "\n";
 
 			switch (currentTaskType)
 			{
 				case TaskType::Goal:
 				{
-					if (planState.DebugPrint)
+					if (DebugPrint)
 						std::cout << "Goal\n";
 					GoalTask* goalTask = currentTask->Goal;
 					GoalDecomposition decomposition;
@@ -240,19 +221,19 @@ PlanStepStatus PlanStep(PlanState& planState)
 					if (!goalTask->DecomposeMethodAtIndex(decomposition.CallList,
 					                                      decomposition.MethodIndex,
 					                                      decomposition.Parameters))
-						return PlanStepStatus::Failed_NoPossiblePlan;
+						return Status::Failed_NoPossiblePlan;
 
 					// TODO erase ahead of time because fuck
 					// Strange things are afoot when we push to stack
 					currentStackFrame.CallList.erase(currentTaskCallIter);
 
-					if (planState.DebugPrint)
+					if (DebugPrint)
 					{
 						std::cout << "----Fullstack working lists [PRE PUSH BACK]\n";
 						std::cout << "[0]\n";
-						printTaskCallList(planState.WorkingCallList);
+						printTaskCallList(WorkingCallList);
 						int i = 1;
-						for (GoalDecomposition& stackFrame : planState.DecompositionStack)
+						for (GoalDecomposition& stackFrame : DecompositionStack)
 						{
 							std::cout << "[" << i++ << "]\n";
 							printTaskCallList(stackFrame.CallList);
@@ -260,24 +241,24 @@ PlanStepStatus PlanStep(PlanState& planState)
 						std::cout << "----\n";
 					}
 
-					planState.DecompositionStack.push_back(decomposition);
-					if (planState.DebugPrint)
-						std::cout << "planState.DecompositionStack.push_back(decomposition);\n";
+					DecompositionStack.push_back(decomposition);
+					if (DebugPrint)
+						std::cout << "DecompositionStack.push_back(decomposition);\n";
 
 					// This code is wrong. I'm not sure why.
 					// Pushing to the stack invalidates our currentStackFrame reference; update it
 					// What the actual fuck (updating the ref doesn't fix the fucking thing)
 					/*std::cout << "Ref updating from " << &currentStackFrame << " to "
-					          << &(*(planState.DecompositionStack.end() - 1)) << "\n";
-					currentStackFrameIter = planState.DecompositionStack.end() - 1;
+					          << &(*(DecompositionStack.end() - 1)) << "\n";
+					currentStackFrameIter = DecompositionStack.end() - 1;
 					currentStackFrame = *currentStackFrameIter;*/
-					if (planState.DebugPrint)
+					if (DebugPrint)
 					{
 						std::cout << "----Fullstack working lists [POST PUSH BACK]\n";
 						std::cout << "[0]\n";
-						printTaskCallList(planState.WorkingCallList);
+						printTaskCallList(WorkingCallList);
 						int i = 1;
-						for (GoalDecomposition& stackFrame : planState.DecompositionStack)
+						for (GoalDecomposition& stackFrame : DecompositionStack)
 						{
 							std::cout << "[" << i++ << "]\n";
 							printTaskCallList(stackFrame.CallList);
@@ -285,20 +266,20 @@ PlanStepStatus PlanStep(PlanState& planState)
 						std::cout << "----\n";
 					}
 
-					if (planState.BreakOnStackPush)
+					if (BreakOnStackPush)
 					{
 						// currentStackFrame.CallList.erase(currentTaskCallIter);
-						return PlanStepStatus::SuccessfulDecomposition;
+						return Status::Running_SuccessfulDecomposition;
 					}
 					// TODO: IMPORTANT! This code will collapse horribly if I don't now start
 					// processing the stack
 					// currentStackFrame.CallList.erase(currentTaskCallIter);
-					return PlanStepStatus::SuccessfulDecomposition;
+					return Status::Running_SuccessfulDecomposition;
 				}
 				break;
 				case TaskType::Primitive:
 				{
-					if (planState.DebugPrint)
+					if (DebugPrint)
 						std::cout << "Primitive\n";
 					PrimitiveTask* primitiveTask = currentTask->Primitive;
 					if (!primitiveTask->StateMeetsPreconditions(taskArguments))
@@ -312,17 +293,17 @@ PlanStepStatus PlanStep(PlanState& planState)
 
 					currentStackFrame.FinalCallList.push_back(currentTaskCall);
 
-					if (planState.BreakOnPrimitiveApply)
+					if (BreakOnPrimitiveApply)
 					{
 						currentStackFrame.CallList.erase(currentTaskCallIter);
-						return PlanStepStatus::SuccessfulPrimitive;
+						return Status::Running_SuccessfulPrimitive;
 					}
 					// Keep processing tasks otherwise
 				}
 				break;
 				case TaskType::Compound:
 				{
-					if (planState.DebugPrint)
+					if (DebugPrint)
 						std::cout << "Compound\n";
 					CompoundTask* compoundTask = currentTask->Compound;
 					if (!compoundTask->StateMeetsPreconditions(taskArguments))
@@ -345,12 +326,12 @@ PlanStepStatus PlanStep(PlanState& planState)
 				}
 				break;
 				default:
-					return PlanStepStatus::Failed_BadData;
+					return Status::Failed_BadData;
 			}
 
 			if (methodFailed)
 			{
-				if (planState.DebugPrint)
+				if (DebugPrint)
 					std::cout << "Method failed decomposition\n";
 				// Clear stack frame
 				currentStackFrame.CallList.clear();
@@ -365,17 +346,17 @@ PlanStepStatus PlanStep(PlanState& planState)
 				        currentStackFrame.CallList, currentStackFrame.MethodIndex,
 				        currentStackFrame.Parameters))
 				{
-					planState.DecompositionStack.pop_back();
-					return PlanStepStatus::FailedGoalDecomposition;
+					DecompositionStack.pop_back();
+					return Status::Running_FailedGoalDecomposition;
 				}
 
 				// TODO: make this optional return
-				return PlanStepStatus::FailedMethodDecomposition;
+				return Status::Running_FailedMethodDecomposition;
 			}
 
 			if (compoundDecompositions.size())
 			{
-				if (planState.DebugPrint)
+				if (DebugPrint)
 				{
 					std::cout << "compoundDecompositions.size() = " << compoundDecompositions.size()
 					          << "\n";
@@ -391,19 +372,19 @@ PlanStepStatus PlanStep(PlanState& planState)
 				//  on; We'll process the tasks next Step
 				// break; // UPDATE: TODO: Eventually we'll need a way to start over the loop if the
 				// caller wants whole plan in one call
-				if (planState.DebugPrint)
+				if (DebugPrint)
 					std::cout << "PlanStep Done\n";
-				return PlanStepStatus::SuccessfulDecomposition;
+				return Status::Running_SuccessfulDecomposition;
 			}
 
-			if (planState.DebugPrint)
+			if (DebugPrint)
 				std::cout << "Loop Done\n";
 		}
 
 		// Finished processing this stack frame
 		if (currentStackFrame.CallList.empty() && !currentStackFrame.FinalCallList.empty())
 		{
-			bool onlyStackFrame = planState.DecompositionStack.size() == 1;
+			bool onlyStackFrame = DecompositionStack.size() == 1;
 			TaskCallList* parentFinalCallList = nullptr;
 			WorldState* parentWorkingState = nullptr;
 
@@ -411,8 +392,8 @@ PlanStepStatus PlanStep(PlanState& planState)
 			// plan, else, the previous stack
 			if (onlyStackFrame)
 			{
-				parentFinalCallList = &planState.FinalCallList;
-				parentWorkingState = &planState.StacklessState;
+				parentFinalCallList = &FinalCallList;
+				parentWorkingState = &StacklessState;
 			}
 			else
 			{
@@ -422,7 +403,7 @@ PlanStepStatus PlanStep(PlanState& planState)
 				parentWorkingState = &previousStackFrame.WorkingState;
 			}
 
-			if (planState.DebugPrint)
+			if (DebugPrint)
 			{
 				std::cout << "Collapsing stack frame. Adding List:\n";
 				printTaskCallList(currentStackFrame.FinalCallList);
@@ -436,19 +417,19 @@ PlanStepStatus PlanStep(PlanState& planState)
 
 			*parentWorkingState = currentStackFrame.WorkingState;
 
-			planState.DecompositionStack.pop_back();
+			DecompositionStack.pop_back();
 
-			if (planState.DebugPrint)
+			if (DebugPrint)
 				std::cout << "Frame Done\n";
 
-			if (planState.BreakOnStackPop)
-				return PlanStepStatus::SuccessfulDecomposition;
+			if (BreakOnStackPop)
+				return Status::Running_SuccessfulDecomposition;
 
 			// TODO: Continue processing the stack
-			return PlanStepStatus::SuccessfulDecomposition;
+			return Status::Running_SuccessfulDecomposition;
 		}
 	}
 
-	return PlanStepStatus::PlanComplete;
+	return Status::PlanComplete;
 }
 }

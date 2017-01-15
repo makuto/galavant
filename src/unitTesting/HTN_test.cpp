@@ -96,9 +96,7 @@ public:
 	{
 		static TestPrimitiveTask testPrimitiveTask;
 		std::cout << "\tDecompose TestCompoundTaskA: " << args.Parameters[0].IntValue << "\n";
-		static Htn::Task primitiveTask;
-		primitiveTask.Primitive = &testPrimitiveTask;
-		primitiveTask.Goal = nullptr;
+		static Htn::Task primitiveTask(&testPrimitiveTask);
 		Htn::TaskCall taskCall = {&primitiveTask, args.Parameters};
 		taskCallList.push_back(taskCall);
 		return true;
@@ -109,7 +107,6 @@ int main()
 {
 	// Test parameters
 	Htn::Parameter testParam = {Htn::Parameter::ParamType::Int, 123};
-	Htn::Parameter boolStateParam = {Htn::Parameter::ParamType::Bool, false};
 
 	// Todo: add getters/setters (settor constructors too)
 	std::cout << testParam.FloatValue << "\n";
@@ -122,15 +119,12 @@ int main()
 	RequiresStatePrimitiveTask requiresStateTask;
 	TestCompoundTaskA testCompoundTaskAA;
 
-	Htn::Task failTaskTask;
-	failTaskTask.Primitive = &failTask;
+	Htn::Task failTaskTask(&failTask);
 
-	Htn::Task requiresStateTaskTask;
-	requiresStateTaskTask.Primitive = &requiresStateTask;
+	Htn::Task requiresStateTaskTask(&requiresStateTask);
 	Htn::TaskCall requiresStateTaskCall = {&requiresStateTaskTask, params};
 
-	Htn::Task compoundTask;
-	compoundTask.Compound = &testCompoundTaskAA;
+	Htn::Task compoundTask(&testCompoundTaskAA);
 	Htn::TaskCall taskCall = {&compoundTask, params};
 
 	// Goal task setup (single)
@@ -138,8 +132,7 @@ int main()
 	Htn::TaskList methods;
 	methods.push_back(&compoundTask);
 	goalTask.SetMethods(&methods);
-	Htn::Task goalTaskTask;
-	goalTaskTask.Goal = &goalTask;
+	Htn::Task goalTaskTask(&goalTask);
 	Htn::TaskCall goalTaskCall = {&goalTaskTask, params};
 
 	// Goal task setup (nested)
@@ -147,14 +140,13 @@ int main()
 	Htn::TaskList nestedMethods;
 	nestedMethods.push_back(&goalTaskTask);
 	nestedGoalTask.SetMethods(&nestedMethods);
-	Htn::Task nestedGoalTaskTask;
-	nestedGoalTaskTask.Goal = &nestedGoalTask;
+	Htn::Task nestedGoalTaskTask(&nestedGoalTask);
 	Htn::TaskCall nestedGoalTaskCall = {&nestedGoalTaskTask, params};
 
 	// Compounds and primitives, but no goals
 	{
 		std::cout << "TEST: Compounds and primitives, but no goals\n\n";
-		Htn::PlanState testPlan;
+		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(taskCall);
 		testPlan.InitialCallList.push_back(taskCall);
 		Htn::TaskArguments args;
@@ -163,9 +155,9 @@ int main()
 
 		for (int i = 0; i < 10; i++)
 		{
-			Htn::PlanStepStatus status = Htn::PlanStep(testPlan);
+			Htn::Planner::Status status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
-			if (status == Htn::PlanStepStatus::PlanComplete)
+			if (status == Htn::Planner::Status::PlanComplete)
 				break;
 		}
 
@@ -176,14 +168,14 @@ int main()
 	// One goal (one stack frame)
 	{
 		std::cout << "TEST: One goal (one stack frame)\n\n";
-		Htn::PlanState testPlan;
+		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(goalTaskCall);
 
 		for (int i = 0; i < 10; i++)
 		{
-			Htn::PlanStepStatus status = Htn::PlanStep(testPlan);
+			Htn::Planner::Status status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
-			if (status == Htn::PlanStepStatus::PlanComplete)
+			if (status == Htn::Planner::Status::PlanComplete)
 				break;
 		}
 
@@ -196,15 +188,15 @@ int main()
 	// Nested goal (two stack frames)
 	{
 		std::cout << "TEST: Nested goal (two stack frames)\n\n";
-		Htn::PlanState testPlan;
+		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
 
 		for (int i = 0; i < 12; i++)
 		{
-			Htn::PlanStepStatus status = Htn::PlanStep(testPlan);
+			Htn::Planner::Status status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
-			if (status == Htn::PlanStepStatus::PlanComplete)
+			if (status == Htn::Planner::Status::PlanComplete)
 				break;
 		}
 
@@ -222,18 +214,17 @@ int main()
 		Htn::TaskList failMethods = {&failTaskTask, &goalTaskTask};
 		// failMethods.push_back(&goalTaskTask);
 		failGoalTask.SetMethods(&failMethods);
-		Htn::Task failGoalTaskTask;
-		failGoalTaskTask.Goal = &failGoalTask;
+		Htn::Task failGoalTaskTask(&failGoalTask);
 		Htn::TaskCall failGoalTaskCall = {&failGoalTaskTask, params};
 
-		Htn::PlanState testPlan;
+		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(failGoalTaskCall);
 
 		for (int i = 0; i < 12; i++)
 		{
-			Htn::PlanStepStatus status = Htn::PlanStep(testPlan);
+			Htn::Planner::Status status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
-			if (status == Htn::PlanStepStatus::PlanComplete)
+			if (status == Htn::Planner::Status::PlanComplete)
 				break;
 		}
 
@@ -247,16 +238,16 @@ int main()
 	{
 		std::cout << "TEST: Proper state change test (task with dependencies on another task being "
 		             "run before it)\n\n";
-		Htn::PlanState testPlan;
+		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
 		testPlan.InitialCallList.push_back(requiresStateTaskCall);
 		testPlan.State = 0;
 
 		for (int i = 0; i < 12; i++)
 		{
-			Htn::PlanStepStatus status = Htn::PlanStep(testPlan);
+			Htn::Planner::Status status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
-			if (status == Htn::PlanStepStatus::PlanComplete)
+			if (status == Htn::Planner::Status::PlanComplete)
 				break;
 		}
 
@@ -271,17 +262,17 @@ int main()
 	{
 		std::cout << "TEST: Proper state change test (task with dependencies on another task being "
 		             "run before it) (This time, fail!)\n\n";
-		Htn::PlanState testPlan;
+		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(requiresStateTaskCall);
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
 		testPlan.State = 0;
 
 		for (int i = 0; i < 12; i++)
 		{
-			Htn::PlanStepStatus status = Htn::PlanStep(testPlan);
+			Htn::Planner::Status status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
-			if (status == Htn::PlanStepStatus::PlanComplete ||
-			    status == Htn::PlanStepStatus::Failed_NoPossiblePlan)
+			if (status == Htn::Planner::Status::PlanComplete ||
+			    status == Htn::Planner::Status::Failed_NoPossiblePlan)
 				break;
 		}
 

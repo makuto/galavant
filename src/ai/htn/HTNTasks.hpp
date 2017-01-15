@@ -81,12 +81,18 @@ protected:
 };*/
 
 // Instead of the commented code, just use a simple struct which stores all types of tasks but
-//  only hope to allow only one thing to be filled in for it
+//  only allow only one thing to be filled in for it
+// TODO: Make members private and require accessors?
 struct Task
 {
 	GoalTask* Goal = nullptr;
 	CompoundTask* Compound = nullptr;
 	PrimitiveTask* Primitive = nullptr;
+
+	Task(void) = delete;
+	Task(GoalTask* goal);
+	Task(CompoundTask* compound);
+	Task(PrimitiveTask* primitive);
 
 	TaskType GetType(void) const;
 };
