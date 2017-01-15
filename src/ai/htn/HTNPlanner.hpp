@@ -66,6 +66,8 @@ struct PlanState
 	bool BreakOnCompoundDecomposition = false;
 	bool BreakOnPrimitiveApply = false;
 
+	bool DebugPrint = false;
+
 	//
 	// Used by PlanStep() only
 	//

@@ -4,17 +4,61 @@
 #include "../ai/htn/HTNTasks.hpp"
 #include "../ai/htn/HTNPlanner.hpp"
 
+class AlwaysFailPrimitiveTask : public Htn::PrimitiveTask
+{
+public:
+	AlwaysFailPrimitiveTask(void) = default;
+	virtual ~AlwaysFailPrimitiveTask(void) = default;
+
+	virtual bool StateMeetsPreconditions(const Htn::TaskArguments& args)
+	{
+		std::cout << "\tStateMeetsPreconditions AlwaysFailPrimitiveTask\n";
+		return false;
+	}
+
+	virtual void ApplyStateChange(Htn::TaskArguments& arguments)
+	{
+		std::cout << "\tApplyStateChange AlwaysFailPrimitiveTask\n";
+	}
+
+	virtual bool Execute(const Htn::TaskArguments& args)
+	{
+		std::cout << "\texecute AlwaysFailPrimitiveTask: " << args.Parameters[0].IntValue << "\n";
+		return false;
+	}
+};
+
+class RequiresStatePrimitiveTask : public Htn::PrimitiveTask
+{
+public:
+	RequiresStatePrimitiveTask(void) = default;
+	virtual ~RequiresStatePrimitiveTask(void) = default;
+
+	virtual bool StateMeetsPreconditions(const Htn::TaskArguments& args)
+	{
+		std::cout << "\tStateMeetsPreconditions RequiresStatePrimitiveTask state = "
+		          << args.worldState << "\n";
+		return args.worldState == 1;
+	}
+
+	virtual void ApplyStateChange(Htn::TaskArguments& arguments)
+	{
+		std::cout << "\tApplyStateChange RequiresStatePrimitiveTask\n";
+	}
+
+	virtual bool Execute(const Htn::TaskArguments& args)
+	{
+		std::cout << "\texecute RequiresStatePrimitiveTask: " << args.Parameters[0].IntValue
+		          << "\n";
+		return true;
+	}
+};
+
 class TestPrimitiveTask : public Htn::PrimitiveTask
 {
 public:
-	TestPrimitiveTask(void)
-	{
-		// Type = Htn::TaskType::Primitive;
-	}
-
-	virtual ~TestPrimitiveTask(void)
-	{
-	}
+	TestPrimitiveTask(void) = default;
+	virtual ~TestPrimitiveTask(void) = default;
 
 	virtual bool StateMeetsPreconditions(const Htn::TaskArguments& args)
 	{
@@ -22,9 +66,10 @@ public:
 		return true;
 	}
 
-	virtual void ApplyStateChange(Htn::TaskArguments& arguments)
+	virtual void ApplyStateChange(Htn::TaskArguments& args)
 	{
 		std::cout << "\tApplyStateChange TestPrimitiveTask\n";
+		args.worldState = 1;
 	}
 
 	virtual bool Execute(const Htn::TaskArguments& args)
@@ -37,14 +82,9 @@ public:
 class TestCompoundTaskA : public Htn::CompoundTask
 {
 public:
-	TestCompoundTaskA(void)
-	{
-		// Type = Htn::TaskType::Primitive;
-	}
+	TestCompoundTaskA(void) = default;
 
-	virtual ~TestCompoundTaskA(void)
-	{
-	}
+	virtual ~TestCompoundTaskA(void) = default;
 
 	virtual bool StateMeetsPreconditions(const Htn::TaskArguments& args)
 	{
@@ -69,15 +109,28 @@ int main()
 {
 	// Test parameters
 	Htn::Parameter testParam = {Htn::Parameter::ParamType::Int, 123};
+	Htn::Parameter boolStateParam = {Htn::Parameter::ParamType::Bool, false};
+
+	// Todo: add getters/setters (settor constructors too)
 	std::cout << testParam.FloatValue << "\n";
 
-	// Compound task setup
+	Htn::ParameterList params;
+	params.push_back(testParam);
+
+	// Base tasks setup
+	AlwaysFailPrimitiveTask failTask;
+	RequiresStatePrimitiveTask requiresStateTask;
 	TestCompoundTaskA testCompoundTaskAA;
+
+	Htn::Task failTaskTask;
+	failTaskTask.Primitive = &failTask;
+
+	Htn::Task requiresStateTaskTask;
+	requiresStateTaskTask.Primitive = &requiresStateTask;
+	Htn::TaskCall requiresStateTaskCall = {&requiresStateTaskTask, params};
 
 	Htn::Task compoundTask;
 	compoundTask.Compound = &testCompoundTaskAA;
-	Htn::ParameterList params;
-	params.push_back(testParam);
 	Htn::TaskCall taskCall = {&compoundTask, params};
 
 	// Goal task setup (single)
@@ -100,6 +153,7 @@ int main()
 
 	// Compounds and primitives, but no goals
 	{
+		std::cout << "TEST: Compounds and primitives, but no goals\n\n";
 		Htn::PlanState testPlan;
 		testPlan.InitialCallList.push_back(taskCall);
 		testPlan.InitialCallList.push_back(taskCall);
@@ -121,6 +175,7 @@ int main()
 
 	// One goal (one stack frame)
 	{
+		std::cout << "TEST: One goal (one stack frame)\n\n";
 		Htn::PlanState testPlan;
 		testPlan.InitialCallList.push_back(goalTaskCall);
 
@@ -133,11 +188,14 @@ int main()
 		}
 
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
-		          << (testPlan.FinalCallList.size() == 1 ? " (Pass)" : " (Fail)") << "\n\n";
+		          << (testPlan.FinalCallList.size() == 1 ? " (Pass)" : " (Fail)") << "\n";
+		printTaskCallList(testPlan.FinalCallList);
+		std::cout << "\n\n";
 	}
 
 	// Nested goal (two stack frames)
 	{
+		std::cout << "TEST: Nested goal (two stack frames)\n\n";
 		Htn::PlanState testPlan;
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
@@ -151,8 +209,86 @@ int main()
 		}
 
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
-		          << (testPlan.FinalCallList.size() == 2 ? " (Pass)" : " (Fail)") << "\n\n";
+		          << (testPlan.FinalCallList.size() == 2 ? " (Pass)" : " (Fail)") << "\n";
 		printTaskCallList(testPlan.FinalCallList);
+		std::cout << "\n\n";
+	}
+
+	// Failed decomposition of first goal method (one stack frame)
+	{
+		std::cout << "TEST: Failed decomposition of first goal method (one stack frame)\n\n";
+		// Goal task setup (first task fails)
+		Htn::GoalTask failGoalTask;
+		Htn::TaskList failMethods = {&failTaskTask, &goalTaskTask};
+		// failMethods.push_back(&goalTaskTask);
+		failGoalTask.SetMethods(&failMethods);
+		Htn::Task failGoalTaskTask;
+		failGoalTaskTask.Goal = &failGoalTask;
+		Htn::TaskCall failGoalTaskCall = {&failGoalTaskTask, params};
+
+		Htn::PlanState testPlan;
+		testPlan.InitialCallList.push_back(failGoalTaskCall);
+
+		for (int i = 0; i < 12; i++)
+		{
+			Htn::PlanStepStatus status = Htn::PlanStep(testPlan);
+			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
+			if (status == Htn::PlanStepStatus::PlanComplete)
+				break;
+		}
+
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
+		          << (testPlan.FinalCallList.size() == 1 ? " (Pass)" : " (Fail)") << "\n";
+		printTaskCallList(testPlan.FinalCallList);
+		std::cout << "\n\n";
+	}
+
+	// Proper state change test (task with dependencies on another task being run before it)
+	{
+		std::cout << "TEST: Proper state change test (task with dependencies on another task being "
+		             "run before it)\n\n";
+		Htn::PlanState testPlan;
+		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
+		testPlan.InitialCallList.push_back(requiresStateTaskCall);
+		testPlan.State = 0;
+
+		for (int i = 0; i < 12; i++)
+		{
+			Htn::PlanStepStatus status = Htn::PlanStep(testPlan);
+			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
+			if (status == Htn::PlanStepStatus::PlanComplete)
+				break;
+		}
+
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
+		          << (testPlan.FinalCallList.size() == 2 ? " (Pass)" : " (Fail)") << "\n";
+		printTaskCallList(testPlan.FinalCallList);
+		std::cout << "\n\n";
+	}
+
+	// Proper state change test (task with dependencies on another task being run before it) (This
+	// time, fail!)
+	{
+		std::cout << "TEST: Proper state change test (task with dependencies on another task being "
+		             "run before it) (This time, fail!)\n\n";
+		Htn::PlanState testPlan;
+		testPlan.InitialCallList.push_back(requiresStateTaskCall);
+		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
+		testPlan.State = 0;
+
+		for (int i = 0; i < 12; i++)
+		{
+			Htn::PlanStepStatus status = Htn::PlanStep(testPlan);
+			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
+			if (status == Htn::PlanStepStatus::PlanComplete ||
+			    status == Htn::PlanStepStatus::Failed_NoPossiblePlan)
+				break;
+		}
+
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
+		          << (testPlan.FinalCallList.size() == 0 ? " (Pass)" : " (Fail)") << "\n";
+		printTaskCallList(testPlan.FinalCallList);
+		std::cout << "\n\n";
 	}
 
 	return 0;
