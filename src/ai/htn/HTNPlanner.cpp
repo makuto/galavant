@@ -7,6 +7,39 @@
 
 namespace Htn
 {
+bool DecomposeGoalTask(GoalDecompositionStack& decompositionStack, GoalTask* goalTask,
+                       int methodIndex, ParameterList& parameters, WorldState& state)
+{
+	GoalDecomposition decomposition;
+	// GoalTask* goalTask = currentTask->GetGoal();
+	decomposition.DecomposedGoalTask = goalTask;
+	decomposition.MethodIndex = methodIndex;
+	// How the hell are parameters off of goals used? Fuck
+	// Well, a method could be restricted to a single Primitive Task or a
+	// CompoundTask
+	decomposition.Parameters = parameters;
+	decomposition.InitialState = state;
+
+	// Perform the decomposition
+	if (goalTask->DecomposeMethodAtIndex(decomposition.CallList, decomposition.MethodIndex,
+	                                     decomposition.Parameters))
+	{
+		decompositionStack.push_back(decomposition);
+		return true;
+	}
+
+	return false;
+}
+
+bool DecomposeCompoundTask(TaskCallList& compoundDecompositions, CompoundTask* compoundTask,
+                           TaskArguments& taskArguments)
+{
+	if (!compoundTask->StateMeetsPreconditions(taskArguments))
+		return false;
+
+	return compoundTask->Decompose(compoundDecompositions, taskArguments);
+}
+
 Planner::Status Planner::PlanStep(void)
 {
 	// When the stack is empty, find a goal task to push onto the task or add tasks as per usual
@@ -54,25 +87,11 @@ Planner::Status Planner::PlanStep(void)
 				{
 					if (DebugPrint)
 						std::cout << "Goal\n";
-					GoalTask* goalTask = currentTask->Goal;
-					GoalDecomposition decomposition;
-					decomposition.DecomposedGoalTask = goalTask;
-					decomposition.MethodIndex = 0;  // -- CHANGE for stacked
-					// How the hell are parameters off of goals used? Fuck
-					// Well, a method could be restricted to a single Primitive Task or a
-					// CompoundTask
-					decomposition.Parameters = currentTaskCall.Parameters;
-					decomposition.InitialState = StacklessState;  // -- CHANGE for stacked
+					GoalTask* goalTask = currentTask->GetGoal();
 
-					// Perform the decomposition
-					if (!goalTask->DecomposeMethodAtIndex(decomposition.CallList,
-					                                      decomposition.MethodIndex,
-					                                      decomposition.Parameters))
+					if (!DecomposeGoalTask(DecompositionStack, goalTask, 0,
+					                       currentTaskCall.Parameters, StacklessState))
 						return Status::Failed_NoPossiblePlan;
-
-					DecompositionStack.push_back(decomposition);
-					if (DebugPrint)
-						std::cout << "DecompositionStack.push_back(decomposition);\n";
 
 					if (BreakOnStackPush)
 					{
@@ -89,7 +108,7 @@ Planner::Status Planner::PlanStep(void)
 				{
 					if (DebugPrint)
 						std::cout << "Primitive\n";
-					PrimitiveTask* primitiveTask = currentTask->Primitive;
+					PrimitiveTask* primitiveTask = currentTask->GetPrimitive();
 					if (!primitiveTask->StateMeetsPreconditions(taskArguments))
 						return Status::Failed_NoPossiblePlan;
 
@@ -111,17 +130,15 @@ Planner::Status Planner::PlanStep(void)
 				{
 					if (DebugPrint)
 						std::cout << "Compound\n";
-					CompoundTask* compoundTask = currentTask->Compound;
-					if (!compoundTask->StateMeetsPreconditions(taskArguments))
-						return Status::Failed_NoPossiblePlan;
-
-					if (!compoundTask->Decompose(compoundDecompositions, taskArguments))
+					CompoundTask* compoundTask = currentTask->GetCompound();
+					if (!DecomposeCompoundTask(compoundDecompositions, compoundTask, taskArguments))
 						return Status::Failed_NoPossiblePlan;
 
 					currentTaskCallIter = WorkingCallList.erase(currentTaskCallIter);
 
 					// we need to push our decomposition to our call list, but we're iterating on
-					// 	it. Break out of the loop and tack it on there
+					//  it. By pushing our decomposition to compoundDecompositions, we break out of
+					//  the loop and tack it on there
 				}
 				break;
 				default:
@@ -207,43 +224,21 @@ Planner::Status Planner::PlanStep(void)
 				{
 					if (DebugPrint)
 						std::cout << "Goal\n";
-					GoalTask* goalTask = currentTask->Goal;
-					GoalDecomposition decomposition;
-					decomposition.DecomposedGoalTask = goalTask;
-					decomposition.MethodIndex = 0;
-					// How the hell are parameters off of goals used? Fuck
-					// Well, a method could be restricted to a single Primitive Task or a
-					// CompoundTask
-					decomposition.Parameters = currentTaskCall.Parameters;
-					decomposition.InitialState = currentStackFrame.WorkingState;
-
-					// Perform the decomposition
-					if (!goalTask->DecomposeMethodAtIndex(decomposition.CallList,
-					                                      decomposition.MethodIndex,
-					                                      decomposition.Parameters))
-						return Status::Failed_NoPossiblePlan;
+					GoalTask* goalTask = currentTask->GetGoal();
 
 					// TODO erase ahead of time because fuck
 					// Strange things are afoot when we push to stack
 					currentStackFrame.CallList.erase(currentTaskCallIter);
 
-					if (DebugPrint)
+					// Perform the decomposition. This function only fails if the method at method
+					// index doesn't exist. This means that the goal task has no alternative options
+					if (!DecomposeGoalTask(DecompositionStack, goalTask, 0,
+					                       currentTaskCall.Parameters,
+					                       currentStackFrame.WorkingState))
 					{
-						std::cout << "----Fullstack working lists [PRE PUSH BACK]\n";
-						std::cout << "[0]\n";
-						printTaskCallList(WorkingCallList);
-						int i = 1;
-						for (GoalDecomposition& stackFrame : DecompositionStack)
-						{
-							std::cout << "[" << i++ << "]\n";
-							printTaskCallList(stackFrame.CallList);
-						}
-						std::cout << "----\n";
+						methodFailed = true;
+						break;
 					}
-
-					DecompositionStack.push_back(decomposition);
-					if (DebugPrint)
-						std::cout << "DecompositionStack.push_back(decomposition);\n";
 
 					// This code is wrong. I'm not sure why.
 					// Pushing to the stack invalidates our currentStackFrame reference; update it
@@ -252,19 +247,6 @@ Planner::Status Planner::PlanStep(void)
 					          << &(*(DecompositionStack.end() - 1)) << "\n";
 					currentStackFrameIter = DecompositionStack.end() - 1;
 					currentStackFrame = *currentStackFrameIter;*/
-					if (DebugPrint)
-					{
-						std::cout << "----Fullstack working lists [POST PUSH BACK]\n";
-						std::cout << "[0]\n";
-						printTaskCallList(WorkingCallList);
-						int i = 1;
-						for (GoalDecomposition& stackFrame : DecompositionStack)
-						{
-							std::cout << "[" << i++ << "]\n";
-							printTaskCallList(stackFrame.CallList);
-						}
-						std::cout << "----\n";
-					}
 
 					if (BreakOnStackPush)
 					{
@@ -281,7 +263,7 @@ Planner::Status Planner::PlanStep(void)
 				{
 					if (DebugPrint)
 						std::cout << "Primitive\n";
-					PrimitiveTask* primitiveTask = currentTask->Primitive;
+					PrimitiveTask* primitiveTask = currentTask->GetPrimitive();
 					if (!primitiveTask->StateMeetsPreconditions(taskArguments))
 					{
 						methodFailed = true;
@@ -305,14 +287,9 @@ Planner::Status Planner::PlanStep(void)
 				{
 					if (DebugPrint)
 						std::cout << "Compound\n";
-					CompoundTask* compoundTask = currentTask->Compound;
-					if (!compoundTask->StateMeetsPreconditions(taskArguments))
-					{
-						methodFailed = true;
-						break;
-					}
+					CompoundTask* compoundTask = currentTask->GetCompound();
 
-					if (!compoundTask->Decompose(compoundDecompositions, taskArguments))
+					if (!DecomposeCompoundTask(compoundDecompositions, compoundTask, taskArguments))
 					{
 						methodFailed = true;
 						break;

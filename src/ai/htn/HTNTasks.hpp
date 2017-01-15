@@ -82,19 +82,29 @@ protected:
 
 // Instead of the commented code, just use a simple struct which stores all types of tasks but
 //  only allow only one thing to be filled in for it
-// TODO: Make members private and require accessors?
 struct Task
 {
-	GoalTask* Goal = nullptr;
-	CompoundTask* Compound = nullptr;
-	PrimitiveTask* Primitive = nullptr;
-
 	Task(void) = delete;
 	Task(GoalTask* goal);
 	Task(CompoundTask* compound);
 	Task(PrimitiveTask* primitive);
 
 	TaskType GetType(void) const;
+
+	GoalTask* GetGoal(void);
+	CompoundTask* GetCompound(void);
+	PrimitiveTask* GetPrimitive(void);
+
+friend std::ostream& operator<<(std::ostream& os, const Task& task);
+private:
+	union
+	{
+		GoalTask* Goal;
+		CompoundTask* Compound;
+		PrimitiveTask* Primitive;
+	};
+
+	TaskType Type;
 };
 
 std::ostream& operator<<(std::ostream& os, const Task& task);

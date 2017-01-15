@@ -1,5 +1,8 @@
 #include "HTNTasks.hpp"
 
+#include <cassert>
+#include <iostream>
+
 namespace Htn
 {
 /*Task::Task(void)
@@ -44,12 +47,10 @@ void GoalTask::SetMethods(TaskList* newMethods)
 
 CompoundTask::CompoundTask(void)
 {
-	// Type = TaskType::Compound;
 }
 
 PrimitiveTask::PrimitiveTask(void)
 {
-	// Type = TaskType::Primitive;
 }
 
 CompoundTask::~CompoundTask(void)
@@ -63,25 +64,40 @@ PrimitiveTask::~PrimitiveTask(void)
 Task::Task(GoalTask* goal)
 {
 	Goal = goal;
+	Type = TaskType::Goal;
 }
+
 Task::Task(CompoundTask* compound)
 {
 	Compound = compound;
+	Type = TaskType::Compound;
 }
+
 Task::Task(PrimitiveTask* primitive)
 {
 	Primitive = primitive;
+	Type = TaskType::Primitive;
 }
 
 TaskType Task::GetType(void) const
 {
-	if (Goal)
-		return TaskType::Goal;
-	if (Compound)
-		return TaskType::Compound;
-	if (Primitive)
-		return TaskType::Primitive;
-	return TaskType::None;
+	return Type;
+}
+
+GoalTask* Task::GetGoal(void)
+{
+	assert(Type == TaskType::Goal);
+	return Goal;
+}
+CompoundTask* Task::GetCompound(void)
+{
+	assert(Type == TaskType::Compound);
+	return Compound;
+}
+PrimitiveTask* Task::GetPrimitive(void)
+{
+	assert(Type == TaskType::Primitive);
+	return Primitive;
 }
 
 std::ostream& operator<<(std::ostream& os, const Task& task)

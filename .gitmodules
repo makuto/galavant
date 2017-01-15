@@ -1,3 +1,6 @@
 [submodule "thirdParty/flatbuffers"]
 	path = thirdParty/flatbuffers
 	url = https://github.com/google/flatbuffers.git
+[submodule "thirdParty/Catch"]
+	path = thirdParty/Catch
+	url = https://github.com/philsquared/Catch.git

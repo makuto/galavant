@@ -1,5 +1,8 @@
 #include <iostream>
 
+#define CATCH_CONFIG_MAIN
+#include "../../thirdParty/Catch/single_include/catch.hpp"
+
 #include "../ai/htn/HTNTypes.hpp"
 #include "../ai/htn/HTNTasks.hpp"
 #include "../ai/htn/HTNPlanner.hpp"
@@ -103,14 +106,9 @@ public:
 	}
 };
 
-int main()
+TEST_CASE("Hierarchical Task Networks Planner")
 {
-	// Test parameters
 	Htn::Parameter testParam = {Htn::Parameter::ParamType::Int, 123};
-
-	// Todo: add getters/setters (settor constructors too)
-	std::cout << testParam.FloatValue << "\n";
-
 	Htn::ParameterList params;
 	params.push_back(testParam);
 
@@ -143,7 +141,7 @@ int main()
 	Htn::Task nestedGoalTaskTask(&nestedGoalTask);
 	Htn::TaskCall nestedGoalTaskCall = {&nestedGoalTaskTask, params};
 
-	// Compounds and primitives, but no goals
+	SECTION("Compounds and primitives, but no goals")
 	{
 		std::cout << "TEST: Compounds and primitives, but no goals\n\n";
 		Htn::Planner testPlan;
@@ -161,11 +159,11 @@ int main()
 				break;
 		}
 
-		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
-		          << (testPlan.FinalCallList.size() == 3 ? " (Pass)" : " (Fail)") << "\n\n";
+		REQUIRE(testPlan.FinalCallList.size() == 3);
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n\n";
 	}
 
-	// One goal (one stack frame)
+	SECTION("One goal (one stack frame)")
 	{
 		std::cout << "TEST: One goal (one stack frame)\n\n";
 		Htn::Planner testPlan;
@@ -179,13 +177,13 @@ int main()
 				break;
 		}
 
-		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
-		          << (testPlan.FinalCallList.size() == 1 ? " (Pass)" : " (Fail)") << "\n";
+		REQUIRE(testPlan.FinalCallList.size() == 1);
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
 		printTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";
 	}
 
-	// Nested goal (two stack frames)
+	SECTION("Nested goal (two stack frames)")
 	{
 		std::cout << "TEST: Nested goal (two stack frames)\n\n";
 		Htn::Planner testPlan;
@@ -200,13 +198,13 @@ int main()
 				break;
 		}
 
-		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
-		          << (testPlan.FinalCallList.size() == 2 ? " (Pass)" : " (Fail)") << "\n";
+		REQUIRE(testPlan.FinalCallList.size() == 2);
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
 		printTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";
 	}
 
-	// Failed decomposition of first goal method (one stack frame)
+	SECTION("Failed decomposition of first goal method (one stack frame)")
 	{
 		std::cout << "TEST: Failed decomposition of first goal method (one stack frame)\n\n";
 		// Goal task setup (first task fails)
@@ -228,13 +226,13 @@ int main()
 				break;
 		}
 
-		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
-		          << (testPlan.FinalCallList.size() == 1 ? " (Pass)" : " (Fail)") << "\n";
+		REQUIRE(testPlan.FinalCallList.size() == 1);
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
 		printTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";
 	}
 
-	// Proper state change test (task with dependencies on another task being run before it)
+	SECTION("Proper state change test (task with dependencies on another task being run before it)")
 	{
 		std::cout << "TEST: Proper state change test (task with dependencies on another task being "
 		             "run before it)\n\n";
@@ -251,14 +249,15 @@ int main()
 				break;
 		}
 
-		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
-		          << (testPlan.FinalCallList.size() == 2 ? " (Pass)" : " (Fail)") << "\n";
+		REQUIRE(testPlan.FinalCallList.size() == 2);
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
 		printTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";
 	}
 
-	// Proper state change test (task with dependencies on another task being run before it) (This
-	// time, fail!)
+	SECTION(
+	    "Proper state change test (task with dependencies on another task being run before it) "
+	    "(This time, fail!)")
 	{
 		std::cout << "TEST: Proper state change test (task with dependencies on another task being "
 		             "run before it) (This time, fail!)\n\n";
@@ -276,11 +275,9 @@ int main()
 				break;
 		}
 
-		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size()
-		          << (testPlan.FinalCallList.size() == 0 ? " (Pass)" : " (Fail)") << "\n";
+		REQUIRE(testPlan.FinalCallList.size() == 0);
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
 		printTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";
 	}
-
-	return 0;
 }
