@@ -14,9 +14,6 @@ bool DecomposeGoalTask(GoalDecompositionStack& decompositionStack, GoalTask* goa
 	// GoalTask* goalTask = currentTask->GetGoal();
 	decomposition.DecomposedGoalTask = goalTask;
 	decomposition.MethodIndex = methodIndex;
-	// How the hell are parameters off of goals used? Fuck
-	// Well, a method could be restricted to a single Primitive Task or a
-	// CompoundTask
 	decomposition.Parameters = parameters;
 	decomposition.InitialState = state;
 
@@ -40,6 +37,9 @@ bool DecomposeCompoundTask(TaskCallList& compoundDecompositions, CompoundTask* c
 	return compoundTask->Decompose(compoundDecompositions, taskArguments);
 }
 
+// TODO: Pool various task lists?
+// TODO: Pull more things out into functions, if possible. It's bad that whenever I make a change to
+// something I have to change it in two places
 Planner::Status Planner::PlanStep(void)
 {
 	// When the stack is empty, find a goal task to push onto the task or add tasks as per usual
@@ -75,8 +75,10 @@ Planner::Status Planner::PlanStep(void)
 			if (!currentTask)
 				continue;
 			TaskType currentTaskType = currentTask->GetType();
-			// NullEntity = TODO
-			TaskArguments taskArguments = {0, StacklessState, currentTaskCall.Parameters};
+
+			// Prepare arguments based on our current working state & parameters
+			// TODO: I don't like this
+			TaskArguments taskArguments = {StacklessState, currentTaskCall.Parameters};
 
 			if (DebugPrint)
 				std::cout << "TaskType currentTaskType = " << (int)currentTaskType << "\n";
@@ -211,8 +213,10 @@ Planner::Status Planner::PlanStep(void)
 			if (!currentTask)
 				continue;
 			TaskType currentTaskType = currentTask->GetType();
-			// NullEntity = TODO
-			TaskArguments taskArguments = {0, currentStackFrame.WorkingState,
+
+			// Prepare arguments based on our current working state & parameters
+			// TODO: I don't like this
+			TaskArguments taskArguments = {currentStackFrame.WorkingState,
 			                               currentTaskCall.Parameters};
 
 			if (DebugPrint)

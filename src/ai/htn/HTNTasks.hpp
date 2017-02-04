@@ -19,10 +19,10 @@ typedef std::vector<TaskCall> TaskCallList;
 typedef TaskCallList::iterator TaskCallListIterator;
 
 //
-// Different types of tasks
+// Tasks
 //
 
-class GoalTask  //: public Task
+class GoalTask
 {
 private:
 	TaskList* Methods;
@@ -38,20 +38,20 @@ public:
 	void SetMethods(TaskList* newMethods);
 };
 
-class CompoundTask  //: public Task
+class CompoundTask
 {
 public:
-	CompoundTask(void);
-	virtual ~CompoundTask(void);
+	CompoundTask(void) = default;
+	virtual ~CompoundTask(void) = default;
 	virtual bool StateMeetsPreconditions(const TaskArguments& arguments) = 0;
 	virtual bool Decompose(TaskCallList& taskCallList, const TaskArguments& arguments) = 0;
 };
 
-class PrimitiveTask  //: public Task
+class PrimitiveTask
 {
 public:
-	PrimitiveTask(void);
-	virtual ~PrimitiveTask(void);
+	PrimitiveTask(void) = default;
+	virtual ~PrimitiveTask(void) = default;
 	virtual bool StateMeetsPreconditions(const TaskArguments& arguments) = 0;
 	virtual void ApplyStateChange(TaskArguments& arguments) = 0;
 	// Returns whether or not starting the task was successful (NOT whether the task completed)
@@ -65,22 +65,8 @@ enum class TaskType
 	Compound,
 	Primitive
 };
-/*
-// Task only exists so that we can store all our Task types in a flat list
-class Task
-{
-public:
-    Task(void);
 
-    // Type is used to know what to cast this Task to
-    TaskType GetType(void);
-
-protected:
-    // This is set by the constructors of each different Task
-    TaskType Type;
-};*/
-
-// Instead of the commented code, just use a simple struct which stores all types of tasks but
+// Instead of using inheritance, just use a simple struct which stores all types of tasks but
 //  only allow only one thing to be filled in for it
 struct Task
 {
@@ -95,7 +81,8 @@ struct Task
 	CompoundTask* GetCompound(void);
 	PrimitiveTask* GetPrimitive(void);
 
-friend std::ostream& operator<<(std::ostream& os, const Task& task);
+	friend std::ostream& operator<<(std::ostream& os, const Task& task);
+
 private:
 	union
 	{

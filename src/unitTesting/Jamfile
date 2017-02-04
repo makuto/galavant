@@ -8,7 +8,10 @@ Main objectPoolTest : ObjectPoolTest.cpp ;
 Main htnTest : HTN_test.cpp ;
 LinkLibraries htnTest : libGalaAi ;
 
-MakeLocate objectComponentTest entityComponentTest objectPoolTest htnTest : bin ;
+Main positionTest : Position_test.cpp ;
+LinkLibraries positionTest : libGalaWorld ;
+
+MakeLocate objectComponentTest entityComponentTest objectPoolTest htnTest positionTest : bin ;
 
 SubInclude . src entityComponentSystem ;
 SubInclude . src ai ;

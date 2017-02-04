@@ -5,16 +5,6 @@
 
 namespace Htn
 {
-/*Task::Task(void)
-{
-    Type = TaskType::None;
-}
-
-TaskType Task::GetType(void)
-{
-    return Type;
-}*/
-
 int GoalTask::GetNumMethods(void)
 {
 	return Methods ? Methods->size() : 0;
@@ -43,22 +33,6 @@ Task* GoalTask::GetMethodAtIndex(int index)
 void GoalTask::SetMethods(TaskList* newMethods)
 {
 	Methods = newMethods;
-}
-
-CompoundTask::CompoundTask(void)
-{
-}
-
-PrimitiveTask::PrimitiveTask(void)
-{
-}
-
-CompoundTask::~CompoundTask(void)
-{
-}
-
-PrimitiveTask::~PrimitiveTask(void)
-{
 }
 
 Task::Task(GoalTask* goal)

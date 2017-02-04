@@ -1,17 +1,33 @@
+
+##
+## Compiler
+##
+
 CC = gcc ;
+
+# GCC
 #C++ = g++ ;
 #LINK = g++ ;
+
+# Clang
 C++ = clang++ ;
 LINK = clang++ ;
 
+##
+## Compiler arguments
+##
+
 # Galavant requires C++11
-# fPIC = position independent code. This is so the lib can be linked in other libs/executables
-# g = debug symbols
-# lstdc++ = standard library
-# -stdlib=lib++ = Unreal uses fucking libc++, which is busted on Ubuntu 16.04. Remove this option if you don't
-#  give a shit about Unreal and/or want to build the tests
-# Og = compile without optimizations for debugging
-C++FLAGS = -std=c++11 -stdlib=libc++ -fPIC -g -Og -Wall -Wextra ;
+#   fPIC = position independent code. This is so the lib can be linked in other libs/executables
+#   g = debug symbols
+#   lstdc++ = standard library
+#   -stdlib=lib++ = Unreal uses libc++, which is busted on Ubuntu 16.04. Remove this option
+#      if you don't give a shit about Unreal and/or want to build the tests
+#   Og = compile without optimizations for debugging
+#   -Wall -Wextra = Error detection/tolerance
+#C++FLAGS = -std=c++11 -stdlib=libc++ -fPIC -g -Og -Wall -Wextra ; # Required arguments for Unreal
+C++FLAGS = -std=c++11 -fPIC -g -Og -Wall -Wextra ;                # Required arguments for tests
+
 OBJECTC++FLAGS = -std=c++11 -lstdc++ -g -Og ;
 
 HDRS = thirdParty/flatbuffers/include ;

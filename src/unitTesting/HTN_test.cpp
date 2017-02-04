@@ -98,8 +98,8 @@ public:
 	virtual bool Decompose(Htn::TaskCallList& taskCallList, const Htn::TaskArguments& args)
 	{
 		static TestPrimitiveTask testPrimitiveTask;
-		std::cout << "\tDecompose TestCompoundTaskA: " << args.Parameters[0].IntValue << "\n";
 		static Htn::Task primitiveTask(&testPrimitiveTask);
+		std::cout << "\tDecompose TestCompoundTaskA: " << args.Parameters[0].IntValue << "\n";
 		Htn::TaskCall taskCall = {&primitiveTask, args.Parameters};
 		taskCallList.push_back(taskCall);
 		return true;
@@ -151,14 +151,16 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		args.Parameters = params;
 		testCompoundTaskAA.Decompose(testPlan.InitialCallList, args);
 
+		Htn::Planner::Status status;
 		for (int i = 0; i < 10; i++)
 		{
-			Htn::Planner::Status status = testPlan.PlanStep();
+			status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
 			if (status == Htn::Planner::Status::PlanComplete)
 				break;
 		}
 
+		REQUIRE(status == Htn::Planner::Status::PlanComplete);
 		REQUIRE(testPlan.FinalCallList.size() == 3);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n\n";
 	}
@@ -169,14 +171,16 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(goalTaskCall);
 
+		Htn::Planner::Status status;
 		for (int i = 0; i < 10; i++)
 		{
-			Htn::Planner::Status status = testPlan.PlanStep();
+			status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
 			if (status == Htn::Planner::Status::PlanComplete)
 				break;
 		}
 
+		REQUIRE(status == Htn::Planner::Status::PlanComplete);
 		REQUIRE(testPlan.FinalCallList.size() == 1);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
 		printTaskCallList(testPlan.FinalCallList);
@@ -190,14 +194,16 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
 
+		Htn::Planner::Status status;
 		for (int i = 0; i < 12; i++)
 		{
-			Htn::Planner::Status status = testPlan.PlanStep();
+			status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
 			if (status == Htn::Planner::Status::PlanComplete)
 				break;
 		}
 
+		REQUIRE(status == Htn::Planner::Status::PlanComplete);
 		REQUIRE(testPlan.FinalCallList.size() == 2);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
 		printTaskCallList(testPlan.FinalCallList);
@@ -218,14 +224,16 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(failGoalTaskCall);
 
+		Htn::Planner::Status status;
 		for (int i = 0; i < 12; i++)
 		{
-			Htn::Planner::Status status = testPlan.PlanStep();
+			status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
 			if (status == Htn::Planner::Status::PlanComplete)
 				break;
 		}
 
+		REQUIRE(status == Htn::Planner::Status::PlanComplete);
 		REQUIRE(testPlan.FinalCallList.size() == 1);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
 		printTaskCallList(testPlan.FinalCallList);
@@ -241,14 +249,16 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		testPlan.InitialCallList.push_back(requiresStateTaskCall);
 		testPlan.State = 0;
 
+		Htn::Planner::Status status;
 		for (int i = 0; i < 12; i++)
 		{
-			Htn::Planner::Status status = testPlan.PlanStep();
+			status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
 			if (status == Htn::Planner::Status::PlanComplete)
 				break;
 		}
 
+		REQUIRE(status == Htn::Planner::Status::PlanComplete);
 		REQUIRE(testPlan.FinalCallList.size() == 2);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
 		printTaskCallList(testPlan.FinalCallList);
@@ -266,15 +276,17 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
 		testPlan.State = 0;
 
+		Htn::Planner::Status status;
 		for (int i = 0; i < 12; i++)
 		{
-			Htn::Planner::Status status = testPlan.PlanStep();
+			status = testPlan.PlanStep();
 			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
 			if (status == Htn::Planner::Status::PlanComplete ||
 			    status == Htn::Planner::Status::Failed_NoPossiblePlan)
 				break;
 		}
 
+		REQUIRE(status == Htn::Planner::Status::Failed_NoPossiblePlan);
 		REQUIRE(testPlan.FinalCallList.size() == 0);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
 		printTaskCallList(testPlan.FinalCallList);

@@ -1,0 +1,5 @@
+SubDir . src world ;
+
+Library libGalaWorld : Position.cpp ;
+
+MakeLocate libGalaWorld.a : lib ;
