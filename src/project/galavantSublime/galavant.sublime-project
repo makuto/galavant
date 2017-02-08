@@ -5,12 +5,12 @@
             "path": "../../../../galavant",
             "name": "Galavant",
             "folder_exclude_patterns": ["project"],
-            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "Jam*"]
+            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "Jam*", "*.md"]
         },
         {
             "path": "../../../../galavant-unreal/GalavantUnreal/Source",
             "name": "Source - Galavant Unreal",
-            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "*.cs"]
+            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "*.cs", "*.md"]
         },
         {
             "path": "../../../gamedata",
@@ -45,14 +45,28 @@
         {
             "name": "Jam",
             "shell_cmd": "jam"
+        },
+        // Assume GalavantUnreal is cloned as a submodule or linked (I can't remember if I actually made it a submodule)
+        {
+            "name": "Jam",
+            "shell_cmd": "jam"
         }
     ],
 
     "settings":
     {
-         //"sublimegdb_workingdir": "${folder:${project_path:your_executable_name}}",
-         "sublimegdb_workingdir": "../../../../galavant/bin/entityComponentTest",
-         
-         "sublimegdb_commandline": "gdb --interpreter=mi ./entityComponentTest"
+        "sublimegdb_executables":
+        {
+            "htnTest":
+            {
+                "workingdir": "/home/macoy/Development/code/repositories/galavant/src/unitTesting/bin",
+                "commandline": "gdb --interpreter=mi ./htnTest"
+            },
+//            "second_executable_name":
+//            {
+//                "workingdir": "${folder:${project_path:second_executable_name}}",
+//                "commandline": "gdb --interpreter=mi ./second_executable"
+//            }
+        }
     }
 }

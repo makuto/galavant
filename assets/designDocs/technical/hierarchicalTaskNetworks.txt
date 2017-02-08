@@ -1,0 +1,82 @@
+Tasks
+	Something to be done which can be broken down into a method to accomplish (task sort of equals goal)
+
+Methods 
+	If the agent's state matches a set of preconditions, return a list of methods and primitives which complete the task
+
+Primitives/Operators
+	If the agent's state matches a set of preconditions, return that the primitive can be performed
+	Perform the actual change in the world
+	Change the world state (this can be both during planning and after actually performing the primitive task) (should
+		these be separated?)
+
+agent = entityID
+agentState = struct
+{
+	isUndead = false
+	hasAmmo = false
+	target = entityID (should this in agent state or parameters?)
+}
+
+worldState = struct
+{
+	towns = {townA: [x, y, z, properties], townB: [x, y, z, properties]}
+	canUndeadDoShit = true
+}
+
+parameters = vector of param
+param = struct
+{
+enum type
+union
+{
+	entityID entity
+	coordinate coord
+
+	scalar val
+	vector vec
+	float floatVal
+}
+}
+
+MethodA = 0
+MethodB = 1
+
+PrimitiveA = 0
+PrimitiveB = 1
+
+MethodA = struct
+{
+	preconditionsSatisfied(agent, agentState, worldState, parameters)
+	{
+		return worldState.useMethodA
+	}
+	newTasks = [(1, method, [param1, param2]), (0, primitive, [])];
+}
+
+PrimitiveA = module
+{
+	arePreconditionsSatisfied(agent, agentState, worldState, parameters)
+	{
+		return worldState.useMethodA
+	}
+
+	applyEffects(agent, agentState, worldState, parameters)
+	{
+		worldState.hasDonePrimitiveA = true
+	}
+
+	execute(agent, agentState, worldState, parameters)
+	{
+		if preconditionsSatisfied(agent, agentState, worldState, parameters)
+			primitiveAComponentManager.subscribeTaskAgent(agent, this) // pass self in for callback (instead: event listener?)
+			return true
+		return false
+	}
+
+	PrimitiveADoneCallback(agent, bool succeeded)
+	{
+		// plan follow code will call applyEffects ?
+		notifyPlanFollowCode(agent, succeeded)
+	}
+}

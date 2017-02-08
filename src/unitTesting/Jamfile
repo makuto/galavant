@@ -1,13 +1,17 @@
 SubDir . src unitTesting ;
 
-Main objectComponentTest : ObjectComponent_test.cpp ../objectComponent/Component.cpp ../objectComponent/ComponentManager.cpp ../objectComponent/Object.cpp ../objectComponent/ObjectComponentManager.cpp ../objectComponent/ObjectID.cpp ../objectComponent/ObjectType.cpp ;
-
 Main entityComponentTest : EntityComponentSystem_test.cpp ;
+LinkLibraries entityComponentTest : libGalaEntityComponent ;
 
 Main objectPoolTest : ObjectPoolTest.cpp ;
 
-LinkLibraries entityComponentTest : libGalaEntityComponent ;
+Main htnTest : HTN_test.cpp ;
+LinkLibraries htnTest : libGalaAi ;
 
-MakeLocate objectComponentTest entityComponentTest objectPoolTest : bin ;
+Main positionTest : Position_test.cpp ;
+LinkLibraries positionTest : libGalaWorld ;
+
+MakeLocate objectComponentTest entityComponentTest objectPoolTest htnTest positionTest : bin ;
 
 SubInclude . src entityComponentSystem ;
+SubInclude . src ai ;

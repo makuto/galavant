@@ -4,5 +4,5 @@
 
 void gv::GalavantMain::Update(float frameTime)
 {
-	std::cout << "Updated Galavant\n";
+	std::cout << "Updated Galavant frameTime: " << frameTime << "\n";
 }
