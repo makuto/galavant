@@ -29,6 +29,8 @@ struct GoalDecomposition
 
 typedef std::vector<GoalDecomposition> GoalDecompositionStack;
 
+// TODO: Either make planner allow making multiple plans with the same instance, or make it clear
+// that it is for a single plan only
 class Planner
 {
 public:
@@ -42,15 +44,17 @@ public:
 	//
 	// Settings to tweak how long you want a single PlanStep() to be
 	//
-	// Break immediately after a new method has been chosen for a goal
-	bool BreakOnStackPush = true;
-	// Break immediately after a method has failed to be decomposed
-	bool BreakOnStackPop = true;
+	// Break whenever a stack action has occurred (a goal has been decomposed, a method has finished
+	// decomposition, or a method failed to decompose)
+	bool BreakOnStackAction = true;
 	// Break immediately after a compound task has been decomposed
 	bool BreakOnCompoundDecomposition = false;
 	// Break immediately after a primitive task has been applied
 	bool BreakOnPrimitiveApply = false;
+	// Break whenever a goal or method failed to decompose
+	bool BreakOnFailedDecomposition = false;
 
+	// Print various details about the status of the stack etc.
 	bool DebugPrint = false;
 
 	enum class Status
@@ -60,10 +64,16 @@ public:
 		Failed_NoPossiblePlan,
 		Failed_NoTasks,
 
+		Running_EnumBegin,
+
 		Running_SuccessfulDecomposition,
+		Running_SuccessfulDecompositionStackPush,
+		Running_SuccessfulDecompositionStackPop,
 		Running_SuccessfulPrimitive,
 		Running_FailedMethodDecomposition,
 		Running_FailedGoalDecomposition,
+
+		Running_EnumEnd,
 
 		// Done
 		PlanComplete
@@ -79,5 +89,8 @@ private:
 
 	// Copy of InitialCallList that Planner can fuck with
 	TaskCallList WorkingCallList;
+
+	Status PlanStep_StackFrame(void);
+	Status PlanStep_BottomLevel(void);
 };
 };

@@ -33,7 +33,8 @@ public:
 	int GetNumMethods(void);
 	Task* GetMethodAtIndex(int index);
 
-	bool DecomposeMethodAtIndex(TaskCallList& decomposition, int index, ParameterList& parameters);
+	bool DecomposeMethodAtIndex(TaskCallList& decomposition, int index,
+	                            const ParameterList& parameters);
 
 	void SetMethods(TaskList* newMethods);
 };
@@ -43,8 +44,10 @@ class CompoundTask
 public:
 	CompoundTask(void) = default;
 	virtual ~CompoundTask(void) = default;
-	virtual bool StateMeetsPreconditions(const TaskArguments& arguments) = 0;
-	virtual bool Decompose(TaskCallList& taskCallList, const TaskArguments& arguments) = 0;
+	virtual bool StateMeetsPreconditions(const WorldState& state,
+	                                     const ParameterList& parameters) const = 0;
+	virtual bool Decompose(TaskCallList& taskCallList, const WorldState& state,
+	                       const ParameterList& parameters) = 0;
 };
 
 class PrimitiveTask
@@ -52,10 +55,13 @@ class PrimitiveTask
 public:
 	PrimitiveTask(void) = default;
 	virtual ~PrimitiveTask(void) = default;
-	virtual bool StateMeetsPreconditions(const TaskArguments& arguments) = 0;
-	virtual void ApplyStateChange(TaskArguments& arguments) = 0;
+	virtual bool StateMeetsPreconditions(const WorldState& state,
+	                                     const ParameterList& parameters) const = 0;
+	virtual void ApplyStateChange(WorldState& state, const ParameterList& parameters) = 0;
 	// Returns whether or not starting the task was successful (NOT whether the task completed)
-	virtual bool Execute(const TaskArguments& arguments) = 0;
+	// Execution should (when completed etc.) modify the world state the same as ApplyStateChange
+	// would. Call that function for extra safety
+	virtual bool Execute(WorldState& state, const ParameterList& parameters) = 0;
 };
 
 enum class TaskType

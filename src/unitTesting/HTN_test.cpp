@@ -13,20 +13,21 @@ public:
 	AlwaysFailPrimitiveTask(void) = default;
 	virtual ~AlwaysFailPrimitiveTask(void) = default;
 
-	virtual bool StateMeetsPreconditions(const Htn::TaskArguments& args)
+	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
+	                                     const Htn::ParameterList& parameters) const
 	{
 		std::cout << "\tStateMeetsPreconditions AlwaysFailPrimitiveTask\n";
 		return false;
 	}
 
-	virtual void ApplyStateChange(Htn::TaskArguments& arguments)
+	virtual void ApplyStateChange(Htn::WorldState& state, const Htn::ParameterList& parameters)
 	{
 		std::cout << "\tApplyStateChange AlwaysFailPrimitiveTask\n";
 	}
 
-	virtual bool Execute(const Htn::TaskArguments& args)
+	virtual bool Execute(Htn::WorldState& state, const Htn::ParameterList& parameters)
 	{
-		std::cout << "\texecute AlwaysFailPrimitiveTask: " << args.Parameters[0].IntValue << "\n";
+		std::cout << "\texecute AlwaysFailPrimitiveTask: " << parameters[0].IntValue << "\n";
 		return false;
 	}
 };
@@ -37,22 +38,22 @@ public:
 	RequiresStatePrimitiveTask(void) = default;
 	virtual ~RequiresStatePrimitiveTask(void) = default;
 
-	virtual bool StateMeetsPreconditions(const Htn::TaskArguments& args)
+	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
+	                                     const Htn::ParameterList& parameters) const
 	{
-		std::cout << "\tStateMeetsPreconditions RequiresStatePrimitiveTask state = "
-		          << args.worldState << "\n";
-		return args.worldState == 1;
+		std::cout << "\tStateMeetsPreconditions RequiresStatePrimitiveTask state = " << state
+		          << "\n";
+		return state == 1;
 	}
 
-	virtual void ApplyStateChange(Htn::TaskArguments& arguments)
+	virtual void ApplyStateChange(Htn::WorldState& state, const Htn::ParameterList& parameters)
 	{
 		std::cout << "\tApplyStateChange RequiresStatePrimitiveTask\n";
 	}
 
-	virtual bool Execute(const Htn::TaskArguments& args)
+	virtual bool Execute(Htn::WorldState& state, const Htn::ParameterList& parameters)
 	{
-		std::cout << "\texecute RequiresStatePrimitiveTask: " << args.Parameters[0].IntValue
-		          << "\n";
+		std::cout << "\texecute RequiresStatePrimitiveTask: " << parameters[0].IntValue << "\n";
 		return true;
 	}
 };
@@ -63,21 +64,22 @@ public:
 	TestPrimitiveTask(void) = default;
 	virtual ~TestPrimitiveTask(void) = default;
 
-	virtual bool StateMeetsPreconditions(const Htn::TaskArguments& args)
+	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
+	                                     const Htn::ParameterList& parameters) const
 	{
 		std::cout << "\tStateMeetsPreconditions TestPrimitiveTask\n";
 		return true;
 	}
 
-	virtual void ApplyStateChange(Htn::TaskArguments& args)
+	virtual void ApplyStateChange(Htn::WorldState& state, const Htn::ParameterList& parameters)
 	{
 		std::cout << "\tApplyStateChange TestPrimitiveTask\n";
-		args.worldState = 1;
+		state = 1;
 	}
 
-	virtual bool Execute(const Htn::TaskArguments& args)
+	virtual bool Execute(Htn::WorldState& state, const Htn::ParameterList& parameters)
 	{
-		std::cout << "\texecute TestPrimitiveTask: " << args.Parameters[0].IntValue << "\n";
+		std::cout << "\texecute TestPrimitiveTask: " << parameters[0].IntValue << "\n";
 		return true;
 	}
 };
@@ -89,18 +91,20 @@ public:
 
 	virtual ~TestCompoundTaskA(void) = default;
 
-	virtual bool StateMeetsPreconditions(const Htn::TaskArguments& args)
+	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
+	                                     const Htn::ParameterList& parameters) const
 	{
 		std::cout << "\tStateMeetsPreconditions TestCompoundTaskA\n";
 		return true;
 	}
 
-	virtual bool Decompose(Htn::TaskCallList& taskCallList, const Htn::TaskArguments& args)
+	virtual bool Decompose(Htn::TaskCallList& taskCallList, const Htn::WorldState& state,
+	                       const Htn::ParameterList& parameters)
 	{
 		static TestPrimitiveTask testPrimitiveTask;
 		static Htn::Task primitiveTask(&testPrimitiveTask);
-		std::cout << "\tDecompose TestCompoundTaskA: " << args.Parameters[0].IntValue << "\n";
-		Htn::TaskCall taskCall = {&primitiveTask, args.Parameters};
+		std::cout << "\tDecompose TestCompoundTaskA: " << parameters[0].IntValue << "\n";
+		Htn::TaskCall taskCall = {&primitiveTask, parameters};
 		taskCallList.push_back(taskCall);
 		return true;
 	}
@@ -147,9 +151,8 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(taskCall);
 		testPlan.InitialCallList.push_back(taskCall);
-		Htn::TaskArguments args;
-		args.Parameters = params;
-		testCompoundTaskAA.Decompose(testPlan.InitialCallList, args);
+		Htn::WorldState nullState;
+		testCompoundTaskAA.Decompose(testPlan.InitialCallList, nullState, params);
 
 		Htn::Planner::Status status;
 		for (int i = 0; i < 10; i++)
@@ -288,6 +291,39 @@ TEST_CASE("Hierarchical Task Networks Planner")
 
 		REQUIRE(status == Htn::Planner::Status::Failed_NoPossiblePlan);
 		REQUIRE(testPlan.FinalCallList.size() == 0);
+		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
+		printTaskCallList(testPlan.FinalCallList);
+		std::cout << "\n\n";
+	}
+
+	SECTION("Test user-specified early break settings")
+	{
+		std::cout << "TEST: User-specified early break settings\n\n";
+		Htn::Planner testPlan;
+		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
+		testPlan.InitialCallList.push_back(requiresStateTaskCall);
+		testPlan.State = 0;
+		testPlan.BreakOnStackAction = false;
+		testPlan.BreakOnCompoundDecomposition = false;
+		testPlan.BreakOnPrimitiveApply = false;
+		testPlan.BreakOnFailedDecomposition = false;
+
+		int numIterations = 0;
+
+		Htn::Planner::Status status;
+		for (int i = 0; i < 12; i++)
+		{
+			numIterations++;
+			status = testPlan.PlanStep();
+			std::cout << "[" << i << "] Returned Status " << (int)status << "\n";
+			if (status == Htn::Planner::Status::PlanComplete ||
+			    status == Htn::Planner::Status::Failed_NoPossiblePlan)
+				break;
+		}
+
+		REQUIRE(status == Htn::Planner::Status::PlanComplete);
+		REQUIRE(testPlan.FinalCallList.size() == 2);
+		REQUIRE(numIterations == 1);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
 		printTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";

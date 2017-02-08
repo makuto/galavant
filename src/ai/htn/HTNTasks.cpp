@@ -11,7 +11,7 @@ int GoalTask::GetNumMethods(void)
 }
 
 bool GoalTask::DecomposeMethodAtIndex(TaskCallList& decomposition, int index,
-                                      ParameterList& parameters)
+                                      const ParameterList& parameters)
 {
 	Task* methodToDecompose = GetMethodAtIndex(index);
 	if (!methodToDecompose)

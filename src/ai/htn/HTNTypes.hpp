@@ -40,10 +40,4 @@ typedef std::vector<Parameter>::reverse_iterator ParameterListReverseIterator;
 
 // The arguments passed to most all Task functions
 typedef int WorldState;  // TODO
-// TODO: Should this struct exist, especially considering the user can't pass it to planner anyways?
-struct TaskArguments
-{
-	WorldState worldState;
-	ParameterList Parameters;
-};
 }
