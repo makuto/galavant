@@ -1,6 +1,7 @@
 #pragma once
 
 #include "HTNTypes.hpp"
+#include "../WorldState.hpp"
 
 #include <iostream>
 
@@ -28,9 +29,9 @@ private:
 	TaskList* Methods;
 
 public:
-	GoalTask(void) = default;
+	GoalTask() = default;
 
-	int GetNumMethods(void);
+	int GetNumMethods();
 	Task* GetMethodAtIndex(int index);
 
 	bool DecomposeMethodAtIndex(TaskCallList& decomposition, int index,
@@ -42,8 +43,8 @@ public:
 class CompoundTask
 {
 public:
-	CompoundTask(void) = default;
-	virtual ~CompoundTask(void) = default;
+	CompoundTask() = default;
+	virtual ~CompoundTask() = default;
 	virtual bool StateMeetsPreconditions(const WorldState& state,
 	                                     const ParameterList& parameters) const = 0;
 	virtual bool Decompose(TaskCallList& taskCallList, const WorldState& state,
@@ -53,8 +54,8 @@ public:
 class PrimitiveTask
 {
 public:
-	PrimitiveTask(void) = default;
-	virtual ~PrimitiveTask(void) = default;
+	PrimitiveTask() = default;
+	virtual ~PrimitiveTask() = default;
 	virtual bool StateMeetsPreconditions(const WorldState& state,
 	                                     const ParameterList& parameters) const = 0;
 	virtual void ApplyStateChange(WorldState& state, const ParameterList& parameters) = 0;
@@ -76,16 +77,16 @@ enum class TaskType
 //  only allow only one thing to be filled in for it
 struct Task
 {
-	Task(void) = delete;
+	Task() = delete;
 	Task(GoalTask* goal);
 	Task(CompoundTask* compound);
 	Task(PrimitiveTask* primitive);
 
-	TaskType GetType(void) const;
+	TaskType GetType() const;
 
-	GoalTask* GetGoal(void);
-	CompoundTask* GetCompound(void);
-	PrimitiveTask* GetPrimitive(void);
+	GoalTask* GetGoal();
+	CompoundTask* GetCompound();
+	PrimitiveTask* GetPrimitive();
 
 	friend std::ostream& operator<<(std::ostream& os, const Task& task);
 
@@ -102,6 +103,6 @@ private:
 
 std::ostream& operator<<(std::ostream& os, const Task& task);
 
-void printTaskList(const TaskList& tasks);
-void printTaskCallList(const TaskCallList& tasks);
+void PrintTaskList(const TaskList& tasks);
+void PrintTaskCallList(const TaskCallList& tasks);
 }

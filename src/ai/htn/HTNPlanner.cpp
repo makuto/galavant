@@ -36,10 +36,20 @@ bool DecomposeCompoundTask(TaskCallList& compoundDecompositions, CompoundTask* c
 	return compoundTask->Decompose(compoundDecompositions, state, parameters);
 }
 
+bool Planner::IsPlanRunning()
+{
+	return IsPlanRunning(CurrentStatus);
+}
+
+bool Planner::IsPlanRunning(Status status)
+{
+	return (status > Status::Running_EnumBegin && status < Status::Running_EnumEnd);
+}
+
 // When the stack is empty, find a goal task to push onto the task or add tasks as per usual
 // If any Decompositions or Preconditions fail, we must fail the entire plan because we have
 //  no alternate methods
-Planner::Status Planner::PlanStep_BottomLevel(void)
+Planner::Status Planner::PlanStep_BottomLevel()
 {
 	if (InitialCallList.empty())
 		return Status::Failed_NoTasks;
@@ -57,7 +67,7 @@ Planner::Status Planner::PlanStep_BottomLevel(void)
 	if (DebugPrint)
 	{
 		std::cout << "\nPlanStep()\nWorkingCallList.size() = " << WorkingCallList.size() << "\n";
-		printTaskCallList(WorkingCallList);
+		PrintTaskCallList(WorkingCallList);
 	}
 
 	for (TaskCallListIterator currentTaskCallIter = WorkingCallList.begin();
@@ -156,7 +166,7 @@ Planner::Status Planner::PlanStep_BottomLevel(void)
 	return Status::PlanComplete;
 }
 
-Planner::Status Planner::PlanStep_StackFrame(void)
+Planner::Status Planner::PlanStep_StackFrame()
 {
 	// Remember: If goal fails to decompose and goal is bottom of stack, fail
 	GoalDecompositionStack::iterator currentStackFrameIter = DecompositionStack.end() - 1;
@@ -166,7 +176,7 @@ Planner::Status Planner::PlanStep_StackFrame(void)
 	{
 		std::cout << "\nPlanStep()\ncurrentStackFrame.CallList.size() = "
 		          << currentStackFrame.CallList.size() << "\n";
-		printTaskCallList(currentStackFrame.CallList);
+		PrintTaskCallList(currentStackFrame.CallList);
 
 		std::cout << "Stack Depth: ";
 		for (unsigned int i = 0; i < DecompositionStack.size(); i++)
@@ -176,12 +186,12 @@ Planner::Status Planner::PlanStep_StackFrame(void)
 		{
 			std::cout << "----Fullstack working lists\n";
 			std::cout << "[0]\n";
-			printTaskCallList(WorkingCallList);
+			PrintTaskCallList(WorkingCallList);
 			int i = 1;
 			for (GoalDecomposition& stackFrame : DecompositionStack)
 			{
 				std::cout << "[" << i++ << "]\n";
-				printTaskCallList(stackFrame.CallList);
+				PrintTaskCallList(stackFrame.CallList);
 			}
 			std::cout << "----\n";
 		}
@@ -318,7 +328,7 @@ Planner::Status Planner::PlanStep_StackFrame(void)
 				std::cout << "currentStackFrame.CallList.size() = "
 				          << currentStackFrame.CallList.size() << "\n";
 				std::cout << "Decomposition:\n";
-				printTaskCallList(compoundDecompositions);
+				PrintTaskCallList(compoundDecompositions);
 			}
 			currentStackFrame.CallList.insert(currentStackFrame.CallList.begin(),
 			                                  compoundDecompositions.begin(),
@@ -360,9 +370,9 @@ Planner::Status Planner::PlanStep_StackFrame(void)
 		if (DebugPrint)
 		{
 			std::cout << "Collapsing stack frame. Adding List:\n";
-			printTaskCallList(currentStackFrame.FinalCallList);
+			PrintTaskCallList(currentStackFrame.FinalCallList);
 			std::cout << "To parent:\n";
-			printTaskCallList(*parentFinalCallList);
+			PrintTaskCallList(*parentFinalCallList);
 		}
 
 		parentFinalCallList->insert(parentFinalCallList->end(),
@@ -385,7 +395,7 @@ Planner::Status Planner::PlanStep_StackFrame(void)
 // TODO: Pool various task lists?
 // TODO: Pull more things out into functions, if possible. It's bad that whenever I make a change to
 // something I have to change it in two places
-Planner::Status Planner::PlanStep(void)
+Planner::Status Planner::PlanStep()
 {
 	Status status = Status::Failed_NoPossiblePlan;
 
@@ -407,10 +417,11 @@ Planner::Status Planner::PlanStep(void)
 		                            status == Status::Running_FailedGoalDecomposition)) ||
 		    (BreakOnFailedDecomposition && (status == Status::Running_FailedGoalDecomposition ||
 		                                    status == Status::Running_FailedMethodDecomposition)))
-			return status;
+			break;
 
-	} while (status >= Status::Running_EnumBegin && status <= Status::Running_EnumEnd);
+	} while (IsPlanRunning(status));
 
+	CurrentStatus = status;
 	return status;
 }
 }

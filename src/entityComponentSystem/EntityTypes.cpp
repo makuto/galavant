@@ -2,6 +2,8 @@
 
 #include "EntityTypes.hpp"
 
+namespace gv
+{
 const Entity NullEntity = 0;
 
 bool EntityComparator(Entity a, Entity b)
@@ -11,7 +13,7 @@ bool EntityComparator(Entity a, Entity b)
 
 void EntityListAppendList(EntityList& list, const EntityList& listToAdd)
 {
-	list.insert(list.begin(), listToAdd.begin(), listToAdd.end());
+	list.insert(list.end(), listToAdd.begin(), listToAdd.end());
 }
 
 void EntityListSort(EntityList& list)
@@ -102,4 +104,6 @@ bool EntityListFindEntity(EntityList& list, Entity entity)
 			return true;
 	}
 	return false;
+}
+
 }

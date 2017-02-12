@@ -5,7 +5,7 @@
 
 namespace Htn
 {
-int GoalTask::GetNumMethods(void)
+int GoalTask::GetNumMethods()
 {
 	return Methods ? Methods->size() : 0;
 }
@@ -53,22 +53,22 @@ Task::Task(PrimitiveTask* primitive)
 	Type = TaskType::Primitive;
 }
 
-TaskType Task::GetType(void) const
+TaskType Task::GetType() const
 {
 	return Type;
 }
 
-GoalTask* Task::GetGoal(void)
+GoalTask* Task::GetGoal()
 {
 	assert(Type == TaskType::Goal);
 	return Goal;
 }
-CompoundTask* Task::GetCompound(void)
+CompoundTask* Task::GetCompound()
 {
 	assert(Type == TaskType::Compound);
 	return Compound;
 }
-PrimitiveTask* Task::GetPrimitive(void)
+PrimitiveTask* Task::GetPrimitive()
 {
 	assert(Type == TaskType::Primitive);
 	return Primitive;
@@ -94,7 +94,7 @@ std::ostream& operator<<(std::ostream& os, const Task& task)
 	return os;
 }
 
-void printTaskList(const TaskList& tasks)
+void PrintTaskList(const TaskList& tasks)
 {
 	std::cout << "TaskList size = " << tasks.size() << " addr " << &tasks << ":\n";
 	for (unsigned int i = 0; i < tasks.size(); i++)
@@ -103,7 +103,7 @@ void printTaskList(const TaskList& tasks)
 	}
 }
 
-void printTaskCallList(const TaskCallList& tasks)
+void PrintTaskCallList(const TaskCallList& tasks)
 {
 	std::cout << "TaskCallList size = " << tasks.size() << " addr " << &tasks << ":\n";
 	for (unsigned int i = 0; i < tasks.size(); i++)

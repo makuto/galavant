@@ -1,0 +1,5 @@
+SubDir . src game ;
+
+Library libGalaGame : agent/PlanComponentManager.cpp ;
+
+MakeLocate libGalaGame.a : lib ;

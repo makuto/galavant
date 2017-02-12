@@ -1,8 +1,9 @@
-#ifndef ENTITYTYPES_H__
-#define ENTITYTYPES_H__
+#pragma once
 
 #include <vector>
 
+namespace gv
+{
 // An Entity is nothing but an ID. This ID is used to get components from ComponentManagers which
 // are assigned to the respective entity. Collections of components which are assigned to the same
 // Entity provide the entity's data and behaviors.
@@ -33,4 +34,4 @@ bool EntityListFindEntity(EntityList& list, Entity entity);
 // This should probably become an enum at some point.
 typedef unsigned int ComponentType;
 
-#endif /* end of include guard: ENTITYTYPES_H__ */
+};

@@ -6,7 +6,9 @@
 #include "../entityComponentSystem/ComponentManager.hpp"
 #include "../entityComponentSystem/PooledComponentManager.hpp"
 
-void TestEntityLists(void)
+using namespace gv;
+
+void TestEntityLists()
 {
 	EntityList testList = {1, 4, 2, 6, 3, 2, 1244};
 
@@ -22,7 +24,7 @@ void TestEntityLists(void)
 	std::cout << "Done\n\n";
 }
 
-void TestEntityCreationAndDestruction(void)
+void TestEntityCreationAndDestruction()
 {
 	class TestComponentManager : public ComponentManager
 	{
@@ -30,7 +32,7 @@ void TestEntityCreationAndDestruction(void)
 		EntityList Subscribers;
 
 	public:
-		TestComponentManager(void)
+		TestComponentManager()
 		{
 			Type = 1;
 		}
@@ -149,7 +151,7 @@ void TestEntityCreationAndDestruction(void)
 	std::cout << "Done\n\n";
 }
 
-void TestEntityComponentTypes(void)
+void TestEntityComponentTypes()
 {
 	struct TestComponent
 	{

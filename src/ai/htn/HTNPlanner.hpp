@@ -2,6 +2,7 @@
 
 #include "HTNTypes.hpp"
 #include "HTNTasks.hpp"
+#include "../WorldState.hpp"
 
 namespace Htn
 {
@@ -29,11 +30,20 @@ struct GoalDecomposition
 
 typedef std::vector<GoalDecomposition> GoalDecompositionStack;
 
-// TODO: Either make planner allow making multiple plans with the same instance, or make it clear
-// that it is for a single plan only
+/* -- Planner --
+Given the world state and a set of goal tasks, decompose them into a list of primitive tasks which,
+when executed, will result in the desired goal tasks being completed. Note that the initial goal
+task set can include compound and primitive tasks.
+
+TODO: Either make planner allow making multiple plans with the same instance, or make it clear
+that it is for a single plan only
+*/
 class Planner
 {
 public:
+	Planner() = default;
+	~Planner() = default;
+
 	WorldState State;
 
 	TaskCallList InitialCallList;
@@ -79,7 +89,12 @@ public:
 		PlanComplete
 	};
 
-	Status PlanStep(void);
+	bool IsPlanRunning();
+	bool IsPlanRunning(Status status);
+
+	Status CurrentStatus;
+
+	Status PlanStep();
 
 private:
 	GoalDecompositionStack DecompositionStack;
@@ -90,7 +105,7 @@ private:
 	// Copy of InitialCallList that Planner can fuck with
 	TaskCallList WorkingCallList;
 
-	Status PlanStep_StackFrame(void);
-	Status PlanStep_BottomLevel(void);
+	Status PlanStep_StackFrame();
+	Status PlanStep_BottomLevel();
 };
 };

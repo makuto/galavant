@@ -5,6 +5,7 @@
 #include <iostream>
 
 // This is some old code copied from the Horizon iteration. It's due for a rewrite.
+// TODO: Add standard iterator syntax (See ObjectPool.hpp)
 
 /* --FragmentedPool--
  * FragmentedPool holds any data. It initializes the requested amount of data on construction.
@@ -43,11 +44,11 @@ template <class R>
 class FragmentedPool
 {
 private:
-	std::vector<FragmentedPoolData<R> > pool;  // The pool data, stored in a STL vector
-	FragmentedPoolData<R>* firstFreeData;	  // The head of the free data linked list
-	FragmentedPoolData<R>* firstUsedData;	  // The head of the used data linked list
-	unsigned int size;						   // The size of the pool
-	unsigned int totalActiveData;			   // The number of active data in the pool
+	std::vector<FragmentedPoolData<R>> pool;  // The pool data itself
+	FragmentedPoolData<R>* firstFreeData;     // The head of the free data linked list
+	FragmentedPoolData<R>* firstUsedData;     // The head of the used data linked list
+	unsigned int size;                        // The size of the pool
+	unsigned int totalActiveData;             // The number of active data in the pool
 
 	// Prepare the data pointers as a linked list
 	void ResetPool()

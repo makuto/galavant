@@ -10,8 +10,8 @@
 class AlwaysFailPrimitiveTask : public Htn::PrimitiveTask
 {
 public:
-	AlwaysFailPrimitiveTask(void) = default;
-	virtual ~AlwaysFailPrimitiveTask(void) = default;
+	AlwaysFailPrimitiveTask() = default;
+	virtual ~AlwaysFailPrimitiveTask() = default;
 
 	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
 	                                     const Htn::ParameterList& parameters) const
@@ -35,8 +35,8 @@ public:
 class RequiresStatePrimitiveTask : public Htn::PrimitiveTask
 {
 public:
-	RequiresStatePrimitiveTask(void) = default;
-	virtual ~RequiresStatePrimitiveTask(void) = default;
+	RequiresStatePrimitiveTask() = default;
+	virtual ~RequiresStatePrimitiveTask() = default;
 
 	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
 	                                     const Htn::ParameterList& parameters) const
@@ -61,8 +61,8 @@ public:
 class TestPrimitiveTask : public Htn::PrimitiveTask
 {
 public:
-	TestPrimitiveTask(void) = default;
-	virtual ~TestPrimitiveTask(void) = default;
+	TestPrimitiveTask() = default;
+	virtual ~TestPrimitiveTask() = default;
 
 	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
 	                                     const Htn::ParameterList& parameters) const
@@ -87,9 +87,9 @@ public:
 class TestCompoundTaskA : public Htn::CompoundTask
 {
 public:
-	TestCompoundTaskA(void) = default;
+	TestCompoundTaskA() = default;
 
-	virtual ~TestCompoundTaskA(void) = default;
+	virtual ~TestCompoundTaskA() = default;
 
 	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
 	                                     const Htn::ParameterList& parameters) const
@@ -186,7 +186,7 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		REQUIRE(status == Htn::Planner::Status::PlanComplete);
 		REQUIRE(testPlan.FinalCallList.size() == 1);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
-		printTaskCallList(testPlan.FinalCallList);
+		PrintTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";
 	}
 
@@ -209,7 +209,7 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		REQUIRE(status == Htn::Planner::Status::PlanComplete);
 		REQUIRE(testPlan.FinalCallList.size() == 2);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
-		printTaskCallList(testPlan.FinalCallList);
+		PrintTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";
 	}
 
@@ -239,7 +239,7 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		REQUIRE(status == Htn::Planner::Status::PlanComplete);
 		REQUIRE(testPlan.FinalCallList.size() == 1);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
-		printTaskCallList(testPlan.FinalCallList);
+		PrintTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";
 	}
 
@@ -264,7 +264,7 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		REQUIRE(status == Htn::Planner::Status::PlanComplete);
 		REQUIRE(testPlan.FinalCallList.size() == 2);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
-		printTaskCallList(testPlan.FinalCallList);
+		PrintTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";
 	}
 
@@ -292,7 +292,7 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		REQUIRE(status == Htn::Planner::Status::Failed_NoPossiblePlan);
 		REQUIRE(testPlan.FinalCallList.size() == 0);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
-		printTaskCallList(testPlan.FinalCallList);
+		PrintTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";
 	}
 
@@ -325,7 +325,7 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		REQUIRE(testPlan.FinalCallList.size() == 2);
 		REQUIRE(numIterations == 1);
 		std::cout << "\n\nFinal Plan length: " << testPlan.FinalCallList.size() << "\n";
-		printTaskCallList(testPlan.FinalCallList);
+		PrintTaskCallList(testPlan.FinalCallList);
 		std::cout << "\n\n";
 	}
 }

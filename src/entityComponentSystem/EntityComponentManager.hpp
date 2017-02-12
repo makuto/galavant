@@ -1,11 +1,12 @@
-#ifndef ENTITYCOMPONENTMANAGER_H__
-#define ENTITYCOMPONENTMANAGER_H__
+#pragma once
 
 #include <map>
 
 #include "EntityTypes.hpp"
 #include "ComponentManager.hpp"
 
+namespace gv
+{
 /* --EntityComponentManager--
 EntityComponentManager is intended to be a very minimal managing class for the Entity Component
 System. Its primary task is to facilitate the creation and destruction of Entities.
@@ -61,11 +62,10 @@ public:
 	// Destroy all entities which have been marked for destruction. Because an entity is just an ID
 	// and a collection of components, this function must notify all ComponentManagers that the
 	// Entity should be unsubscribed from their services.
-	void DestroyEntitiesPendingDestruction(void);
+	void DestroyEntitiesPendingDestruction();
 
 	// Destroys all entities that were created by this EntityComponentManager (i.e. all entities in
 	// the ActiveEntities list)
-	void DestroyAllEntities(void);
+	void DestroyAllEntities();
 };
-
-#endif /* end of include guard: ENTITYCOMPONENTMANAGER_H__ */
+};

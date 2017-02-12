@@ -1,5 +1,7 @@
 #include "EntityComponentManager.hpp"
 
+namespace gv
+{
 Entity EntityComponentManager::NextNewEntity = 1;
 
 EntityComponentManager::EntityComponentManager()
@@ -80,7 +82,7 @@ void EntityComponentManager::UnsubscribeEntitiesFromAllManagers(EntityList &enti
 // Destroy all entities which have been marked for destruction. Because an entity is just an ID
 // and a collection of components, this function must notify all ComponentManagers that the
 // Entity should be unsubscribed from their services.
-void EntityComponentManager::DestroyEntitiesPendingDestruction(void)
+void EntityComponentManager::DestroyEntitiesPendingDestruction()
 {
 	if (!EntitiesPendingDestruction.empty())
 	{
@@ -98,7 +100,7 @@ void EntityComponentManager::DestroyEntitiesPendingDestruction(void)
 
 // Destroys all entities that were created by this EntityComponentManager (i.e. all entities in
 // the ActiveEntities list)
-void EntityComponentManager::DestroyAllEntities(void)
+void EntityComponentManager::DestroyAllEntities()
 {
 	// Mark all active entities as pending destruction. I do this because if I just destroyed
 	// ActiveEntities, then EntitiesPendingDestruction could have entities which have already been
@@ -110,4 +112,5 @@ void EntityComponentManager::DestroyAllEntities(void)
 
 	ActiveEntities.clear();  // this should be empty anyways
 	EntitiesPendingDestruction.clear();
+}
 }

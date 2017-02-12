@@ -1,5 +1,4 @@
-#ifndef POOLEDCOMPONENTMANAGER_H__
-#define POOLEDCOMPONENTMANAGER_H__
+#pragma once
 
 // TODO: Handle full pool better (will be done when FragmentedPool is replaced)
 #include <cassert>
@@ -10,6 +9,8 @@
 #include "EntityTypes.hpp"
 #include "ComponentManager.hpp"
 
+namespace gv
+{
 /* --PooledComponentManager--
 PooledComponentManager is a general purpose PooledComponentManager that assumes you're managing your
 components in a standard way.
@@ -58,7 +59,7 @@ private:
 	EntityList Subscribers;
 
 	// TODO: Replace FragmentedPool with a better pool
-	FragmentedPool<PooledComponent<T> > PooledComponents;
+	FragmentedPool<PooledComponent<T>> PooledComponents;
 
 protected:
 	typedef int FragmentedPoolIterator;
@@ -69,7 +70,7 @@ protected:
 	{
 		for (int i = 0; i < PooledComponents.GetPoolSize(); i++)
 		{
-			FragmentedPoolData<PooledComponent<T> >* currentPooledComponent =
+			FragmentedPoolData<PooledComponent<T>>* currentPooledComponent =
 			    PooledComponents.GetActiveDataAtIndex(i);
 
 			if (currentPooledComponent)
@@ -90,7 +91,7 @@ protected:
 		it++;
 		for (; it < PooledComponents.GetPoolSize(); it++)
 		{
-			FragmentedPoolData<PooledComponent<T> >* currentPooledComponent =
+			FragmentedPoolData<PooledComponent<T>>* currentPooledComponent =
 			    PooledComponents.GetActiveDataAtIndex(it);
 
 			if (currentPooledComponent)
@@ -103,7 +104,7 @@ protected:
 
 	PooledComponent<T>* GetComponent(FragmentedPoolIterator& it)
 	{
-		FragmentedPoolData<PooledComponent<T> >* pooledComponent =
+		FragmentedPoolData<PooledComponent<T>>* pooledComponent =
 		    PooledComponents.GetActiveDataAtIndex(it);
 		if (pooledComponent)
 			return &pooledComponent->data;
@@ -112,12 +113,14 @@ protected:
 
 	// Do whatever your custom manager does for subscribing here.
 	// The components are already in the pool.
+	// It is safe to subscribe and unsubscribe components in this function
 	virtual void SubscribeEntitiesInternal(std::vector<PooledComponent<T>*>& components)
 	{
 	}
 
 	// Do whatever your custom manager does for unsubscribing here.
 	// The components are still in the subscription list and pool
+	// It is safe to subscribe and unsubscribe components in this function
 	virtual void UnsubscribeEntitiesInternal(std::vector<PooledComponent<T>*>& components)
 	{
 	}
@@ -133,11 +136,11 @@ public:
 	}
 
 	// If the entity is already subscribed, the input component will be tossed out
-	void SubscribeEntities(const std::vector<PooledComponent<T> >& components)
+	void SubscribeEntities(const std::vector<PooledComponent<T>>& components)
 	{
 		std::vector<PooledComponent<T>*> newSubscribers(components.size());
 
-		for (typename std::vector<PooledComponent<T> >::const_iterator it = components.begin();
+		for (typename std::vector<PooledComponent<T>>::const_iterator it = components.begin();
 		     it != components.end(); ++it)
 		{
 			const PooledComponent<T> currentPooledComponent = (*it);
@@ -146,7 +149,7 @@ public:
 			if (EntityListFindEntity(Subscribers, currentPooledComponent.entity))
 				continue;
 
-			FragmentedPoolData<PooledComponent<T> >* newPooledComponent =
+			FragmentedPoolData<PooledComponent<T>>* newPooledComponent =
 			    PooledComponents.GetNewData();
 
 			// Pool is full!
@@ -182,7 +185,7 @@ public:
 
 			for (int i = 0; i < PooledComponents.GetPoolSize(); i++)
 			{
-				FragmentedPoolData<PooledComponent<T> >* currentPooledComponent =
+				FragmentedPoolData<PooledComponent<T>>* currentPooledComponent =
 				    PooledComponents.GetActiveDataAtIndex(i);
 
 				if (currentPooledComponent && currentPooledComponent->data.entity == currentEntity)
@@ -191,6 +194,9 @@ public:
 		}
 
 		// Let child do whatever it needs to unsubscribe the given entities
+		// Note that the child can actually unsubscribe entities in their function. This will
+		// currently only mean we might try to double-unsubscribe in the code below, which is not
+		// bad
 		UnsubscribeEntitiesInternal(unsubscribers);
 
 		// Remove the entities from pool (freeing memory)
@@ -201,7 +207,7 @@ public:
 
 			for (int i = 0; i < PooledComponents.GetPoolSize(); i++)
 			{
-				FragmentedPoolData<PooledComponent<T> >* currentPooledComponent =
+				FragmentedPoolData<PooledComponent<T>>* currentPooledComponent =
 				    PooledComponents.GetActiveDataAtIndex(i);
 
 				if (currentPooledComponent && currentPooledComponent->data.entity == currentEntity)
@@ -213,11 +219,10 @@ public:
 		EntityListRemoveNonUniqueEntitiesInSuspect(entitiesToUnsubscribe, Subscribers);
 	}
 
-	void Reset(void)
+	void Reset()
 	{
 		PooledComponents.Clear();
 		Subscribers.clear();
 	}
 };
-
-#endif /* end of include guard: POOLEDCOMPONENTMANAGER_H__ */
+}

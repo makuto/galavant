@@ -29,7 +29,7 @@ struct Parameter
 		float FloatValue;
 		bool BoolValue;
 
-		Entity EntityValue;
+		gv::Entity EntityValue;
 	};
 };
 
@@ -39,5 +39,5 @@ typedef std::vector<Parameter>::const_iterator ParameterListConstIterator;
 typedef std::vector<Parameter>::reverse_iterator ParameterListReverseIterator;
 
 // The arguments passed to most all Task functions
-typedef int WorldState;  // TODO
+typedef int WorldState;  // TODO: replace with AI WorldState from WorldState.hpp
 }

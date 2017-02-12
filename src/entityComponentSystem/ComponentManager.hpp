@@ -1,8 +1,9 @@
-#ifndef COMPONENTMANAGER_H__
-#define COMPONENTMANAGER_H__
+#pragma once
 
 #include "EntityTypes.hpp"
 
+namespace gv
+{
 // Base class for all ComponentManagers. Note that it is intended to be a very minimal interface
 // because the Entity Component System is designed to be minimally polymorphic. This is so it is
 // more obvious when things happen. It also reduces the amount of boilerplate needed when creating a
@@ -10,6 +11,7 @@
 class ComponentManager
 {
 protected:
+	// You should set this type in your constructor
 	ComponentType Type;
 
 public:
@@ -17,7 +19,7 @@ public:
 
 	virtual void UnsubscribeEntities(const EntityList& entities);
 
-	ComponentType GetType(void);
+	ComponentType GetType();
 };
 
-#endif /* end of include guard: COMPONENTMANAGER_H__ */
+};

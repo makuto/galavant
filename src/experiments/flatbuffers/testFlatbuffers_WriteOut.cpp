@@ -60,7 +60,7 @@ char *readBinary(const char *filename)
 	return nullptr;
 }
 
-void testFlatbufferToJSON(void)
+void testFlatbufferToJSON()
 {
 	const char *outputFilename = "Output.json";
 	const char *flatbufferFilename = "SavedHelloForWrite.bin";

@@ -39,12 +39,12 @@ public:
 		NextFreeData = 0;
 	}
 
-	typename PoolContainer<T>::iterator begin(void)
+	typename PoolContainer<T>::iterator begin()
 	{
 		return Pool.begin();
 	}
 
-	typename PoolContainer<T>::iterator end(void)
+	typename PoolContainer<T>::iterator end()
 	{
 		// Only return the range of data which are actually active in the pool
 		return Pool.begin() + NextFreeData;
@@ -55,19 +55,19 @@ public:
 		return 0;  // TODO
 	}
 
-	unsigned int GetSize(void)
+	unsigned int GetSize()
 	{
 		return Pool.size();
 	}
 
-	unsigned int GetNumActiveElements(void)
+	unsigned int GetNumActiveElements()
 	{
 		// Because NextFreeData is the index of the free data nearest to the last active data, it is
 		// equivalent to the number of active data
 		return NextFreeData;
 	}
 
-	T* GetNewData(void)
+	T* GetNewData()
 	{
 		T* newData = GetUnsafe(NextFreeData);
 		NextFreeData++;
