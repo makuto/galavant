@@ -22,6 +22,8 @@ To build with jam, first install jam:
 `sudo apt-get install jam`
 Then run jam (in galavant/ is fine):
 `jam`
+For vastly faster build times, add `-j` plus the number of CPU cores on your machine, e.g.:
+`jam -j4`
 
 ## Dependencies
 

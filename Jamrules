@@ -1,4 +1,3 @@
-
 ##
 ## Compiler
 ##
@@ -28,9 +27,31 @@ LINK = clang++ ;
 #C++FLAGS = -std=c++11 -stdlib=libc++ -fPIC -g -Og -Wall -Wextra ; # Required arguments for Unreal
 C++FLAGS = -std=c++11 -fPIC -g -Og -Wall -Wextra ;                # Required arguments for tests
 
-OBJECTC++FLAGS = -std=c++11 -lstdc++ -g -Og ;
-
 HDRS = thirdParty/flatbuffers/include ;
 
 # TODO: add project-specific filetype rules for things like flatbuffer .json compilation (see "UserObject rule":
 # 	https://swarm.workshop.perforce.com/view/guest/perforce_software/jam/src/Jamfile.html ) ?
+
+# TODO: Add variable that allows user to swap between compiling Unreal
+#  and compiling testse on the command line (see above page under "Variables
+#  used in Building Executables and Libraries)
+
+# TODO: [Hacked done] Calling jam -dc indicates that it thinks many unmodified files are newer, 
+#  which is why it's building way more than it should be. Further investigation is needed, as if it 
+#  has nothing to build it should complete almost instantly
+#  
+#  The problem was Library deletes .o files, preventing Jam from knowing what needs rebuilt
+#   (see https://swarm.workshop.perforce.com/view/guest/perforce_software/jam/src/Jambase.html)
+#  Actually, because I'm moving libs to lib/, Jam doesn't know to look there for .o
+#   (see http://maillist.perforce.com/pipermail/jamming/2004-November/004235.html)
+#  Motherfucker seems to be broken no matter fucking what (see src/Jamfile commented lines)
+#
+#  Update: Something seems fucked with the Library or LibraryFromObjects rules. Instead of diving
+#   deeper, I'm going to just add this flag which will guarantee Jam won't rely on reading the libs
+#   to find "missing" objects
+#  (as an aside, https://swarm.workshop.perforce.com/view/guest/perforce_software/jam/src/Jam.html
+#   was helpful, esp 'jam -dx')
+KEEPOBJS = true ; # This doesn't actually fix anything, though it seems like it should
+NOARSCAN = true ; # This actually fixes the problem
+#AR = ar rUu ; # I was thinking maybe the AR command was wrong (always outputting deterministically)
+               # It doesn't seem like this is the problem though
