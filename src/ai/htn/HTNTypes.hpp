@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../entityComponentSystem/EntityTypes.hpp"
+#include "../world/Position.hpp"
 
 namespace Htn
 {
@@ -18,7 +19,8 @@ struct Parameter
 		Bool,
 
 		// Game-specific
-		Entity
+		Entity,
+		Position
 	};
 
 	ParamType Type;
@@ -30,7 +32,13 @@ struct Parameter
 		bool BoolValue;
 
 		gv::Entity EntityValue;
+		gv::Position PositionValue;
 	};
+
+	Parameter()
+	{
+		new(&PositionValue) gv::Position();
+	}
 };
 
 typedef std::vector<Parameter> ParameterList;
@@ -38,6 +46,17 @@ typedef std::vector<Parameter>::iterator ParameterListIterator;
 typedef std::vector<Parameter>::const_iterator ParameterListConstIterator;
 typedef std::vector<Parameter>::reverse_iterator ParameterListReverseIterator;
 
-// The arguments passed to most all Task functions
-typedef int WorldState;  // TODO: replace with AI WorldState from WorldState.hpp
+struct TaskEvent
+{
+	enum class TaskResult
+	{
+		None = 0,
+
+		TaskSucceeded,
+		TaskFailed
+	};
+
+	TaskResult Result;
+	gv::Entity entity;
+};
 }

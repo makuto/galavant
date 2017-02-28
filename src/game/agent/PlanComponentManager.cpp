@@ -2,6 +2,8 @@
 
 #include "../../entityComponentSystem/PooledComponentManager.hpp"
 
+namespace gv
+{
 PlanComponentManager::PlanComponentManager() : gv::PooledComponentManager<PlanComponentData>(100)
 {
 }
@@ -10,12 +12,18 @@ PlanComponentManager::~PlanComponentManager()
 {
 }
 
-void PlanComponentManager::Initialize()
+void PlanComponentManager::Initialize(WorldStateManager* newWorldStateManager)
 {
+	worldStateManager = newWorldStateManager;
 }
 
 void PlanComponentManager::Update(float deltaSeconds)
 {
+	EntityList entitiesToUnsubscribe;
+
+	if (!worldStateManager)
+		return;
+
 	// TODO: Adding true iterator support to pool will drastically help damning this to hell
 	gv::PooledComponentManager<PlanComponentData>::FragmentedPoolIterator it =
 	    gv::PooledComponentManager<PlanComponentData>::NULL_POOL_ITERATOR;
@@ -28,32 +36,74 @@ void PlanComponentManager::Update(float deltaSeconds)
 			continue;
 
 		Htn::Planner& componentPlanner = currentComponent->data.Planner;
+		Entity currentEntity = currentComponent->entity;
 
-		// For now, don't follow plan, just ignore finished/failed plans
-		if (!componentPlanner.IsPlanRunning())
-			continue;
-
-		Htn::Planner::Status status = componentPlanner.PlanStep();
-		if (!componentPlanner.IsPlanRunning())
+		if (!componentPlanner.IsPlannerRunning())
 		{
-			if (status == Htn::Planner::Status::PlanComplete)
+			if (componentPlanner.CurrentStatus == Htn::Planner::Status::PlanComplete)
 			{
-				std::cout << "PlanComponentManager: Sucessful plan for Entity "
-				          << currentComponent->entity << "! Final Call List:\n";
-				Htn::PrintTaskCallList(componentPlanner.FinalCallList);
-			}
+				Htn::TaskCallList::iterator currentStep = componentPlanner.FinalCallList.begin();
 
-			if (status < Htn::Planner::Status::Running_EnumBegin)
+				if (currentStep != componentPlanner.FinalCallList.end())
+				{
+					Htn::ParameterList& parameters = (*currentStep).Parameters;
+					Htn::Task* task = (*currentStep).TaskToCall;
+					gv::WorldState worldState =
+					    worldStateManager->GetWorldStateForAgent(currentEntity);
+
+					// We are ignorant of type here because the plan consists only of primitives at
+					// this point
+					if (task)
+						task->GetPrimitive()->Execute(worldState, parameters);
+
+					// Remove the current step because we've executed it.
+					// TODO: Only remove if the step has finished; handle failed steps
+					// For now, just edit FinalCallList directly
+					componentPlanner.FinalCallList.erase(currentStep);
+				}
+				else
+				{
+					// We have finished all tasks; remove this entity from the manager
+					// TODO: We'll eventually hook up some event shit
+					entitiesToUnsubscribe.push_back(currentEntity);
+				}
+			}
+			else
+				entitiesToUnsubscribe.push_back(currentEntity);
+		}
+		else
+		{
+			Htn::Planner::Status status = componentPlanner.PlanStep();
+			if (!componentPlanner.IsPlannerRunning())
 			{
-				std::cout << "PlanComponentManager: Failed plan for Entity "
-				          << currentComponent->entity << "! Initial Call List:\n";
-				Htn::PrintTaskCallList(componentPlanner.InitialCallList);
+				if (status == Htn::Planner::Status::PlanComplete)
+				{
+					std::cout << "PlanComponentManager: Sucessful plan for Entity "
+					          << currentComponent->entity << "! Final Call List:\n";
+					Htn::PrintTaskCallList(componentPlanner.FinalCallList);
+					// We'll execute the plan next Update()
+				}
+
+				if (status < Htn::Planner::Status::Running_EnumBegin)
+				{
+					std::cout << "PlanComponentManager: Failed plan for Entity "
+					          << currentComponent->entity << " with code " << int(status)
+					          << "! Initial Call List:\n";
+					Htn::PrintTaskCallList(componentPlanner.InitialCallList);
+
+					// Plan failed, remove entity
+					// TODO: Hook up  events
+					entitiesToUnsubscribe.push_back(currentEntity);
+				}
 			}
 		}
 	}
+
+	UnsubscribeEntities(entitiesToUnsubscribe);
 }
 
-void PlanComponentManager::SubscribeEntitiesInternal(PlanComponentRefList& components)
+void PlanComponentManager::SubscribeEntitiesInternal(const EntityList& subscribers,
+                                                     PlanComponentRefList& components)
 {
 	for (gv::PooledComponent<PlanComponentData>* currentComponent : components)
 	{
@@ -61,14 +111,20 @@ void PlanComponentManager::SubscribeEntitiesInternal(PlanComponentRefList& compo
 			continue;
 
 		Htn::Planner& planner = currentComponent->data.Planner;
-		Htn::TaskCallList& goalCallList = currentComponent->data.Goals;
+		Htn::TaskCallList& goalCallList = currentComponent->data.Tasks;
 
+		planner.State = worldStateManager->GetWorldStateForAgent(currentComponent->entity);
 		planner.InitialCallList.insert(planner.InitialCallList.end(), goalCallList.begin(),
 		                               goalCallList.end());
+
+		// TODO: This is not kosher
+		planner.CurrentStatus = Htn::Planner::Status::Running_EnumBegin;
+		planner.DebugPrint = true;
 	}
 }
 
-void PlanComponentManager::UnsubscribeEntitiesInternal(PlanComponentRefList& components)
+void PlanComponentManager::UnsubscribeEntitiesInternal(const EntityList& unsubscribers,
+                                                       PlanComponentRefList& components)
 {
 	for (gv::PooledComponent<PlanComponentData>* currentComponent : components)
 	{
@@ -77,4 +133,5 @@ void PlanComponentManager::UnsubscribeEntitiesInternal(PlanComponentRefList& com
 
 		// Perform unsubscription
 	}
+}
 }

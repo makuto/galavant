@@ -43,13 +43,14 @@
             "working_dir": "../../../src/experiments"
         },
         {
-            "name": "Jam",
-            "shell_cmd": "jam"
+            "name": "Jam Current Directory",
+            "shell_cmd": "jam -j4 -q"
         },
         // Assume GalavantUnreal is cloned as a submodule or linked (I can't remember if I actually made it a submodule)
         {
-            "name": "Jam",
-            "shell_cmd": "jam"
+            "name": "Jam Unreal",
+            "shell_cmd": "jam -j4 -q -a libGalavant.a libGalaThirdPartyWrapper.a libGalaEntityComponent.a libGalaAi.a libGalaWorld.a libGalaGame.a",
+            "working_dir": "../../../../galavant"
         }
     ],
 

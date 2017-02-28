@@ -37,17 +37,32 @@ void GoalTask::SetMethods(TaskList* newMethods)
 
 Task::Task(GoalTask* goal)
 {
+	Initialize(goal);
+}
+
+Task::Task(CompoundTask* compound)
+{
+	Initialize(compound);
+}
+
+Task::Task(PrimitiveTask* primitive)
+{
+	Initialize(primitive);
+}
+
+void Task::Initialize(GoalTask* goal)
+{
 	Goal = goal;
 	Type = TaskType::Goal;
 }
 
-Task::Task(CompoundTask* compound)
+void Task::Initialize(CompoundTask* compound)
 {
 	Compound = compound;
 	Type = TaskType::Compound;
 }
 
-Task::Task(PrimitiveTask* primitive)
+void Task::Initialize(PrimitiveTask* primitive)
 {
 	Primitive = primitive;
 	Type = TaskType::Primitive;

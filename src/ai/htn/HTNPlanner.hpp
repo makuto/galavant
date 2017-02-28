@@ -18,11 +18,11 @@ struct GoalDecomposition
 	TaskCallList CallList;
 
 	// The state and parameters at the time this decomposition took place
-	WorldState InitialState;
+	gv::WorldState InitialState;
 	ParameterList Parameters;
 
 	// State while the method is being decomposed
-	WorldState WorkingState;
+	gv::WorldState WorkingState;
 
 	// The result of this stack frame decomposition (only primitive tasks remaining)
 	TaskCallList FinalCallList;
@@ -44,7 +44,7 @@ public:
 	Planner() = default;
 	~Planner() = default;
 
-	WorldState State;
+	gv::WorldState State;
 
 	TaskCallList InitialCallList;
 
@@ -89,8 +89,8 @@ public:
 		PlanComplete
 	};
 
-	bool IsPlanRunning();
-	bool IsPlanRunning(Status status);
+	bool IsPlannerRunning();
+	bool IsPlannerRunning(Status status);
 
 	Status CurrentStatus;
 
@@ -100,7 +100,7 @@ private:
 	GoalDecompositionStack DecompositionStack;
 
 	// Used for when all goals have been decomposed to manage mutable state
-	WorldState StacklessState;
+	gv::WorldState StacklessState;
 
 	// Copy of InitialCallList that Planner can fuck with
 	TaskCallList WorkingCallList;

@@ -1,5 +1,7 @@
 SubDir . src ai ;
 
-Library libGalaAi : htn/HTNTasks.cpp htn/HTNPlanner.cpp ;
+Library libGalaAi : htn/HTNTasks.cpp htn/HTNPlanner.cpp WorldState.cpp ;
+
+LinkLibraries LibGalaAi : LibGalaWorld ;
 
 MakeLocate libGalaAi.a : lib ;

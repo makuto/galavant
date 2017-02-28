@@ -45,9 +45,9 @@ class CompoundTask
 public:
 	CompoundTask() = default;
 	virtual ~CompoundTask() = default;
-	virtual bool StateMeetsPreconditions(const WorldState& state,
+	virtual bool StateMeetsPreconditions(const gv::WorldState& state,
 	                                     const ParameterList& parameters) const = 0;
-	virtual bool Decompose(TaskCallList& taskCallList, const WorldState& state,
+	virtual bool Decompose(TaskCallList& taskCallList, const gv::WorldState& state,
 	                       const ParameterList& parameters) = 0;
 };
 
@@ -56,13 +56,13 @@ class PrimitiveTask
 public:
 	PrimitiveTask() = default;
 	virtual ~PrimitiveTask() = default;
-	virtual bool StateMeetsPreconditions(const WorldState& state,
+	virtual bool StateMeetsPreconditions(const gv::WorldState& state,
 	                                     const ParameterList& parameters) const = 0;
-	virtual void ApplyStateChange(WorldState& state, const ParameterList& parameters) = 0;
+	virtual void ApplyStateChange(gv::WorldState& state, const ParameterList& parameters) = 0;
 	// Returns whether or not starting the task was successful (NOT whether the task completed)
 	// Execution should (when completed etc.) modify the world state the same as ApplyStateChange
 	// would. Call that function for extra safety
-	virtual bool Execute(WorldState& state, const ParameterList& parameters) = 0;
+	virtual bool Execute(gv::WorldState& state, const ParameterList& parameters) = 0;
 };
 
 enum class TaskType
@@ -77,10 +77,14 @@ enum class TaskType
 //  only allow only one thing to be filled in for it
 struct Task
 {
-	Task() = delete;
+	Task() = default;
 	Task(GoalTask* goal);
 	Task(CompoundTask* compound);
 	Task(PrimitiveTask* primitive);
+
+	void Initialize(GoalTask* goal);
+	void Initialize(CompoundTask* compound);
+	void Initialize(PrimitiveTask* primitive);
 
 	TaskType GetType() const;
 

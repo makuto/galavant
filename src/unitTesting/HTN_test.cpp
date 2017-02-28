@@ -13,19 +13,19 @@ public:
 	AlwaysFailPrimitiveTask() = default;
 	virtual ~AlwaysFailPrimitiveTask() = default;
 
-	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
+	virtual bool StateMeetsPreconditions(const gv::WorldState& state,
 	                                     const Htn::ParameterList& parameters) const
 	{
 		std::cout << "\tStateMeetsPreconditions AlwaysFailPrimitiveTask\n";
 		return false;
 	}
 
-	virtual void ApplyStateChange(Htn::WorldState& state, const Htn::ParameterList& parameters)
+	virtual void ApplyStateChange(gv::WorldState& state, const Htn::ParameterList& parameters)
 	{
 		std::cout << "\tApplyStateChange AlwaysFailPrimitiveTask\n";
 	}
 
-	virtual bool Execute(Htn::WorldState& state, const Htn::ParameterList& parameters)
+	virtual bool Execute(gv::WorldState& state, const Htn::ParameterList& parameters)
 	{
 		std::cout << "\texecute AlwaysFailPrimitiveTask: " << parameters[0].IntValue << "\n";
 		return false;
@@ -38,20 +38,20 @@ public:
 	RequiresStatePrimitiveTask() = default;
 	virtual ~RequiresStatePrimitiveTask() = default;
 
-	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
+	virtual bool StateMeetsPreconditions(const gv::WorldState& state,
 	                                     const Htn::ParameterList& parameters) const
 	{
-		std::cout << "\tStateMeetsPreconditions RequiresStatePrimitiveTask state = " << state
-		          << "\n";
-		return state == 1;
+		std::cout << "\tStateMeetsPreconditions RequiresStatePrimitiveTask state.TestStateChange = "
+		          << state.TestStateChange << "\n";
+		return state.TestStateChange == 1;
 	}
 
-	virtual void ApplyStateChange(Htn::WorldState& state, const Htn::ParameterList& parameters)
+	virtual void ApplyStateChange(gv::WorldState& state, const Htn::ParameterList& parameters)
 	{
 		std::cout << "\tApplyStateChange RequiresStatePrimitiveTask\n";
 	}
 
-	virtual bool Execute(Htn::WorldState& state, const Htn::ParameterList& parameters)
+	virtual bool Execute(gv::WorldState& state, const Htn::ParameterList& parameters)
 	{
 		std::cout << "\texecute RequiresStatePrimitiveTask: " << parameters[0].IntValue << "\n";
 		return true;
@@ -64,20 +64,20 @@ public:
 	TestPrimitiveTask() = default;
 	virtual ~TestPrimitiveTask() = default;
 
-	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
+	virtual bool StateMeetsPreconditions(const gv::WorldState& state,
 	                                     const Htn::ParameterList& parameters) const
 	{
 		std::cout << "\tStateMeetsPreconditions TestPrimitiveTask\n";
 		return true;
 	}
 
-	virtual void ApplyStateChange(Htn::WorldState& state, const Htn::ParameterList& parameters)
+	virtual void ApplyStateChange(gv::WorldState& state, const Htn::ParameterList& parameters)
 	{
 		std::cout << "\tApplyStateChange TestPrimitiveTask\n";
-		state = 1;
+		state.TestStateChange = 1;
 	}
 
-	virtual bool Execute(Htn::WorldState& state, const Htn::ParameterList& parameters)
+	virtual bool Execute(gv::WorldState& state, const Htn::ParameterList& parameters)
 	{
 		std::cout << "\texecute TestPrimitiveTask: " << parameters[0].IntValue << "\n";
 		return true;
@@ -91,14 +91,14 @@ public:
 
 	virtual ~TestCompoundTaskA() = default;
 
-	virtual bool StateMeetsPreconditions(const Htn::WorldState& state,
+	virtual bool StateMeetsPreconditions(const gv::WorldState& state,
 	                                     const Htn::ParameterList& parameters) const
 	{
 		std::cout << "\tStateMeetsPreconditions TestCompoundTaskA\n";
 		return true;
 	}
 
-	virtual bool Decompose(Htn::TaskCallList& taskCallList, const Htn::WorldState& state,
+	virtual bool Decompose(Htn::TaskCallList& taskCallList, const gv::WorldState& state,
 	                       const Htn::ParameterList& parameters)
 	{
 		static TestPrimitiveTask testPrimitiveTask;
@@ -151,7 +151,7 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(taskCall);
 		testPlan.InitialCallList.push_back(taskCall);
-		Htn::WorldState nullState;
+		gv::WorldState nullState;
 		testCompoundTaskAA.Decompose(testPlan.InitialCallList, nullState, params);
 
 		Htn::Planner::Status status;
@@ -250,7 +250,7 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
 		testPlan.InitialCallList.push_back(requiresStateTaskCall);
-		testPlan.State = 0;
+		testPlan.State.TestStateChange = 0;
 
 		Htn::Planner::Status status;
 		for (int i = 0; i < 12; i++)
@@ -277,7 +277,7 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(requiresStateTaskCall);
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
-		testPlan.State = 0;
+		testPlan.State.TestStateChange = 0;
 
 		Htn::Planner::Status status;
 		for (int i = 0; i < 12; i++)
@@ -302,7 +302,7 @@ TEST_CASE("Hierarchical Task Networks Planner")
 		Htn::Planner testPlan;
 		testPlan.InitialCallList.push_back(nestedGoalTaskCall);
 		testPlan.InitialCallList.push_back(requiresStateTaskCall);
-		testPlan.State = 0;
+		testPlan.State.TestStateChange = 0;
 		testPlan.BreakOnStackAction = false;
 		testPlan.BreakOnCompoundDecomposition = false;
 		testPlan.BreakOnPrimitiveApply = false;

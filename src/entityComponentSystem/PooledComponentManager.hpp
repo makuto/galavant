@@ -114,15 +114,22 @@ protected:
 	// Do whatever your custom manager does for subscribing here.
 	// The components are already in the pool.
 	// It is safe to subscribe and unsubscribe components in this function
-	virtual void SubscribeEntitiesInternal(std::vector<PooledComponent<T>*>& components)
+	virtual void SubscribeEntitiesInternal(const EntityList& subscribers,
+	                                       std::vector<PooledComponent<T>*>& components)
 	{
 	}
 
 	// Do whatever your custom manager does for unsubscribing here.
 	// The components are still in the subscription list and pool
 	// It is safe to subscribe and unsubscribe components in this function
-	virtual void UnsubscribeEntitiesInternal(std::vector<PooledComponent<T>*>& components)
+	virtual void UnsubscribeEntitiesInternal(const EntityList& unsubscribers,
+	                                         std::vector<PooledComponent<T>*>& components)
 	{
+	}
+
+	const EntityList& GetSubscriberList() const
+	{
+		return Subscribers;
 	}
 
 public:
@@ -138,7 +145,8 @@ public:
 	// If the entity is already subscribed, the input component will be tossed out
 	void SubscribeEntities(const std::vector<PooledComponent<T>>& components)
 	{
-		std::vector<PooledComponent<T>*> newSubscribers(components.size());
+		std::vector<PooledComponent<T>*> newSubscriberComponents(components.size());
+		EntityList newSubscribers;
 
 		for (typename std::vector<PooledComponent<T>>::const_iterator it = components.begin();
 		     it != components.end(); ++it)
@@ -156,14 +164,17 @@ public:
 			// TODO: handle this elegantly
 			assert(newPooledComponent);
 
+			// TODO: Remove allocation by the caller by letting them pull straight from the pool
 			newPooledComponent->data = currentPooledComponent;
 
-			Subscribers.push_back(currentPooledComponent.entity);
+			newSubscribers.push_back(currentPooledComponent.entity);
 
-			newSubscribers.push_back(&newPooledComponent->data);
+			newSubscriberComponents.push_back(&newPooledComponent->data);
 		}
 
-		SubscribeEntitiesInternal(newSubscribers);
+		Subscribers.insert(Subscribers.end(), newSubscribers.begin(), newSubscribers.end());
+
+		SubscribeEntitiesInternal(newSubscribers, newSubscriberComponents);
 	}
 
 	virtual void UnsubscribeEntities(const EntityList& entities)
@@ -197,7 +208,7 @@ public:
 		// Note that the child can actually unsubscribe entities in their function. This will
 		// currently only mean we might try to double-unsubscribe in the code below, which is not
 		// bad
-		UnsubscribeEntitiesInternal(unsubscribers);
+		UnsubscribeEntitiesInternal(entitiesToUnsubscribe, unsubscribers);
 
 		// Remove the entities from pool (freeing memory)
 		for (EntityListConstIterator it = entitiesToUnsubscribe.begin();

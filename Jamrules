@@ -1,3 +1,6 @@
+# Temporary Unreal Command line (TODO: Fix this so there's targets or something)
+# jam -j4 -a libGalavant.a libGalaThirdPartyWrapper.a libGalaEntityComponent.a libGalaAi.a libGalaWorld.a libGalaGame.a
+
 ##
 ## Compiler
 ##
@@ -24,8 +27,9 @@ LINK = clang++ ;
 #      if you don't give a shit about Unreal and/or want to build the tests
 #   Og = compile without optimizations for debugging
 #   -Wall -Wextra = Error detection/tolerance
-#C++FLAGS = -std=c++11 -stdlib=libc++ -fPIC -g -Og -Wall -Wextra ; # Required arguments for Unreal
-C++FLAGS = -std=c++11 -fPIC -g -Og -Wall -Wextra ;                # Required arguments for tests
+
+C++FLAGS = -std=c++11 -stdlib=libc++ -fPIC -g -Og -Wall -Wextra ; # Required arguments for Unreal
+#C++FLAGS = -std=c++11 -fPIC -g -Og -Wall -Wextra ;                # Required arguments for tests
 
 HDRS = thirdParty/flatbuffers/include ;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 namespace gv
 {
 struct Position
@@ -10,8 +12,17 @@ struct Position
 
 	Position() = default;
 	Position(float x, float y, float z);
+	~Position() = default;
 
 	bool Equals(const Position& otherPosition, float tolerance) const;
+
+	void Reset();
+	void Set(float x, float y, float z);
+
+	float ManhattanTo(const Position& otherPosition) const;
+
+	// Returns true if the Position is exactly zero
+	explicit operator bool() const;
 
 	float& operator[](int index);
 
@@ -24,6 +35,8 @@ struct Position
 	Position& operator-=(const Position& otherPosition);
 	Position& operator*=(const Position& otherPosition);
 	Position& operator/=(const Position& otherPosition);
+
+	bool operator==(const Position& otherPosition) const;
 };
 
 struct GlobalPosition
@@ -35,4 +48,7 @@ struct GlobalPosition
 	GlobalPosition() = default;
 	GlobalPosition(Position& localPosition);
 };
+
+typedef std::vector<Position> PositionList;
+typedef std::vector<Position*> PositionRefList;
 };

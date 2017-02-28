@@ -48,4 +48,12 @@ TEST_CASE("Position and GlobalPosition")
 		a += b;
 		REQUIRE(a.Equals(expectedResult, 0.01f));
 	}
+
+	SECTION("Position Explicit Bool")
+	{
+		gv::Position a(1.f, 2.f, 3.f);
+		gv::Position b;
+		REQUIRE(a);
+		REQUIRE(!b);
+	}
 }

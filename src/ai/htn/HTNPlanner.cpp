@@ -8,7 +8,7 @@
 namespace Htn
 {
 bool DecomposeGoalTask(GoalDecompositionStack& decompositionStack, GoalTask* goalTask,
-                       int methodIndex, ParameterList& parameters, WorldState& state)
+                       int methodIndex, ParameterList& parameters, gv::WorldState& state)
 {
 	GoalDecomposition decomposition;
 	decomposition.DecomposedGoalTask = goalTask;
@@ -28,7 +28,7 @@ bool DecomposeGoalTask(GoalDecompositionStack& decompositionStack, GoalTask* goa
 }
 
 bool DecomposeCompoundTask(TaskCallList& compoundDecompositions, CompoundTask* compoundTask,
-                           const WorldState& state, const ParameterList& parameters)
+                           const gv::WorldState& state, const ParameterList& parameters)
 {
 	if (!compoundTask->StateMeetsPreconditions(state, parameters))
 		return false;
@@ -36,12 +36,12 @@ bool DecomposeCompoundTask(TaskCallList& compoundDecompositions, CompoundTask* c
 	return compoundTask->Decompose(compoundDecompositions, state, parameters);
 }
 
-bool Planner::IsPlanRunning()
+bool Planner::IsPlannerRunning()
 {
-	return IsPlanRunning(CurrentStatus);
+	return IsPlannerRunning(CurrentStatus);
 }
 
-bool Planner::IsPlanRunning(Status status)
+bool Planner::IsPlannerRunning(Status status)
 {
 	return (status > Status::Running_EnumBegin && status < Status::Running_EnumEnd);
 }
@@ -350,7 +350,7 @@ Planner::Status Planner::PlanStep_StackFrame()
 	{
 		bool onlyStackFrame = DecompositionStack.size() == 1;
 		TaskCallList* parentFinalCallList = nullptr;
-		WorldState* parentWorkingState = nullptr;
+		gv::WorldState* parentWorkingState = nullptr;
 
 		// If this is the only frame on the stack, its call list and working state goes to the
 		// plan, else, the previous stack
@@ -419,7 +419,7 @@ Planner::Status Planner::PlanStep()
 		                                    status == Status::Running_FailedMethodDecomposition)))
 			break;
 
-	} while (IsPlanRunning(status));
+	} while (IsPlannerRunning(status));
 
 	CurrentStatus = status;
 	return status;

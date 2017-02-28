@@ -13,6 +13,29 @@ bool Position::Equals(const Position& otherPosition, float tolerance) const
 	        fabs(Z - otherPosition.Z) <= tolerance);
 }
 
+void Position::Reset()
+{
+	X = Y = Z = 0.f;
+}
+
+void Position::Set(float x, float y, float z)
+{
+	X = x;
+	Y = y;
+	Z = z;
+}
+
+float Position::ManhattanTo(const Position& otherPosition) const
+{
+	return fabs(X - otherPosition.X) + fabs(Y - otherPosition.Y) + fabs(Z - otherPosition.Z);
+}
+
+Position::operator bool() const
+{
+	// Only return false if we're exactly zero (don't use tolerances)
+	return !(X == 0.f && Y == 0.f && Z == 0.f);
+}
+
 float& Position::operator[](int index)
 {
 	switch (index)
@@ -93,6 +116,11 @@ Position& Position::operator/=(const Position& otherPosition)
 	Y /= otherPosition.Y;
 	Z /= otherPosition.Z;
 	return *this;
+}
+
+bool Position::operator==(const Position& otherPosition) const
+{
+	return X == otherPosition.X && Y == otherPosition.Y && Z == otherPosition.Z;
 }
 
 GlobalPosition::GlobalPosition(Position& localPosition) : LocalPosition(localPosition)
