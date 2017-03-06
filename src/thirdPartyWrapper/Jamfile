@@ -1,5 +1,7 @@
 SubDir . src thirdPartyWrapper ;
 
+SubDirC++Flags $(ALLLIBSC++FLAGS) ;
+
 Library libGalaThirdPartyWrapper : noise/noise.cpp ;
 
 MakeLocate libGalaThirdPartyWrapper.a : lib/thirdPartyWrapper ;

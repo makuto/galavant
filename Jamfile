@@ -1,3 +1,12 @@
 SubDir . ;
 
+SubDirC++Flags $(ALLLIBSC++FLAGS) ;
+
+# Lazy pseudotarget for Galavant - make a dummy executable which will make Jam build the libs we're
+#  actually going to use. There's definitely a better way to do this but I'm too lazy to find it
+Main GalavantPseudotarget : src/main.cpp ;
+LinkLibraries GalavantPseudotarget : libGalavant libGalaThirdPartyWrapper libGalaEntityComponent libGalaAi libGalaWorld libGalaGame ;
+
+MakeLocate GalavantPseudotarget : bin ;
+
 SubInclude . src ;

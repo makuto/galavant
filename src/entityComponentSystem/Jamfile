@@ -1,5 +1,7 @@
 SubDir . src entityComponentSystem ;
 
+SubDirC++Flags $(ALLLIBSC++FLAGS) ;
+
 Library libGalaEntityComponent : EntityTypes.cpp EntitySharedData.cpp EntityComponentManager.cpp ComponentManager.cpp ;
 LinkLibraries libGalaEntityComponent : libGalaWorld ;
 

@@ -1,5 +1,7 @@
 SubDir . src experiments ;
 
+SubDirC++Flags $(TESTSC++FLAGS) ;
+
 SubInclude . src experiments flatbuffers ;
 SubInclude . src experiments noise ;
 SubInclude . src experiments threading ;

@@ -1,5 +1,12 @@
-# Temporary Unreal Command line (TODO: Fix this so there's targets or something)
-# jam -j4 -a libGalavant.a libGalaThirdPartyWrapper.a libGalaEntityComponent.a libGalaAi.a libGalaWorld.a libGalaGame.a
+# Building Tests:
+# jam clean
+# jam -j4 -q
+
+# Building Unreal:
+# jam clean
+# jam -j4 -q -sUNREAL=true GalavantPseudotarget
+
+# (if building the same target repeatedly, don't clean, if that wasn't obvious)
 
 ##
 ## Compiler
@@ -20,25 +27,45 @@ LINK = clang++ ;
 ##
 
 # Galavant requires C++11
-#   fPIC = position independent code. This is so the lib can be linked in other libs/executables
+
+## Argument explanation
+#
 #   g = debug symbols
-#   lstdc++ = standard library
+#   -O0 = compile without optimizations for debugging
+#
+#   -Wall -Wextra = Error detection/tolerance
+#   -Wno-unused-parameter = I should probably get rid of this at some point
+#
+#   fPIC = position independent code. This is so the lib can be linked in other libs/executables
 #   -stdlib=lib++ = Unreal uses libc++, which is busted on Ubuntu 16.04. Remove this option
 #      if you don't give a shit about Unreal and/or want to build the tests
-#   Og = compile without optimizations for debugging
-#   -Wall -Wextra = Error detection/tolerance
+#
+#   lstdc++ = standard library [Unused]
 
-C++FLAGS = -std=c++11 -stdlib=libc++ -fPIC -g -Og -Wall -Wextra ; # Required arguments for Unreal
-#C++FLAGS = -std=c++11 -fPIC -g -Og -Wall -Wextra ;                # Required arguments for tests
+# Arguments used on all projects, regardless of any variables
+C++FLAGS = -std=c++11 -Wall -Wextra -Wno-unused-parameter ;
 
-HDRS = thirdParty/flatbuffers/include ;
+# Required arguments for tests
+TESTSC++FLAGS = -g ;
+# Required arguments for Unreal
+UNREALC++FLAGS = -g -stdlib=libc++ -fPIC ;
+
+# ALLLIBSC++FLAGS should be used for all libraries which might be used by both tests and Unreal
+if $(UNREAL)
+{
+	ALLLIBSC++FLAGS = $(UNREALC++FLAGS) ;
+}
+else
+{
+	ALLLIBSC++FLAGS = $(TESTSC++FLAGS) ;
+}
+
+OPTIM = -O0 ;
+
+HDRS = thirdParty/flatbuffers/include thirdParty/plog/include ;
 
 # TODO: add project-specific filetype rules for things like flatbuffer .json compilation (see "UserObject rule":
 # 	https://swarm.workshop.perforce.com/view/guest/perforce_software/jam/src/Jamfile.html ) ?
-
-# TODO: Add variable that allows user to swap between compiling Unreal
-#  and compiling testse on the command line (see above page under "Variables
-#  used in Building Executables and Libraries)
 
 # TODO: [Hacked done] Calling jam -dc indicates that it thinks many unmodified files are newer, 
 #  which is why it's building way more than it should be. Further investigation is needed, as if it 
@@ -59,3 +86,12 @@ KEEPOBJS = true ; # This doesn't actually fix anything, though it seems like it 
 NOARSCAN = true ; # This actually fixes the problem
 #AR = ar rUu ; # I was thinking maybe the AR command was wrong (always outputting deterministically)
                # It doesn't seem like this is the problem though
+AR = ar cr ;
+
+# Some helpful Jam commands
+# -q        : stop on failed target
+# -jN       : use N cores
+# -sVAR=VAL : Set VAR to VAL. Note that setting UNREAL=false is the same as setting UNREAL=true,
+#              frustratingly
+# -dx       : print commands being used
+# -n        : don't actually run commands

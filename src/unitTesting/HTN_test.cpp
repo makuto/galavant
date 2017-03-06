@@ -112,7 +112,9 @@ public:
 
 TEST_CASE("Hierarchical Task Networks Planner")
 {
-	Htn::Parameter testParam = {Htn::Parameter::ParamType::Int, 123};
+	Htn::Parameter testParam;
+	testParam.Type = Htn::Parameter::ParamType::Int;
+	testParam.IntValue = 123;
 	Htn::ParameterList params;
 	params.push_back(testParam);
 

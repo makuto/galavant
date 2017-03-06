@@ -6,7 +6,7 @@ int main()
 {
 	ObjectPool<int> testPool(100);
 	
-	for (int i = 0; i < testPool.GetSize(); i++)
+	for (unsigned int i = 0; i < testPool.GetSize(); i++)
 	{
 		int* newData = testPool.GetNewData();
 		if (newData)

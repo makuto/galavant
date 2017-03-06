@@ -65,11 +65,16 @@ void PlanComponentManager::Update(float deltaSeconds)
 				{
 					// We have finished all tasks; remove this entity from the manager
 					// TODO: We'll eventually hook up some event shit
+					std::cout << "PlanComponentManager: Call list empty\n";
 					entitiesToUnsubscribe.push_back(currentEntity);
 				}
 			}
 			else
+			{
+				std::cout << "PlanComponentManager: Plan not complete, status "
+				          << (int)componentPlanner.CurrentStatus << "\n";
 				entitiesToUnsubscribe.push_back(currentEntity);
+			}
 		}
 		else
 		{
@@ -93,12 +98,15 @@ void PlanComponentManager::Update(float deltaSeconds)
 
 					// Plan failed, remove entity
 					// TODO: Hook up  events
+					std::cout << "PlanComponentManager: Plan not running/failed\n";
 					entitiesToUnsubscribe.push_back(currentEntity);
 				}
 			}
 		}
 	}
 
+	std::cout << "PlanComponentManager: Unsubscribed " << entitiesToUnsubscribe.size()
+	          << " entities\n";
 	UnsubscribeEntities(entitiesToUnsubscribe);
 }
 
@@ -118,9 +126,11 @@ void PlanComponentManager::SubscribeEntitiesInternal(const EntityList& subscribe
 		                               goalCallList.end());
 
 		// TODO: This is not kosher
-		planner.CurrentStatus = Htn::Planner::Status::Running_EnumBegin;
+		planner.CurrentStatus = Htn::Planner::Status::Running_SuccessfulPrimitive;
 		planner.DebugPrint = true;
 	}
+
+	std::cout << "PlanComponentManager: Subscribed " << components.size() << " entities\n";
 }
 
 void PlanComponentManager::UnsubscribeEntitiesInternal(const EntityList& unsubscribers,

@@ -63,6 +63,14 @@
                 "workingdir": "/home/macoy/Development/code/repositories/galavant/src/unitTesting/bin",
                 "commandline": "gdb --interpreter=mi ./htnTest"
             },
+
+            "UnrealEditor":
+            {
+                // sudo gdb /home/macoy/Downloads/UnrealEngine/Engine/Binaries/Linux/UE4Editor $(ps -A | grep UE4Editor | awk '{print $1;}')
+                "workingdir": "/home/macoy/Downloads/UnrealEngine/Engine/Binaries/Linux",
+                "commandline": "gdb --interpreter=mi ./UE4Editor"
+            },
+
 //            "second_executable_name":
 //            {
 //                "workingdir": "${folder:${project_path:second_executable_name}}",

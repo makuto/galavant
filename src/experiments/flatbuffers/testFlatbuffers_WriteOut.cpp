@@ -62,7 +62,7 @@ char *readBinary(const char *filename)
 
 void testFlatbufferToJSON()
 {
-	const char *outputFilename = "Output.json";
+	//const char *outputFilename = "Output.json";
 	const char *flatbufferFilename = "SavedHelloForWrite.bin";
 	const char *schemaFilename = "bogusSchema.flb";
 	const char *includePaths = {
@@ -73,7 +73,7 @@ void testFlatbufferToJSON()
 
 	if (memblock && schemaBlock)
 	{
-		const Galavant::Test::Hello *readInHello = Galavant::Test::GetHello(memblock);
+		// const Galavant::Test::Hello *readInHello = Galavant::Test::GetHello(memblock);
 		// printHello(readInHello);
 
 		flatbuffers::Parser parser;
@@ -84,8 +84,8 @@ void testFlatbufferToJSON()
 
 		std::cout << outputString << "\n";
 
-		//std::cout << "Generating text file...\n";
-		//flatbuffers::GenerateTextFile(parser, memblock, outputFilename);
+		// std::cout << "Generating text file...\n";
+		// flatbuffers::GenerateTextFile(parser, memblock, outputFilename);
 
 		delete memblock;
 		delete schemaBlock;

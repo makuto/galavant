@@ -1,5 +1,7 @@
 SubDir . src experiments flatbuffers ;
 
+SubDirC++Flags $(TESTSC++FLAGS) ;
+
 Main testFlatbuffers : testFlatbuffers.cpp ;
 
 Main testFlatbuffers_write : testFlatbuffers_WriteOut.cpp ;

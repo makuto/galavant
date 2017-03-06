@@ -1,5 +1,7 @@
 SubDir . src experiments threading ;
 
+SubDirC++Flags $(TESTSC++FLAGS) ;
+
 Main multithreading : multithreading.cpp ;
 
 MakeLocate multithreading : bin ;

@@ -1,5 +1,7 @@
 SubDir . src ;
 
+SubDirC++Flags $(ALLLIBSC++FLAGS) ;
+
 Library libGalavant : GalavantMain.cpp ;
 LinkLibraries libGalavant : libGalaThirdPartyWrapper ;
 MakeLocate libGalavant.a : lib ;

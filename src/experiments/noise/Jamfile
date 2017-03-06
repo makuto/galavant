@@ -1,5 +1,7 @@
 SubDir . src experiments noise ;
 
+SubDirC++Flags $(TESTSC++FLAGS) ;
+
 Main simple2dNoiseTest : simple2dNoiseTest.cpp ;
 
 LinkLibraries simple2dNoiseTest : libGalaThirdPartyWrapper ;

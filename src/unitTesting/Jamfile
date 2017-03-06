@@ -1,5 +1,7 @@
 SubDir . src unitTesting ;
 
+SubDirC++Flags $(TESTSC++FLAGS) ;
+
 Main entityComponentTest : EntityComponentSystem_test.cpp ;
 LinkLibraries entityComponentTest : libGalaEntityComponent ;
 
@@ -11,7 +13,9 @@ LinkLibraries htnTest : libGalaAi ;
 Main positionTest : Position_test.cpp ;
 LinkLibraries positionTest : libGalaWorld ;
 
-MakeLocate objectComponentTest entityComponentTest objectPoolTest htnTest positionTest : bin ;
+Main logTest : Log_test.cpp ;
+
+MakeLocate objectComponentTest entityComponentTest objectPoolTest htnTest positionTest logTest : bin ;
 
 SubInclude . src entityComponentSystem ;
 SubInclude . src ai ;

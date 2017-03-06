@@ -43,7 +43,7 @@ bool Planner::IsPlannerRunning()
 
 bool Planner::IsPlannerRunning(Status status)
 {
-	return (status > Status::Running_EnumBegin && status < Status::Running_EnumEnd);
+	return (status >= Status::Running_EnumBegin && status <= Status::Running_EnumEnd);
 }
 
 // When the stack is empty, find a goal task to push onto the task or add tasks as per usual

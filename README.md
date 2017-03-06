@@ -33,6 +33,7 @@ The following libraries are required by Galavant and included in /thirdParty:
 - [OpenSimplexNoise](https://gist.github.com/tombsar/716134ec71d1b8c1b530), created by Arthur Tombs (public domain)
 - [Flatbuffers](https://github.com/google/flatbuffers), created by Google/Fun Propulsion Labs (Apache License, v2.0)
 - [Catch](https://github.com/philsquared/Catch), created by various contributors/a dude named Travis (Boost Software License)
+- [PLog](https://github.com/SergiusTheBest/plog), created by Sergey Podobry (Mozilla Public License v2.0)
 
 ## License
 

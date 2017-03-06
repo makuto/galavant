@@ -63,7 +63,7 @@ char *readBuffer()
 	return nullptr;
 }
 
-void createPlaceholderHelloArray(std::vector<flatbuffers::Offset<Galavant::Test::Hello> > &array,
+void createPlaceholderHelloArray(std::vector<flatbuffers::Offset<Galavant::Test::Hello>> &array,
                                  flatbuffers::FlatBufferBuilder &builder, int count)
 {
 	for (int i = 0; i < count; i++)
@@ -114,7 +114,7 @@ void testHellos()
 void testHelloDict()
 {
 	flatbuffers::FlatBufferBuilder builder;
-	std::vector<flatbuffers::Offset<Galavant::Test::Hello> > helloArray;
+	std::vector<flatbuffers::Offset<Galavant::Test::Hello>> helloArray;
 
 	createPlaceholderHelloArray(helloArray, builder, 10000);
 
@@ -132,12 +132,12 @@ void testHelloDict()
 
 		if (readInHelloDict)
 		{
-			const flatbuffers::Vector<flatbuffers::Offset<Galavant::Test::Hello> > *helloArray =
+			const flatbuffers::Vector<flatbuffers::Offset<Galavant::Test::Hello>> *helloArray =
 			    readInHelloDict->helloArray();
 
 			if (helloArray)
 			{
-				for (int i = 0; i < helloArray->Length(); i++)
+				for (unsigned int i = 0; i < helloArray->Length(); i++)
 				{
 					const Galavant::Test::Hello *readInHello = helloArray->Get(i);
 
