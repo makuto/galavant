@@ -42,14 +42,24 @@
             "shell_cmd": "make",
             "working_dir": "../../../src/experiments"
         },
+
         {
             "name": "Jam Current Directory",
             "shell_cmd": "jam -j4 -q"
         },
-        // Assume GalavantUnreal is cloned as a submodule or linked (I can't remember if I actually made it a submodule)
+        {
+            "name": "Jam Clean All",
+            "shell_cmd": "jam clean",
+            "working_dir": "../../../../galavant"
+        },
+        {
+            "name": "Jam Build (not Unreal)",
+            "shell_cmd": "jam -j4 -q",
+            "working_dir": "../../../../galavant"
+        },
         {
             "name": "Jam Unreal",
-            "shell_cmd": "jam -j4 -q -a libGalavant.a libGalaThirdPartyWrapper.a libGalaEntityComponent.a libGalaAi.a libGalaWorld.a libGalaGame.a",
+            "shell_cmd": "jam -j4 -q -sUNREAL=true GalavantPseudotarget",
             "working_dir": "../../../../galavant"
         }
     ],
@@ -58,17 +68,17 @@
     {
         "sublimegdb_executables":
         {
-            "htnTest":
-            {
-                "workingdir": "/home/macoy/Development/code/repositories/galavant/src/unitTesting/bin",
-                "commandline": "gdb --interpreter=mi ./htnTest"
-            },
-
             "UnrealEditor":
             {
                 // sudo gdb /home/macoy/Downloads/UnrealEngine/Engine/Binaries/Linux/UE4Editor $(ps -A | grep UE4Editor | awk '{print $1;}')
                 "workingdir": "/home/macoy/Downloads/UnrealEngine/Engine/Binaries/Linux",
-                "commandline": "gdb --interpreter=mi ./UE4Editor"
+                "commandline": "gdb --interpreter=mi ./UE4Editor /home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
+            },
+
+            "htnTest":
+            {
+                "workingdir": "../../../bin",
+                "commandline": "gdb --interpreter=mi ./htnTest"
             },
 
 //            "second_executable_name":

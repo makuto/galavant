@@ -6,6 +6,7 @@ Library libGalavant : GalavantMain.cpp ;
 LinkLibraries libGalavant : libGalaThirdPartyWrapper ;
 MakeLocate libGalavant.a : lib ;
 
+SubInclude . src util ;
 SubInclude . src thirdPartyWrapper ;
 SubInclude . src entityComponentSystem ;
 SubInclude . src ai ;

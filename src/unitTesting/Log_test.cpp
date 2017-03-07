@@ -9,20 +9,20 @@
 #include <plog/Formatters/FuncMessageFormatter.h>
 #include <list>
 
+#include "../util/Logging.hpp"
+
 // Copied from thirdParty/plog/samples/CustomAppender/Main.cpp
 namespace plog
 {
-template <class Formatter>           // Typically a formatter is passed as a template parameter.
-class MyAppender : public IAppender  // All appenders MUST inherit IAppender interface.
+template <class Formatter>
+class MyAppender : public IAppender
 {
 public:
-	virtual void write(
-	    const Record& record)  // This is a method from IAppender that MUST be implemented.
+	virtual void write(const Record& record)
 	{
-		util::nstring str =
-		    Formatter::format(record);  // Use the formatter to get a string from a record.
+		util::nstring str = Formatter::format(record);
 
-		m_messageList.push_back(str);  // Store a log message in a list.
+		m_messageList.push_back(str);
 	}
 
 	std::list<util::nstring>& getMessageList()
@@ -58,5 +58,19 @@ TEST_CASE("Log")
 		LOGD << "A debug message!";
 
 		REQUIRE(!myAppender.getMessageList().empty());
+	}
+
+	SECTION("Log Console Appender")
+	{
+		static plog::ColorConsoleAppender<plog::FuncMessageFormatter> s_ConsoleLogAppender;
+		plog::init(plog::debug, &s_ConsoleLogAppender);
+
+		for (int i = 0; i < 10; i++)
+			LOGD << "[" << i << "]";
+
+		LOGD << "You should see 1 - 9 above";
+
+		// I don't know how to test this
+		REQUIRE(true);
 	}
 }

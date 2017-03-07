@@ -1,9 +1,9 @@
 #include "HTNPlanner.hpp"
 
+#include "../../util/Logging.hpp"
+
 #include "HTNTypes.hpp"
 #include "HTNTasks.hpp"
-
-#include <iostream>
 
 namespace Htn
 {
@@ -66,7 +66,7 @@ Planner::Status Planner::PlanStep_BottomLevel()
 
 	if (DebugPrint)
 	{
-		std::cout << "\nPlanStep()\nWorkingCallList.size() = " << WorkingCallList.size() << "\n";
+		LOGD << "PlanStep() WorkingCallList.size() = " << WorkingCallList.size();
 		PrintTaskCallList(WorkingCallList);
 	}
 
@@ -80,15 +80,13 @@ Planner::Status Planner::PlanStep_BottomLevel()
 			continue;
 		TaskType currentTaskType = currentTask->GetType();
 
-		if (DebugPrint)
-			std::cout << "TaskType currentTaskType = " << (int)currentTaskType << "\n";
+		LOGD_IF(DebugPrint) << "TaskType currentTaskType = " << (int)currentTaskType;
 
 		switch (currentTaskType)
 		{
 			case TaskType::Goal:
 			{
-				if (DebugPrint)
-					std::cout << "Goal\n";
+				LOGD_IF(DebugPrint) << "Goal";
 				GoalTask* goalTask = currentTask->GetGoal();
 
 				if (!DecomposeGoalTask(DecompositionStack, goalTask, 0, currentTaskCall.Parameters,
@@ -101,8 +99,7 @@ Planner::Status Planner::PlanStep_BottomLevel()
 			break;
 			case TaskType::Primitive:
 			{
-				if (DebugPrint)
-					std::cout << "Primitive\n";
+				LOGD_IF(DebugPrint) << "Primitive";
 				PrimitiveTask* primitiveTask = currentTask->GetPrimitive();
 				if (!primitiveTask->StateMeetsPreconditions(StacklessState,
 				                                            currentTaskCall.Parameters))
@@ -123,8 +120,7 @@ Planner::Status Planner::PlanStep_BottomLevel()
 			break;
 			case TaskType::Compound:
 			{
-				if (DebugPrint)
-					std::cout << "Compound\n";
+				LOGD_IF(DebugPrint) << "Compound";
 				CompoundTask* compoundTask = currentTask->GetCompound();
 
 				// we need to push our decomposition to our call list, but we're iterating on
@@ -143,24 +139,20 @@ Planner::Status Planner::PlanStep_BottomLevel()
 
 		if (compoundDecompositions.size())
 		{
-			if (DebugPrint)
-			{
-				std::cout << "compoundDecompositions.size() = " << compoundDecompositions.size()
-				          << "\n";
-			}
+			LOGD_IF(DebugPrint) << "compoundDecompositions.size() = "
+			                    << compoundDecompositions.size();
+
 			WorkingCallList.insert(WorkingCallList.begin(), compoundDecompositions.begin(),
 			                       compoundDecompositions.end());
 
-			if (DebugPrint)
-				std::cout << "PlanStep Done\n";
+			LOGD_IF(DebugPrint) << "PlanStep Done";
 
 			// We have to break here because we are adding things to the list we're iterating
 			//  on; We'll process the tasks next Step
 			return Status::Running_SuccessfulDecomposition;
 		}
 
-		if (DebugPrint)
-			std::cout << "Loop Done\n";
+		LOGD_IF(DebugPrint) << "Loop Done";
 	}
 
 	return Status::PlanComplete;
@@ -174,26 +166,25 @@ Planner::Status Planner::PlanStep_StackFrame()
 
 	if (DebugPrint)
 	{
-		std::cout << "\nPlanStep()\ncurrentStackFrame.CallList.size() = "
-		          << currentStackFrame.CallList.size() << "\n";
+		LOGD << "PlanStep() currentStackFrame.CallList.size() = "
+		     << currentStackFrame.CallList.size();
 		PrintTaskCallList(currentStackFrame.CallList);
 
-		std::cout << "Stack Depth: ";
+		LOGD << "Stack Depth: ";
 		for (unsigned int i = 0; i < DecompositionStack.size(); i++)
-			std::cout << "=";
-		std::cout << "\n";
+			LOGD << "=";
 
 		{
-			std::cout << "----Fullstack working lists\n";
-			std::cout << "[0]\n";
+			LOGD << "----Fullstack working lists";
+			LOGD << "[0]";
 			PrintTaskCallList(WorkingCallList);
 			int i = 1;
 			for (GoalDecomposition& stackFrame : DecompositionStack)
 			{
-				std::cout << "[" << i++ << "]\n";
+				LOGD << "[" << i++ << "]";
 				PrintTaskCallList(stackFrame.CallList);
 			}
-			std::cout << "----\n";
+			LOGD << "----";
 		}
 	}
 
@@ -210,15 +201,13 @@ Planner::Status Planner::PlanStep_StackFrame()
 			continue;
 		TaskType currentTaskType = currentTask->GetType();
 
-		if (DebugPrint)
-			std::cout << "TaskType currentTaskType = " << (int)currentTaskType << "\n";
+		LOGD_IF(DebugPrint) << "TaskType currentTaskType = " << (int)currentTaskType;
 
 		switch (currentTaskType)
 		{
 			case TaskType::Goal:
 			{
-				if (DebugPrint)
-					std::cout << "Goal\n";
+				LOGD_IF(DebugPrint) << "Goal";
 				GoalTask* goalTask = currentTask->GetGoal();
 
 				// TODO erase ahead of time because fuck
@@ -237,8 +226,8 @@ Planner::Status Planner::PlanStep_StackFrame()
 				// This code is wrong. I'm not sure why.
 				// Pushing to the stack invalidates our currentStackFrame reference; update it
 				// What the actual fuck (updating the ref doesn't fix the fucking thing)
-				/*std::cout << "Ref updating from " << &currentStackFrame << " to "
-				          << &(*(DecompositionStack.end() - 1)) << "\n";
+				/*LOGD << "Ref updating from " << &currentStackFrame << " to "
+				          << &(*(DecompositionStack.end() - 1));
 				currentStackFrameIter = DecompositionStack.end() - 1;
 				currentStackFrame = *currentStackFrameIter;*/
 
@@ -247,8 +236,7 @@ Planner::Status Planner::PlanStep_StackFrame()
 			break;
 			case TaskType::Primitive:
 			{
-				if (DebugPrint)
-					std::cout << "Primitive\n";
+				LOGD_IF(DebugPrint) << "Primitive";
 				PrimitiveTask* primitiveTask = currentTask->GetPrimitive();
 				if (!primitiveTask->StateMeetsPreconditions(currentStackFrame.WorkingState,
 				                                            currentTaskCall.Parameters))
@@ -272,8 +260,7 @@ Planner::Status Planner::PlanStep_StackFrame()
 			break;
 			case TaskType::Compound:
 			{
-				if (DebugPrint)
-					std::cout << "Compound\n";
+				LOGD_IF(DebugPrint) << "Compound";
 				CompoundTask* compoundTask = currentTask->GetCompound();
 
 				if (!DecomposeCompoundTask(compoundDecompositions, compoundTask,
@@ -297,8 +284,7 @@ Planner::Status Planner::PlanStep_StackFrame()
 
 		if (methodFailed)
 		{
-			if (DebugPrint)
-				std::cout << "Method failed decomposition\n";
+			LOGD_IF(DebugPrint) << "Method failed decomposition";
 			// Clear stack frame
 			currentStackFrame.CallList.clear();
 			currentStackFrame.FinalCallList.clear();
@@ -323,26 +309,22 @@ Planner::Status Planner::PlanStep_StackFrame()
 		{
 			if (DebugPrint)
 			{
-				std::cout << "compoundDecompositions.size() = " << compoundDecompositions.size()
-				          << "\n";
-				std::cout << "currentStackFrame.CallList.size() = "
-				          << currentStackFrame.CallList.size() << "\n";
-				std::cout << "Decomposition:\n";
+				LOGD << "compoundDecompositions.size() = " << compoundDecompositions.size();
+				LOGD << "currentStackFrame.CallList.size() = " << currentStackFrame.CallList.size();
+				LOGD << "Decomposition:";
 				PrintTaskCallList(compoundDecompositions);
 			}
 			currentStackFrame.CallList.insert(currentStackFrame.CallList.begin(),
 			                                  compoundDecompositions.begin(),
 			                                  compoundDecompositions.end());
-			if (DebugPrint)
-				std::cout << "PlanStep Done\n";
+			LOGD_IF(DebugPrint) << "PlanStep Done";
 
 			// We have to break here because we are adding things to the list we're iterating
 			//  on; We'll process the tasks next Step
 			return Status::Running_SuccessfulDecomposition;
 		}
 
-		if (DebugPrint)
-			std::cout << "Loop Done\n";
+		LOGD_IF(DebugPrint) << "Loop Done";
 	}
 
 	// Finished processing this stack frame
@@ -369,9 +351,9 @@ Planner::Status Planner::PlanStep_StackFrame()
 
 		if (DebugPrint)
 		{
-			std::cout << "Collapsing stack frame. Adding List:\n";
+			LOGD << "Collapsing stack frame. Adding List:";
 			PrintTaskCallList(currentStackFrame.FinalCallList);
-			std::cout << "To parent:\n";
+			LOGD << "To parent:";
 			PrintTaskCallList(*parentFinalCallList);
 		}
 
@@ -383,8 +365,7 @@ Planner::Status Planner::PlanStep_StackFrame()
 
 		DecompositionStack.pop_back();
 
-		if (DebugPrint)
-			std::cout << "Frame Done\n";
+		LOGD_IF(DebugPrint) << "Frame Done";
 
 		return Status::Running_SuccessfulDecompositionStackPop;
 	}

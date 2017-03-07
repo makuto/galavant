@@ -3,6 +3,8 @@
 #define CATCH_CONFIG_MAIN
 #include "../../thirdParty/Catch/single_include/catch.hpp"
 
+#include "../util/Logging.hpp"
+
 #include "../ai/htn/HTNTypes.hpp"
 #include "../ai/htn/HTNTasks.hpp"
 #include "../ai/htn/HTNPlanner.hpp"
@@ -112,6 +114,8 @@ public:
 
 TEST_CASE("Hierarchical Task Networks Planner")
 {
+	gv::InitializeConsoleOnlyLogging();
+
 	Htn::Parameter testParam;
 	testParam.Type = Htn::Parameter::ParamType::Int;
 	testParam.IntValue = 123;

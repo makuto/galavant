@@ -1,0 +1,7 @@
+SubDir . src util ;
+
+SubDirC++Flags $(ALLLIBSC++FLAGS) ;
+
+Library libGalaUtil : Logging.cpp ;
+
+MakeLocate libGalaUtil.a : lib ;

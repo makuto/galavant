@@ -1,5 +1,7 @@
 #include "PlanComponentManager.hpp"
 
+#include "../../util/Logging.hpp"
+
 #include "../../entityComponentSystem/PooledComponentManager.hpp"
 
 namespace gv
@@ -65,14 +67,14 @@ void PlanComponentManager::Update(float deltaSeconds)
 				{
 					// We have finished all tasks; remove this entity from the manager
 					// TODO: We'll eventually hook up some event shit
-					std::cout << "PlanComponentManager: Call list empty\n";
+					LOGD << "PlanComponentManager: Call list empty";
 					entitiesToUnsubscribe.push_back(currentEntity);
 				}
 			}
 			else
 			{
-				std::cout << "PlanComponentManager: Plan not complete, status "
-				          << (int)componentPlanner.CurrentStatus << "\n";
+				LOGD << "PlanComponentManager: Plan not complete, status "
+				     << (int)componentPlanner.CurrentStatus;
 				entitiesToUnsubscribe.push_back(currentEntity);
 			}
 		}
@@ -83,30 +85,30 @@ void PlanComponentManager::Update(float deltaSeconds)
 			{
 				if (status == Htn::Planner::Status::PlanComplete)
 				{
-					std::cout << "PlanComponentManager: Sucessful plan for Entity "
-					          << currentComponent->entity << "! Final Call List:\n";
+					LOGD << "PlanComponentManager: Sucessful plan for Entity "
+					     << currentComponent->entity << "! Final Call List:";
 					Htn::PrintTaskCallList(componentPlanner.FinalCallList);
 					// We'll execute the plan next Update()
 				}
 
 				if (status < Htn::Planner::Status::Running_EnumBegin)
 				{
-					std::cout << "PlanComponentManager: Failed plan for Entity "
-					          << currentComponent->entity << " with code " << int(status)
-					          << "! Initial Call List:\n";
+					LOGD << "PlanComponentManager: Failed plan for Entity "
+					     << currentComponent->entity << " with code " << int(status)
+					     << "! Initial Call List:";
 					Htn::PrintTaskCallList(componentPlanner.InitialCallList);
 
 					// Plan failed, remove entity
 					// TODO: Hook up  events
-					std::cout << "PlanComponentManager: Plan not running/failed\n";
+					LOGD << "PlanComponentManager: Plan not running/failed";
 					entitiesToUnsubscribe.push_back(currentEntity);
 				}
 			}
 		}
 	}
 
-	std::cout << "PlanComponentManager: Unsubscribed " << entitiesToUnsubscribe.size()
-	          << " entities\n";
+	LOGD_IF(entitiesToUnsubscribe.size()) << "PlanComponentManager: Unsubscribed "
+	                                      << entitiesToUnsubscribe.size() << " entities";
 	UnsubscribeEntities(entitiesToUnsubscribe);
 }
 
@@ -130,7 +132,7 @@ void PlanComponentManager::SubscribeEntitiesInternal(const EntityList& subscribe
 		planner.DebugPrint = true;
 	}
 
-	std::cout << "PlanComponentManager: Subscribed " << components.size() << " entities\n";
+	LOGD << "PlanComponentManager: Subscribed " << components.size() << " entities";
 }
 
 void PlanComponentManager::UnsubscribeEntitiesInternal(const EntityList& unsubscribers,

@@ -1,7 +1,8 @@
 #include "HTNTasks.hpp"
 
 #include <cassert>
-#include <iostream>
+
+#include "../../util/Logging.hpp"
 
 namespace Htn
 {
@@ -33,6 +34,27 @@ Task* GoalTask::GetMethodAtIndex(int index)
 void GoalTask::SetMethods(TaskList* newMethods)
 {
 	Methods = newMethods;
+}
+
+Task* GoalTask::GetTask()
+{
+	if (TaskContainer.GetType() == TaskType::None)
+		TaskContainer.Initialize(this);
+	return &TaskContainer;
+}
+
+Task* PrimitiveTask::GetTask()
+{
+	if (TaskContainer.GetType() == TaskType::None)
+		TaskContainer.Initialize(this);
+	return &TaskContainer;
+}
+
+Task* CompoundTask::GetTask()
+{
+	if (TaskContainer.GetType() == TaskType::None)
+		TaskContainer.Initialize(this);
+	return &TaskContainer;
 }
 
 Task::Task(GoalTask* goal)
@@ -111,19 +133,15 @@ std::ostream& operator<<(std::ostream& os, const Task& task)
 
 void PrintTaskList(const TaskList& tasks)
 {
-	std::cout << "TaskList size = " << tasks.size() << " addr " << &tasks << ":\n";
+	LOGD << "TaskList size = " << tasks.size() << " addr " << &tasks << ":";
 	for (unsigned int i = 0; i < tasks.size(); i++)
-	{
-		std::cout << "\t[" << i << "] " << *tasks[i] << "\n";
-	}
+		LOGD << "    [" << i << "] " << *tasks[i];
 }
 
 void PrintTaskCallList(const TaskCallList& tasks)
 {
-	std::cout << "TaskCallList size = " << tasks.size() << " addr " << &tasks << ":\n";
+	LOGD << "TaskCallList size = " << tasks.size() << " addr " << &tasks << ":";
 	for (unsigned int i = 0; i < tasks.size(); i++)
-	{
-		std::cout << "\t[" << i << "] " << *tasks[i].TaskToCall << "\n";
-	}
+		LOGD << "    [" << i << "] " << *tasks[i].TaskToCall;
 }
 }

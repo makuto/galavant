@@ -2,7 +2,6 @@
 #define POOL_HPP
 #include <stdlib.h>
 #include <vector>
-#include <iostream>
 
 // This is some old code copied from the Horizon iteration. It's due for a rewrite.
 // TODO: Add standard iterator syntax (See ObjectPool.hpp)

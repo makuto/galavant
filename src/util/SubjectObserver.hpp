@@ -38,6 +38,8 @@ public:
 		if (foundObserver != Observers.end())
 			Observers.remove(foundObserver);
 	}
+
+	// TODO: This could be improved by sending all events in one Notify...
 	void Notify(const T& event)
 	{
 		for (Observer<T>* currentObserver : Observers)
