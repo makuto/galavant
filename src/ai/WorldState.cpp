@@ -4,7 +4,7 @@
 
 namespace gv
 {
-WorldState WorldStateManager::GetWorldStateForAgent(Entity agent)
+WorldState& WorldStateManager::GetWorldStateForAgent(Entity agent)
 {
 	EntityWorldStateMap::iterator findEnt = EntityWorldStates.find(agent);
 

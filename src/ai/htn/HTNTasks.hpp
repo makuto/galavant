@@ -2,6 +2,7 @@
 
 #include "HTNTypes.hpp"
 #include "../WorldState.hpp"
+#include "../../util/SubjectObserver.hpp"
 
 // For std::ostream
 #include <iostream>
@@ -102,6 +103,23 @@ public:
 	Task* GetTask();
 };
 
+struct TaskExecuteStatus
+{
+	enum ExecutionStatus
+	{
+		Failed = 0,
+		Succeeded = 1,
+		Running = 2,
+		Subscribe = 3,
+		Reexecute = 4
+	};
+
+	ExecutionStatus Status;
+
+	// If the status is to Subscribe, the thing running tasks should Observe the given subject
+	gv::Subject<TaskEvent>* Subject;
+};
+
 class PrimitiveTask
 {
 private:
@@ -116,7 +134,7 @@ public:
 	// Returns whether or not starting the task was successful (NOT whether the task completed)
 	// Execution should (when completed etc.) modify the world state the same as ApplyStateChange
 	// would. Call that function for extra safety
-	virtual bool Execute(gv::WorldState& state, const ParameterList& parameters) = 0;
+	virtual TaskExecuteStatus Execute(gv::WorldState& state, const ParameterList& parameters) = 0;
 
 	Task* GetTask();
 };

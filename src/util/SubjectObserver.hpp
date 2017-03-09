@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "entityComponentSystem/EntityTypes.hpp"
+#include "../entityComponentSystem/EntityTypes.hpp"
 
 namespace gv
 {

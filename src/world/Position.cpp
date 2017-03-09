@@ -127,3 +127,11 @@ GlobalPosition::GlobalPosition(Position& localPosition) : LocalPosition(localPos
 {
 }
 }
+
+namespace plog
+{
+Record& operator<<(Record& record, const gv::Position& position)
+{
+	return record << "(" << position.X << ", " << position.Y << ", " << position.Z << ")";
+}
+}

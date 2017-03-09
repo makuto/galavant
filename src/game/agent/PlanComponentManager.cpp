@@ -50,31 +50,50 @@ void PlanComponentManager::Update(float deltaSeconds)
 				{
 					Htn::ParameterList& parameters = (*currentStep).Parameters;
 					Htn::Task* task = (*currentStep).TaskToCall;
-					gv::WorldState worldState =
+					gv::WorldState& worldState =
 					    worldStateManager->GetWorldStateForAgent(currentEntity);
 
-					// We are ignorant of type here because the plan consists only of primitives at
-					// this point
 					if (task)
-						task->GetPrimitive()->Execute(worldState, parameters);
+					{
+						Htn::TaskExecuteStatus status;
+						// We are ignorant of type here because the plan consists only of primitives
+						// at this point
+						status = task->GetPrimitive()->Execute(worldState, parameters);
 
-					// Remove the current step because we've executed it.
-					// TODO: Only remove if the step has finished; handle failed steps
-					// For now, just edit FinalCallList directly
-					componentPlanner.FinalCallList.erase(currentStep);
+						switch (status.Status)
+						{
+							case Htn::TaskExecuteStatus::Reexecute:
+								// Don't get rid of the task - execute again
+								break;
+							case Htn::TaskExecuteStatus::Subscribe:
+								if (status.Subject)
+									status.Subject->AddObserver(this);
+								componentPlanner.FinalCallList.erase(currentStep);
+								break;
+
+							// All other statuses result in us getting rid of the task
+							default:
+								LOGD_IF(DebugPrint) << "Task returned conclusive status "
+								                    << status.Status;
+								componentPlanner.FinalCallList.erase(currentStep);
+								break;
+						}
+					}
+					else
+						componentPlanner.FinalCallList.erase(currentStep);
 				}
 				else
 				{
 					// We have finished all tasks; remove this entity from the manager
 					// TODO: We'll eventually hook up some event shit
-					LOGD << "PlanComponentManager: Call list empty";
+					LOGD_IF(DebugPrint) << "PlanComponentManager: Call list empty";
 					entitiesToUnsubscribe.push_back(currentEntity);
 				}
 			}
 			else
 			{
-				LOGD << "PlanComponentManager: Plan not complete, status "
-				     << (int)componentPlanner.CurrentStatus;
+				LOGD_IF(DebugPrint) << "PlanComponentManager: Plan not complete, status "
+				                    << (int)componentPlanner.CurrentStatus;
 				entitiesToUnsubscribe.push_back(currentEntity);
 			}
 		}
@@ -85,22 +104,22 @@ void PlanComponentManager::Update(float deltaSeconds)
 			{
 				if (status == Htn::Planner::Status::PlanComplete)
 				{
-					LOGD << "PlanComponentManager: Sucessful plan for Entity "
-					     << currentComponent->entity << "! Final Call List:";
+					LOGD_IF(DebugPrint) << "PlanComponentManager: Sucessful plan for Entity "
+					                    << currentComponent->entity << "! Final Call List:";
 					Htn::PrintTaskCallList(componentPlanner.FinalCallList);
 					// We'll execute the plan next Update()
 				}
 
 				if (status < Htn::Planner::Status::Running_EnumBegin)
 				{
-					LOGD << "PlanComponentManager: Failed plan for Entity "
-					     << currentComponent->entity << " with code " << int(status)
-					     << "! Initial Call List:";
+					LOGD_IF(DebugPrint) << "PlanComponentManager: Failed plan for Entity "
+					                    << currentComponent->entity << " with code " << int(status)
+					                    << "! Initial Call List:";
 					Htn::PrintTaskCallList(componentPlanner.InitialCallList);
 
 					// Plan failed, remove entity
 					// TODO: Hook up  events
-					LOGD << "PlanComponentManager: Plan not running/failed";
+					LOGD_IF(DebugPrint) << "PlanComponentManager: Plan not running/failed";
 					entitiesToUnsubscribe.push_back(currentEntity);
 				}
 			}
@@ -110,6 +129,12 @@ void PlanComponentManager::Update(float deltaSeconds)
 	LOGD_IF(entitiesToUnsubscribe.size()) << "PlanComponentManager: Unsubscribed "
 	                                      << entitiesToUnsubscribe.size() << " entities";
 	UnsubscribeEntities(entitiesToUnsubscribe);
+}
+
+void PlanComponentManager::OnNotify(const Htn::TaskEvent& event)
+{
+	LOGD_IF(DebugPrint) << "Entity [" << event.entity << "] Task notify returned status "
+	                    << (int)event.Result;
 }
 
 void PlanComponentManager::SubscribeEntitiesInternal(const EntityList& subscribers,
@@ -132,7 +157,7 @@ void PlanComponentManager::SubscribeEntitiesInternal(const EntityList& subscribe
 		planner.DebugPrint = true;
 	}
 
-	LOGD << "PlanComponentManager: Subscribed " << components.size() << " entities";
+	LOGD_IF(DebugPrint) << "PlanComponentManager: Subscribed " << components.size() << " entities";
 }
 
 void PlanComponentManager::UnsubscribeEntitiesInternal(const EntityList& unsubscribers,

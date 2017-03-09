@@ -27,10 +27,12 @@ public:
 		std::cout << "\tApplyStateChange AlwaysFailPrimitiveTask\n";
 	}
 
-	virtual bool Execute(gv::WorldState& state, const Htn::ParameterList& parameters)
+	virtual Htn::TaskExecuteStatus Execute(gv::WorldState& state,
+	                                      const Htn::ParameterList& parameters)
 	{
 		std::cout << "\texecute AlwaysFailPrimitiveTask: " << parameters[0].IntValue << "\n";
-		return false;
+		Htn::TaskExecuteStatus status {Htn::TaskExecuteStatus::ExecutionStatus::Failed, NULL};
+		return status;
 	}
 };
 
@@ -53,10 +55,12 @@ public:
 		std::cout << "\tApplyStateChange RequiresStatePrimitiveTask\n";
 	}
 
-	virtual bool Execute(gv::WorldState& state, const Htn::ParameterList& parameters)
+	virtual Htn::TaskExecuteStatus Execute(gv::WorldState& state,
+	                                      const Htn::ParameterList& parameters)
 	{
 		std::cout << "\texecute RequiresStatePrimitiveTask: " << parameters[0].IntValue << "\n";
-		return true;
+		Htn::TaskExecuteStatus status {Htn::TaskExecuteStatus::ExecutionStatus::Succeeded, NULL};
+		return status;
 	}
 };
 
@@ -79,10 +83,12 @@ public:
 		state.TestStateChange = 1;
 	}
 
-	virtual bool Execute(gv::WorldState& state, const Htn::ParameterList& parameters)
+	virtual Htn::TaskExecuteStatus Execute(gv::WorldState& state,
+	                                      const Htn::ParameterList& parameters)
 	{
 		std::cout << "\texecute TestPrimitiveTask: " << parameters[0].IntValue << "\n";
-		return true;
+		Htn::TaskExecuteStatus status {Htn::TaskExecuteStatus::ExecutionStatus::Succeeded, NULL};
+		return status;
 	}
 };
 

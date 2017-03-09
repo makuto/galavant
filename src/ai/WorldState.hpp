@@ -38,6 +38,6 @@ private:
 	typedef std::map<Entity, WorldState> EntityWorldStateMap;
 	EntityWorldStateMap EntityWorldStates;
 public:
-	WorldState GetWorldStateForAgent(Entity agent);
+	WorldState& GetWorldStateForAgent(Entity agent);
 };
 };

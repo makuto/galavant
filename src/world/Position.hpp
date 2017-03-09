@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "../util/Logging.hpp"
+
 namespace gv
 {
 struct Position
@@ -52,3 +54,8 @@ struct GlobalPosition
 typedef std::vector<Position> PositionList;
 typedef std::vector<Position*> PositionRefList;
 };
+
+namespace plog
+{
+Record& operator<<(Record& record, const gv::Position& position);
+}
