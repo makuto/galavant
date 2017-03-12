@@ -19,6 +19,8 @@ void PlanComponentManager::Initialize(WorldStateManager* newWorldStateManager)
 	worldStateManager = newWorldStateManager;
 }
 
+void OnNotify(const Htn::TaskEventList& events, void* userData);
+
 void PlanComponentManager::Update(float deltaSeconds)
 {
 	EntityList entitiesToUnsubscribe;
@@ -66,8 +68,8 @@ void PlanComponentManager::Update(float deltaSeconds)
 								// Don't get rid of the task - execute again
 								break;
 							case Htn::TaskExecuteStatus::Subscribe:
-								if (status.Subject)
-									status.Subject->AddObserver(this);
+								if (status.EventCallbackContainer)
+									status.EventCallbackContainer->AddCallback(&OnNotify, this);
 								componentPlanner.FinalCallList.erase(currentStep);
 								break;
 
@@ -104,9 +106,12 @@ void PlanComponentManager::Update(float deltaSeconds)
 			{
 				if (status == Htn::Planner::Status::PlanComplete)
 				{
-					LOGD_IF(DebugPrint) << "PlanComponentManager: Sucessful plan for Entity "
-					                    << currentComponent->entity << "! Final Call List:";
-					Htn::PrintTaskCallList(componentPlanner.FinalCallList);
+					if (DebugPrint)
+					{
+						LOGD << "PlanComponentManager: Sucessful plan for Entity "
+						     << currentComponent->entity << "! Final Call List:";
+						Htn::PrintTaskCallList(componentPlanner.FinalCallList);
+					}
 					// We'll execute the plan next Update()
 				}
 
@@ -131,10 +136,18 @@ void PlanComponentManager::Update(float deltaSeconds)
 	UnsubscribeEntities(entitiesToUnsubscribe);
 }
 
-void PlanComponentManager::OnNotify(const Htn::TaskEvent& event)
+void OnNotify(const Htn::TaskEventList& events, void* userData)
 {
-	LOGD_IF(DebugPrint) << "Entity [" << event.entity << "] Task notify returned status "
-	                    << (int)event.Result;
+	if (userData)
+	{
+		PlanComponentManager* planManager = (PlanComponentManager*)userData;
+		for (const Htn::TaskEvent& event : events)
+		{
+			LOGD_IF(planManager->DebugPrint) << "Entity [" << event.entity
+			                                 << "] Task notify returned status "
+			                                 << (int)event.Result;
+		}
+	}
 }
 
 void PlanComponentManager::SubscribeEntitiesInternal(const EntityList& subscribers,
@@ -154,10 +167,10 @@ void PlanComponentManager::SubscribeEntitiesInternal(const EntityList& subscribe
 
 		// TODO: This is not kosher
 		planner.CurrentStatus = Htn::Planner::Status::Running_SuccessfulPrimitive;
-		planner.DebugPrint = true;
+		planner.DebugPrint = DebugPrint;
 	}
 
-	LOGD_IF(DebugPrint) << "PlanComponentManager: Subscribed " << components.size() << " entities";
+	LOGD_IF(DebugPrint) << "PlanComponentManager: Subscribed " << subscribers.size() << " entities";
 }
 
 void PlanComponentManager::UnsubscribeEntitiesInternal(const EntityList& unsubscribers,

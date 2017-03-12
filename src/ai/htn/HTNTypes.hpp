@@ -37,8 +37,15 @@ struct Parameter
 
 	Parameter()
 	{
-		new(&PositionValue) gv::Position();
+		new (&PositionValue) gv::Position();
 	}
+
+	// TODO Make these helpers
+	/*void SetInt(Int& newInt);
+	void SetFloat(Float& newFloat);
+	void SetBool(Bool& newBool);
+	void SetEntity(Entity& newEntity);
+	void SetPosition(Position& newPosition);*/
 };
 
 typedef std::vector<Parameter> ParameterList;
@@ -59,4 +66,6 @@ struct TaskEvent
 	TaskResult Result;
 	gv::Entity entity;
 };
+typedef std::vector<TaskEvent> TaskEventList;
+using TaskEventCallback = void (*)(const TaskEventList&, void*);
 }

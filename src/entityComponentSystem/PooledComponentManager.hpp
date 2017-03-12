@@ -142,6 +142,7 @@ public:
 		Reset();
 	}
 
+	// TODO: Make the caller wrap their thing in a PooledComponent for no reason? Gross
 	// If the entity is already subscribed, the input component will be tossed out
 	void SubscribeEntities(const std::vector<PooledComponent<T>>& components)
 	{
@@ -228,6 +229,17 @@ public:
 
 		// Remove all entities which were unsubscribed from the Subscribers list
 		EntityListRemoveNonUniqueEntitiesInSuspect(entitiesToUnsubscribe, Subscribers);
+	}
+
+	bool IsSubscribed(const Entity& entity)
+	{
+		for (const Entity& subscriber : Subscribers)
+		{
+			if (subscriber == entity)
+				return true;
+		}
+
+		return false;
 	}
 
 	void Reset()

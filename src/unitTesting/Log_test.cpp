@@ -4,9 +4,9 @@
 #include "../../thirdParty/Catch/single_include/catch.hpp"
 
 #include <plog/Log.h>
-
-// for MyAppender
 #include <plog/Formatters/FuncMessageFormatter.h>
+#include <plog/Appenders/ColorConsoleAppender.h>
+
 #include <list>
 
 #include "../util/Logging.hpp"

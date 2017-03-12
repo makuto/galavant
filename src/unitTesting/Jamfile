@@ -8,7 +8,7 @@ LinkLibraries entityComponentTest : libGalaEntityComponent ;
 Main objectPoolTest : ObjectPoolTest.cpp ;
 
 Main htnTest : HTN_test.cpp ;
-LinkLibraries htnTest : libGalaAi ;
+LinkLibraries htnTest : libGalaAi libGalaUtil ;
 
 Main positionTest : Position_test.cpp ;
 LinkLibraries positionTest : libGalaWorld ;

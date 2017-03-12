@@ -2,7 +2,7 @@
 
 #include "HTNTypes.hpp"
 #include "../WorldState.hpp"
-#include "../../util/SubjectObserver.hpp"
+#include "../../util/CallbackContainer.hpp"
 
 // For std::ostream
 #include <iostream>
@@ -116,8 +116,8 @@ struct TaskExecuteStatus
 
 	ExecutionStatus Status;
 
-	// If the status is to Subscribe, the thing running tasks should Observe the given subject
-	gv::Subject<TaskEvent>* Subject;
+	// If the status is to Subscribe, the thing running tasks should add its callback
+	gv::CallbackContainer<TaskEventCallback>* EventCallbackContainer;
 };
 
 class PrimitiveTask

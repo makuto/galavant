@@ -2,7 +2,7 @@ SubDir . src game ;
 
 SubDirC++Flags $(ALLLIBSC++FLAGS) ;
 
-Library libGalaGame : agent/PlanComponentManager.cpp ;
+Library libGalaGame : agent/PlanComponentManager.cpp agent/AgentComponentManager.cpp ;
 
 LinkLibraries libGalaGame : libGalaAi libGalaWorld ;
 

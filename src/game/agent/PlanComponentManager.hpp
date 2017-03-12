@@ -4,7 +4,6 @@
 #include "../../ai/htn/HTNPlanner.hpp"
 #include "../../ai/htn/HTNTypes.hpp"
 #include "../../ai/WorldState.hpp"
-#include "../../util/SubjectObserver.hpp"
 
 namespace gv
 {
@@ -24,8 +23,7 @@ TODO: PooledComponentManager is going to need to be discarded in order to handle
 plans.
 */
 // TODO: Multiple inheritance :(
-class PlanComponentManager : public gv::PooledComponentManager<PlanComponentData>,
-                             public gv::Observer<Htn::TaskEvent>
+class PlanComponentManager : public gv::PooledComponentManager<PlanComponentData>
 {
 private:
 	WorldStateManager* worldStateManager;
@@ -47,7 +45,5 @@ public:
 	virtual ~PlanComponentManager();
 	void Initialize(WorldStateManager* newWorldStateManager);
 	virtual void Update(float deltaSeconds);
-
-	virtual void OnNotify(const Htn::TaskEvent& event);
 };
 };
