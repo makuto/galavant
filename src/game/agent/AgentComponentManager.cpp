@@ -3,6 +3,7 @@
 #include "../../util/Logging.hpp"
 
 #include "../../entityComponentSystem/PooledComponentManager.hpp"
+#include "../../ai/htn/HTNTaskDb.hpp"
 
 namespace gv
 {
@@ -73,7 +74,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 				if (needUpdated)
 				{
 					need.LastUpdateTime = WorldTime;
-					
+
 					for (const NeedLevelTrigger& needLevelTrigger : need.Def->LevelTriggers)
 					{
 						bool needTriggerHit = (needLevelTrigger.GreaterThanLevel &&
@@ -118,21 +119,23 @@ void AgentComponentManager::Update(float deltaSeconds)
 					{
 						if (goal.Type == AgentGoal::GoalType::GetResource)
 						{
-							LOGD_IF(DebugPrint)
-							    << "Agent starting GetResource goal plan (not actually hooked up)";
-							goal.Status = AgentGoal::GoalStatus::InProgress;
-							/*gv::PooledComponent<PlanComponentData> newPlanComponent;
+							gv::PooledComponent<PlanComponentData> newPlanComponent;
 							Htn::Parameter resourceToFind;
 							resourceToFind.IntValue = goal.WorldResource;
 							resourceToFind.Type = Htn::Parameter::ParamType::Int;
 							Htn::ParameterList parameters = {resourceToFind};
-							Htn::TaskCall findAgentCall{testGetResourceTask.GetTask(), parameters};
-							Htn::TaskCallList findAgentTasks = {findAgentCall};
+							Htn::TaskCall getResourceCall{
+							    Htn::TaskDb::GetTask(Htn::TaskName::GetResource), parameters};
+							Htn::TaskCallList getResourceTasks = {getResourceCall};
 							newPlanComponent.entity = currentEntity;
 							newPlanComponent.data.Tasks.insert(newPlanComponent.data.Tasks.end(),
-							                                   GetResourceTasks.begin(),
-							                                   GetResourceTasks.end());
-							newPlans.push_back(newPlanComponent);*/
+							                                   getResourceTasks.begin(),
+							                                   getResourceTasks.end());
+
+							newPlans.push_back(newPlanComponent);
+
+							LOGD_IF(DebugPrint) << "Agent starting GetResource goal plan";
+							goal.Status = AgentGoal::GoalStatus::InProgress;
 						}
 					}
 					else

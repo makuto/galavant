@@ -77,7 +77,10 @@ Planner::Status Planner::PlanStep_BottomLevel()
 		TaskCall currentTaskCall = (*currentTaskCallIter);
 		Task* currentTask = currentTaskCall.TaskToCall;
 		if (!currentTask)
-			continue;
+		{
+			LOGE << "Task in plan is null!";
+			return Status::Failed_BadData;
+		}
 		TaskType currentTaskType = currentTask->GetType();
 
 		LOGD_IF(DebugPrint) << "TaskType currentTaskType = " << (int)currentTaskType;
@@ -198,7 +201,10 @@ Planner::Status Planner::PlanStep_StackFrame()
 		TaskCall currentTaskCall = (*currentTaskCallIter);
 		Task* currentTask = currentTaskCall.TaskToCall;
 		if (!currentTask)
-			continue;
+		{
+			LOGE << "Task in plan is null!";
+			return Status::Failed_BadData;
+		}
 		TaskType currentTaskType = currentTask->GetType();
 
 		LOGD_IF(DebugPrint) << "TaskType currentTaskType = " << (int)currentTaskType;

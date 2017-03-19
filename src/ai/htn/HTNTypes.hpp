@@ -67,5 +67,6 @@ struct TaskEvent
 	gv::Entity entity;
 };
 typedef std::vector<TaskEvent> TaskEventList;
+
 using TaskEventCallback = void (*)(const TaskEventList&, void*);
 }

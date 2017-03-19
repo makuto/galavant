@@ -4,6 +4,7 @@
 #include "../WorldState.hpp"
 #include "../../util/CallbackContainer.hpp"
 
+
 // For std::ostream
 #include <iostream>
 
@@ -108,16 +109,13 @@ struct TaskExecuteStatus
 	enum ExecutionStatus
 	{
 		Failed = 0,
-		Succeeded = 1,
-		Running = 2,
-		Subscribe = 3,
-		Reexecute = 4
+		Succeeded,
+		Running,
+		Subscribe,
+		Reexecute
 	};
 
 	ExecutionStatus Status;
-
-	// If the status is to Subscribe, the thing running tasks should add its callback
-	gv::CallbackContainer<TaskEventCallback>* EventCallbackContainer;
 };
 
 class PrimitiveTask

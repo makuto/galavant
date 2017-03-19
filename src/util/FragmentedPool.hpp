@@ -58,15 +58,15 @@ private:
 		{
 			FragmentedPoolData<R>* currentData = &pool[i];
 			currentData->nextFreeData = &pool[i + 1];
-			currentData->nextUsedData = NULL;
-			currentData->prevUsedData = NULL;
+			currentData->nextUsedData = nullptr;
+			currentData->prevUsedData = nullptr;
 			currentData->isActive = false;
 		}
-		// Last datum needs NULL status to signal end of linked list
+		// Last datum needs nullptr status to signal end of linked list
 		FragmentedPoolData<R>* lastData = &pool[size - 1];
-		lastData->nextFreeData = NULL;
-		lastData->nextUsedData = NULL;
-		lastData->prevUsedData = NULL;
+		lastData->nextFreeData = nullptr;
+		lastData->nextUsedData = nullptr;
+		lastData->prevUsedData = nullptr;
 		lastData->isActive = false;
 	}
 
@@ -77,8 +77,8 @@ public:
 	{
 		size = newSize;
 		totalActiveData = 0;
-		firstFreeData = NULL;
-		firstUsedData = NULL;
+		firstFreeData = nullptr;
+		firstUsedData = nullptr;
 		pool.resize(size);
 		ResetPool();
 	}
@@ -87,29 +87,29 @@ public:
 	void Clear()
 	{
 		totalActiveData = 0;
-		firstFreeData = NULL;
-		firstUsedData = NULL;
+		firstFreeData = nullptr;
+		firstUsedData = nullptr;
 		ResetPool();
 	}
-	// Returns the first free data in the pool, or NULL if the pool is
+	// Returns the first free data in the pool, or nullptr if the pool is
 	// full.
 	FragmentedPoolData<R>* GetNewData()
 	{
-		if (firstFreeData != NULL)  // Make sure the pool isn't full
+		if (firstFreeData != nullptr)  // Make sure the pool isn't full
 		{
 			FragmentedPoolData<R>* freeData = firstFreeData;
 			firstFreeData = firstFreeData->nextFreeData;
 			// Link this data into the usedData linked list
-			if (firstUsedData != NULL)
+			if (firstUsedData != nullptr)
 				firstUsedData->nextUsedData = freeData;
-			freeData->nextUsedData = NULL;
+			freeData->nextUsedData = nullptr;
 			freeData->prevUsedData = firstUsedData;
 			firstUsedData = freeData;
 			freeData->isActive = true;
 			totalActiveData++;
 			return freeData;
 		}
-		return NULL;  // Pool is full
+		return nullptr;  // Pool is full
 	}
 
 	// Sets the data to inactive so that it can be used again.
@@ -125,30 +125,30 @@ public:
 	}
 
 	// Gets data at the requested index.
-	// Returns NULL if index isn't within range or data is not active
+	// Returns nullptr if index isn't within range or data is not active
 	// Use getNextActiveData if you want to iterate through the pool
 	//(it uses nextUsedData to skip over inactive data)
 	FragmentedPoolData<R>* GetActiveDataAtIndex(unsigned int index)
 	{
 		// Index out of bounds
 		if (index > size)
-			return NULL;
+			return nullptr;
 		FragmentedPoolData<R>* data = &pool[index];
 		if (data->isActive)
 			return data;
 		else
-			return NULL;  // Data isn't in use
+			return nullptr;  // Data isn't in use
 	}
 
 	// Uses prevUsedData to skip over inactive data. This function will
-	// all fast iteration through active data in the pool. Break on NULL
+	// all fast iteration through active data in the pool. Break on nullptr
 	FragmentedPoolData<R>* GetNextActiveData(FragmentedPoolData<R>* currentData)
 	{
 		return currentData->prevUsedData;
 	}
 
 	// Returns the first active data (use in conjunction with getNextActiveData)
-	// to traverse the pool. Returns NULL if the pool is empty
+	// to traverse the pool. Returns nullptr if the pool is empty
 	FragmentedPoolData<R>* GetFirstActiveData()
 	{
 		return firstUsedData;

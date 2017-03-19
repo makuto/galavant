@@ -146,8 +146,10 @@ public:
 	// If the entity is already subscribed, the input component will be tossed out
 	void SubscribeEntities(const std::vector<PooledComponent<T>>& components)
 	{
-		std::vector<PooledComponent<T>*> newSubscriberComponents(components.size());
+		std::vector<PooledComponent<T>*> newSubscriberComponents;
+		newSubscriberComponents.reserve(components.size());
 		EntityList newSubscribers;
+		newSubscribers.reserve(components.size());
 
 		for (typename std::vector<PooledComponent<T>>::const_iterator it = components.begin();
 		     it != components.end(); ++it)
@@ -186,7 +188,8 @@ public:
 		// Ensure that we only unsubscribe entities which are actually Subscribers
 		EntityListRemoveUniqueEntitiesInSuspect(Subscribers, entitiesToUnsubscribe);
 
-		std::vector<PooledComponent<T>*> unsubscribers(entitiesToUnsubscribe.size());
+		std::vector<PooledComponent<T>*> unsubscribers;
+		unsubscribers.reserve(entitiesToUnsubscribe.size());
 
 		// Build the list of components we are going to be unsubscribing for the
 		//  child of this class. We can probably make this one loop, but we'll save that for later

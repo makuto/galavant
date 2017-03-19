@@ -4,6 +4,7 @@
 #include "../../ai/htn/HTNPlanner.hpp"
 #include "../../ai/htn/HTNTypes.hpp"
 #include "../../ai/WorldState.hpp"
+#include "../../util/CallbackContainer.hpp"
 
 namespace gv
 {
@@ -14,15 +15,16 @@ struct PlanComponentData
 protected:
 	friend class PlanComponentManager;
 	Htn::Planner Planner;
+
+	bool WaitingForEvent = false;
 };
 
 /* --PlanComponentManager--
 Prepare, manage, and execute plan(s) for Entities.
 
-TODO: PooledComponentManager is going to need to be discarded in order to handle Entities with many
+TODO: PooledComponentManager is going to need to be modified in order to handle Entities with many
 plans.
 */
-// TODO: Multiple inheritance :(
 class PlanComponentManager : public gv::PooledComponentManager<PlanComponentData>
 {
 private:
@@ -43,7 +45,10 @@ public:
 
 	PlanComponentManager();
 	virtual ~PlanComponentManager();
-	void Initialize(WorldStateManager* newWorldStateManager);
+	void Initialize(WorldStateManager* newWorldStateManager,
+	                CallbackContainer<Htn::TaskEventCallback>* taskEventCallbacks);
 	virtual void Update(float deltaSeconds);
+
+	Htn::TaskEventList ReceivedEvents;
 };
 };

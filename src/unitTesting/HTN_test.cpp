@@ -31,7 +31,7 @@ public:
 	                                      const Htn::ParameterList& parameters)
 	{
 		std::cout << "\texecute AlwaysFailPrimitiveTask: " << parameters[0].IntValue << "\n";
-		Htn::TaskExecuteStatus status {Htn::TaskExecuteStatus::ExecutionStatus::Failed, NULL};
+		Htn::TaskExecuteStatus status {Htn::TaskExecuteStatus::ExecutionStatus::Failed};
 		return status;
 	}
 };
@@ -59,7 +59,7 @@ public:
 	                                      const Htn::ParameterList& parameters)
 	{
 		std::cout << "\texecute RequiresStatePrimitiveTask: " << parameters[0].IntValue << "\n";
-		Htn::TaskExecuteStatus status {Htn::TaskExecuteStatus::ExecutionStatus::Succeeded, NULL};
+		Htn::TaskExecuteStatus status {Htn::TaskExecuteStatus::ExecutionStatus::Succeeded};
 		return status;
 	}
 };
@@ -87,7 +87,7 @@ public:
 	                                      const Htn::ParameterList& parameters)
 	{
 		std::cout << "\texecute TestPrimitiveTask: " << parameters[0].IntValue << "\n";
-		Htn::TaskExecuteStatus status {Htn::TaskExecuteStatus::ExecutionStatus::Succeeded, NULL};
+		Htn::TaskExecuteStatus status {Htn::TaskExecuteStatus::ExecutionStatus::Succeeded};
 		return status;
 	}
 };

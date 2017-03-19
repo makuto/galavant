@@ -1,14 +1,16 @@
-#include "GalavantUnreal.h"
-
-#include "TestWorldResourceLocator.hpp"
+#include "WorldResourceLocator.hpp"
 #include <limits>
 
+namespace gv
+{
+namespace WorldResourceLocator
+{
 static const unsigned int DEFAULT_RESOURCELIST_SIZE = 10;
 
 typedef std::map<WorldResourceType, ResourceList*> ResourceMap;
 static ResourceMap s_Resources;
 
-void WorldResourceLocator_ClearResources()
+void ClearResources()
 {
 	for (std::pair<const WorldResourceType, ResourceList*>& resourceTypeList : s_Resources)
 	{
@@ -17,37 +19,45 @@ void WorldResourceLocator_ClearResources()
 	s_Resources.clear();
 }
 
-bool WorldResourceLocator_ResourceListExists(const WorldResourceType type) const
+bool ResourceListExists(const WorldResourceType type)
 {
 	return s_Resources.find(type) != s_Resources.end();
 }
 
-bool WorldResourceLocator_ResourceExistsInWorld(const WorldResourceType type)
+bool ResourceExistsInWorld(const WorldResourceType type)
 {
-	return WorldResourceLocator_ResourceListExists(type) && !s_Resources[type]->empty();
+	return ResourceListExists(type) && !s_Resources[type]->empty();
 }
 
-void WorldResourceLocator_AddResource(const WorldResourceType type, const gv::Position& location)
+int NumResourcesInWorld(const WorldResourceType type)
+{
+	if (ResourceListExists(type))
+		return s_Resources[type]->size();
+	return 0;
+}
+
+void AddResource(const WorldResourceType type, const gv::Position& location)
 {
 	gv::Position newResource(location);
 	// Ensure we're not exactly 0,0,0 because I designed this poorly
 	newResource.Z = !newResource ? 0.1f : newResource.Z;
 
-	if (WorldResourceLocator_ResourceListExists(type))
+	if (ResourceListExists(type))
 	{
 		s_Resources[type]->push_back(newResource);
 	}
 	else
 	{
-		ResourceList* newResourceList = new ResourceList(DEFAULT_RESOURCELIST_SIZE);
+		ResourceList* newResourceList = new ResourceList();
+		newResourceList->reserve(DEFAULT_RESOURCELIST_SIZE);
 		newResourceList->push_back(newResource);
 		s_Resources[type] = newResourceList;
 	}
 }
 
-void WorldResourceLocator_RemoveResource(const WorldResourceType type, const gv::Position& location)
+void RemoveResource(const WorldResourceType type, const gv::Position& location)
 {
-	if (WorldResourceLocator_ResourceListExists(type))
+	if (ResourceListExists(type))
 	{
 		ResourceList* resourceList = s_Resources[type];
 		ResourceList::iterator resourceIt =
@@ -57,16 +67,15 @@ void WorldResourceLocator_RemoveResource(const WorldResourceType type, const gv:
 	}
 }
 
-void WorldResourceLocator_MoveResource(const WorldResourceType type,
-                                       const gv::Position& oldLocation,
-                                       const gv::Position& newLocation)
+void MoveResource(const WorldResourceType type, const gv::Position& oldLocation,
+                  const gv::Position& newLocation)
 {
-	if (WorldResourceLocator_ResourceListExists(type))
+	if (ResourceListExists(type))
 	{
 		for (gv::Position& currentResource : *s_Resources[type])
 		{
 			// They should be exactly equal. It's the caller's responsibility to keep track of this
-			if (currentResource.Equals(oldLocation, 0.f))
+			if (currentResource.Equals(oldLocation, 1.f))
 			{
 				currentResource = newLocation;
 				// Ensure we're not exactly 0,0,0 because I designed this poorly
@@ -79,12 +88,11 @@ void WorldResourceLocator_MoveResource(const WorldResourceType type,
 
 // Find the nearest resource. Uses Manhattan distance
 // Manhattan distance of -1 indicates no resource was found
-gv::Position WorldResourceLocator_FindNearestResource(const WorldResourceType type,
-                                                      const gv::Position& location,
-                                                      bool allowSameLocation, float& manhattanToOut)
+gv::Position FindNearestResource(const WorldResourceType type, const gv::Position& location,
+                                 bool allowSameLocation, float& manhattanToOut)
 {
 	gv::Position zeroPosition;
-	if (WorldResourceLocator_ResourceListExists(type))
+	if (ResourceListExists(type))
 	{
 		gv::Position closestResource;
 		float closestResourceDistance = std::numeric_limits<float>::max();
@@ -106,4 +114,6 @@ gv::Position WorldResourceLocator_FindNearestResource(const WorldResourceType ty
 
 	manhattanToOut = -1.f;
 	return zeroPosition;
+}
+}
 }

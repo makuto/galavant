@@ -37,7 +37,8 @@ void EntityCreatePositions(const EntityList& entities, PositionRefList& position
 
 		// Destroy the unowned position for the entity, if it exists
 		{
-			EntityPositionMap::iterator findPosition = s_Data.UnownedEntityPositions.find(currentEntity);
+			EntityPositionMap::iterator findPosition =
+			    s_Data.UnownedEntityPositions.find(currentEntity);
 			if (findPosition != s_Data.UnownedEntityPositions.end())
 				s_Data.UnownedEntityPositions.erase(findPosition);
 		}
@@ -48,7 +49,8 @@ void EntityCreatePositions(const EntityList& entities, PositionRefList& position
 
 void EntityDestroyPositions(const EntityList& entities)
 {
-	// TODO: This is bad :(
+	// TODO: This is a bit bad: loop through all positions for each entity to remove approaches N
+	// squared
 	for (EntityPositionRefMap::iterator it = s_Data.EntityPositionRefs.begin();
 	     it != s_Data.EntityPositionRefs.end();)
 	{
@@ -57,6 +59,11 @@ void EntityDestroyPositions(const EntityList& entities)
 		{
 			if (it->first == currentEntity)
 			{
+				// Copy to owned, in case other things still care about position
+				// TODO: Should that be the case? How to handle destroyed entities?
+				if (it->second)
+					s_Data.UnownedEntityPositions[it->first] = *it->second;
+
 				it = s_Data.EntityPositionRefs.erase(it);
 				foundEntity = true;
 				break;
