@@ -3,6 +3,7 @@
 
 #include "../entityComponentSystem/EntityTypes.hpp"
 #include "../entityComponentSystem/EntityComponentManager.hpp"
+#include "../entityComponentSystem/ComponentTypes.hpp"
 #include "../entityComponentSystem/ComponentManager.hpp"
 #include "../entityComponentSystem/PooledComponentManager.hpp"
 
@@ -34,7 +35,7 @@ void TestEntityCreationAndDestruction()
 	public:
 		TestComponentManager()
 		{
-			Type = 1;
+			Type = ComponentType::Test;
 		}
 		virtual ~TestComponentManager()
 		{

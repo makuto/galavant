@@ -30,8 +30,4 @@ void EntityListRemoveUniqueEntitiesInSuspect(const EntityList& list, EntityList&
 // Linear search for entity. I'll eventually add a binary search function if it can be assumed that
 // the list is sorted
 bool EntityListFindEntity(EntityList& list, Entity entity);
-
-// This should probably become an enum at some point.
-typedef unsigned int ComponentType;
-
 };

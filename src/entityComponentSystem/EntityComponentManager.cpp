@@ -1,16 +1,24 @@
 #include "EntityComponentManager.hpp"
 
+#include <cassert>
+
 namespace gv
 {
 Entity EntityComponentManager::NextNewEntity = 1;
+EntityComponentManager *EntityComponentManager::Singleton = nullptr;
 
 EntityComponentManager::EntityComponentManager()
 {
+	// Should not create more than one ECM! Commented due to Unreal's hotreloading :(
+	// assert(!Singleton);
+	Singleton = this;
 }
 
 EntityComponentManager::~EntityComponentManager()
 {
 	DestroyAllEntities();
+
+	Singleton = nullptr;
 }
 
 // Sets the ComponentManager for a ComponentType. Returns false if there is already a manager
@@ -20,10 +28,12 @@ bool EntityComponentManager::AddComponentManagerOfType(ComponentType type,
 {
 	if (manager)
 	{
-		// Make sure there isn't already a ComponentManager for the type
 		EntityComponentManager::ComponentManagerMapIterator findIt = ComponentManagers.find(type);
-		if (findIt == ComponentManagers.end())
-			ComponentManagers[type] = manager;
+
+		// Make sure there isn't already a ComponentManager for the type
+		assert(findIt == ComponentManagers.end());
+
+		ComponentManagers[type] = manager;
 	}
 
 	return false;
@@ -112,5 +122,13 @@ void EntityComponentManager::DestroyAllEntities()
 
 	ActiveEntities.clear();  // this should be empty anyways
 	EntitiesPendingDestruction.clear();
+}
+
+EntityComponentManager *EntityComponentManager::GetSingleton()
+{
+	// If failed, someone is requesting ECM before one has been initialized! Commented due to
+	// Unreal's hotreloading :(
+	// assert(Singleton);
+	return Singleton;
 }
 }

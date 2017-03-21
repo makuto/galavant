@@ -3,12 +3,14 @@
 #include "../../util/Logging.hpp"
 
 #include "../../entityComponentSystem/PooledComponentManager.hpp"
+#include "../../entityComponentSystem/ComponentTypes.hpp"
 #include "../../ai/htn/HTNTaskDb.hpp"
 
 namespace gv
 {
 AgentComponentManager::AgentComponentManager() : gv::PooledComponentManager<AgentComponentData>(100)
 {
+	Type = gv::ComponentType::Agent;
 }
 
 AgentComponentManager::~AgentComponentManager()
@@ -167,6 +169,8 @@ void AgentComponentManager::SubscribeEntitiesInternal(const EntityList& subscrib
 	{
 		if (!currentComponent)
 			continue;
+
+		currentComponent->data.ConsciousState = AgentConsciousState::Conscious;
 	}
 
 	LOGD_IF(DebugPrint) << "AgentComponentManager: Subscribed " << subscribers.size()
@@ -186,5 +190,38 @@ void AgentComponentManager::UnsubscribeEntitiesInternal(const EntityList& unsubs
 
 	LOGD_IF(unsubscribers.size()) << "AgentComponentManager: Unsubscribed " << unsubscribers.size()
 	                              << " entities";
+}
+
+void AgentComponentManager::GetAgentConsciousStates(const EntityList& entities,
+                                                    AgentConsciousStateList& stateListOut)
+{
+	for (const Entity& entity : entities)
+	{
+		bool foundEntity = false;
+
+		// TODO: Adding true iterator support to pool will drastically help damning this to hell
+		gv::PooledComponentManager<AgentComponentData>::FragmentedPoolIterator it =
+		    gv::PooledComponentManager<AgentComponentData>::NULL_POOL_ITERATOR;
+		for (gv::PooledComponent<AgentComponentData>* currentComponent = ActivePoolBegin(it);
+		     currentComponent != nullptr &&
+		     it != gv::PooledComponentManager<AgentComponentData>::NULL_POOL_ITERATOR;
+		     currentComponent = GetNextActivePooledComponent(it))
+		{
+			if (!currentComponent)
+				continue;
+
+			Entity currentEntity = currentComponent->entity;
+
+			if (currentEntity == entity)
+			{
+				stateListOut.push_back(currentComponent->data.ConsciousState);
+				foundEntity = true;
+				break;
+			}
+		}
+
+		if (!foundEntity)
+			stateListOut.push_back(AgentConsciousState::None);
+	}
 }
 }

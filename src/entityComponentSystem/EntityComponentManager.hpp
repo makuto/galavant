@@ -3,6 +3,7 @@
 #include <map>
 
 #include "EntityTypes.hpp"
+#include "ComponentTypes.hpp"
 #include "ComponentManager.hpp"
 
 namespace gv
@@ -22,6 +23,8 @@ class EntityComponentManager
 private:
 	typedef std::map<ComponentType, ComponentManager *> ComponentManagerMap;
 	typedef ComponentManagerMap::iterator ComponentManagerMapIterator;
+
+	static EntityComponentManager* Singleton;
 
 	ComponentManagerMap ComponentManagers;
 
@@ -67,5 +70,7 @@ public:
 	// Destroys all entities that were created by this EntityComponentManager (i.e. all entities in
 	// the ActiveEntities list)
 	void DestroyAllEntities();
+
+	static EntityComponentManager* GetSingleton();
 };
 };

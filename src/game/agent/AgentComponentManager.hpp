@@ -1,6 +1,9 @@
 #pragma once
 
+#include <vector>
+
 #include "../../entityComponentSystem/PooledComponentManager.hpp"
+#include "../../entityComponentSystem/EntityTypes.hpp"
 #include "PlanComponentManager.hpp"
 #include "Needs.hpp"
 
@@ -31,9 +34,26 @@ struct AgentGoal
 };
 typedef std::vector<AgentGoal> AgentGoalList;
 
+// An agent can only be one of these at a time
+enum class AgentConsciousState
+{
+	None = 0,
+
+	Conscious,
+	Unconscious,
+	Sleeping,
+	Dead,
+
+	AgentState_count
+};
+
+typedef std::vector<AgentConsciousState> AgentConsciousStateList;
+
 struct AgentComponentData
 {
 	bool IsAlive = true;
+	AgentConsciousState ConsciousState;
+
 	NeedList Needs;
 	AgentGoalList Goals;
 };
@@ -65,5 +85,7 @@ public:
 	void Initialize(PlanComponentManager* newPlanComponentManager);
 
 	virtual void Update(float deltaSeconds);
+
+	void GetAgentConsciousStates(const EntityList& entities, AgentConsciousStateList& stateListOut);
 };
 };

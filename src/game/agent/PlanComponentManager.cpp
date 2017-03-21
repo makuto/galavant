@@ -3,11 +3,13 @@
 #include "../../util/Logging.hpp"
 
 #include "../../entityComponentSystem/PooledComponentManager.hpp"
+#include "../../entityComponentSystem/ComponentTypes.hpp"
 
 namespace gv
 {
 PlanComponentManager::PlanComponentManager() : gv::PooledComponentManager<PlanComponentData>(100)
 {
+	Type = ComponentType::Plan;
 }
 
 PlanComponentManager::~PlanComponentManager()

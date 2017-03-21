@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EntityTypes.hpp"
+#include "ComponentTypes.hpp"
 
 namespace gv
 {
