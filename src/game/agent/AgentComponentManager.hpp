@@ -71,8 +71,8 @@ protected:
 
 	virtual void SubscribeEntitiesInternal(const EntityList& subscribers,
 	                                       AgentComponentRefList& components);
-	virtual void UnsubscribeEntitiesInternal(const EntityList& unsubscribers,
-	                                         AgentComponentRefList& components);
+	virtual void UnsubscribePoolEntitiesInternal(const EntityList& unsubscribers,
+	                                             AgentComponentRefList& components);
 
 public:
 	typedef std::vector<PooledComponent<AgentComponentData>> AgentComponentList;

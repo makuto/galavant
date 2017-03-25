@@ -15,12 +15,17 @@ protected:
 	// You should set this type in your constructor
 	ComponentType Type;
 
+	EntityList Subscribers;
+
+	virtual void UnsubscribeEntitiesInternal(const EntityList& entities);
+
 public:
 	virtual ~ComponentManager();
 
-	virtual void UnsubscribeEntities(const EntityList& entities);
+	// Calls UnsubscribeEntitiesInternal on entities actually subscribed (filters out
+	// non-subscribers), then once you're done it removes the entities from the Subscribers list
+	void UnsubscribeEntities(const EntityList& entities);
 
 	ComponentType GetType();
 };
-
 };

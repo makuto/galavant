@@ -35,8 +35,8 @@ protected:
 
 	virtual void SubscribeEntitiesInternal(const EntityList& subscribers,
 	                                       PlanComponentRefList& components);
-	virtual void UnsubscribeEntitiesInternal(const EntityList& unsubscribers,
-	                                         PlanComponentRefList& components);
+	virtual void UnsubscribePoolEntitiesInternal(const EntityList& unsubscribers,
+	                                             PlanComponentRefList& components);
 
 public:
 	typedef std::vector<gv::PooledComponent<PlanComponentData>> PlanComponentList;

@@ -6,8 +6,24 @@ ComponentManager::~ComponentManager()
 {
 }
 
+void ComponentManager::UnsubscribeEntitiesInternal(const EntityList& entities)
+{
+	// Classes don't have to implement this function if all they want is a subscriber list
+}
+
 void ComponentManager::UnsubscribeEntities(const EntityList& entities)
 {
+	// Copy for modification
+	EntityList entitiesToUnsubscribe;
+	EntityListAppendList(entitiesToUnsubscribe, entities);
+
+	// Make sure they're actually subscribed
+	EntityListRemoveUniqueEntitiesInSuspect(Subscribers, entitiesToUnsubscribe);
+
+	UnsubscribeEntitiesInternal(entitiesToUnsubscribe);
+
+	// Remove from subscribers
+	EntityListRemoveNonUniqueEntitiesInSuspect(entitiesToUnsubscribe, Subscribers);
 }
 
 ComponentType ComponentManager::GetType()

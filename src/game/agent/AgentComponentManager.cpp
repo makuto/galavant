@@ -177,8 +177,8 @@ void AgentComponentManager::SubscribeEntitiesInternal(const EntityList& subscrib
 	                    << " entities";
 }
 
-void AgentComponentManager::UnsubscribeEntitiesInternal(const EntityList& unsubscribers,
-                                                        AgentComponentRefList& components)
+void AgentComponentManager::UnsubscribePoolEntitiesInternal(const EntityList& unsubscribers,
+                                                            AgentComponentRefList& components)
 {
 	for (gv::PooledComponent<AgentComponentData>* currentComponent : components)
 	{

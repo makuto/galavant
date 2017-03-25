@@ -122,8 +122,8 @@ protected:
 	// Do whatever your custom manager does for unsubscribing here.
 	// The components are still in the subscription list and pool
 	// It is safe to subscribe and unsubscribe components in this function
-	virtual void UnsubscribeEntitiesInternal(const EntityList& unsubscribers,
-	                                         std::vector<PooledComponent<T>*>& components)
+	virtual void UnsubscribePoolEntitiesInternal(const EntityList& unsubscribers,
+	                                             std::vector<PooledComponent<T>*>& components)
 	{
 	}
 
@@ -180,14 +180,8 @@ public:
 		SubscribeEntitiesInternal(newSubscribers, newSubscriberComponents);
 	}
 
-	virtual void UnsubscribeEntities(const EntityList& entities)
+	virtual void UnsubscribeEntitiesInternal(const EntityList& entitiesToUnsubscribe)
 	{
-		EntityList entitiesToUnsubscribe;
-		EntityListAppendList(entitiesToUnsubscribe, entities);
-
-		// Ensure that we only unsubscribe entities which are actually Subscribers
-		EntityListRemoveUniqueEntitiesInSuspect(Subscribers, entitiesToUnsubscribe);
-
 		std::vector<PooledComponent<T>*> unsubscribers;
 		unsubscribers.reserve(entitiesToUnsubscribe.size());
 
@@ -212,7 +206,7 @@ public:
 		// Note that the child can actually unsubscribe entities in their function. This will
 		// currently only mean we might try to double-unsubscribe in the code below, which is not
 		// bad
-		UnsubscribeEntitiesInternal(entitiesToUnsubscribe, unsubscribers);
+		UnsubscribePoolEntitiesInternal(entitiesToUnsubscribe, unsubscribers);
 
 		// Remove the entities from pool (freeing memory)
 		for (EntityListConstIterator it = entitiesToUnsubscribe.begin();
@@ -229,9 +223,6 @@ public:
 					PooledComponents.RemoveData(currentPooledComponent);
 			}
 		}
-
-		// Remove all entities which were unsubscribed from the Subscribers list
-		EntityListRemoveNonUniqueEntitiesInSuspect(entitiesToUnsubscribe, Subscribers);
 	}
 
 	bool IsSubscribed(const Entity& entity)

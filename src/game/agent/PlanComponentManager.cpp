@@ -209,8 +209,8 @@ void PlanComponentManager::SubscribeEntitiesInternal(const EntityList& subscribe
 	LOGD_IF(DebugPrint) << "Subscribed " << subscribers.size() << " entities";
 }
 
-void PlanComponentManager::UnsubscribeEntitiesInternal(const EntityList& unsubscribers,
-                                                       PlanComponentRefList& components)
+void PlanComponentManager::UnsubscribePoolEntitiesInternal(const EntityList& unsubscribers,
+                                                           PlanComponentRefList& components)
 {
 	for (gv::PooledComponent<PlanComponentData>* currentComponent : components)
 	{
