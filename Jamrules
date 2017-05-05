@@ -62,7 +62,7 @@ else
 
 OPTIM = -O0 ;
 
-HDRS = thirdParty/flatbuffers/include thirdParty/plog/include ;
+HDRS = thirdParty/flatbuffers/include thirdParty/plog/include src ;
 
 # TODO: add project-specific filetype rules for things like flatbuffer .json compilation (see "UserObject rule":
 # 	https://swarm.workshop.perforce.com/view/guest/perforce_software/jam/src/Jamfile.html ) ?

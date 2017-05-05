@@ -6,6 +6,7 @@
 
 namespace gv
 {
+extern const float POSITION_TOLERANCE;
 struct Position
 {
 	float X = 0.f;

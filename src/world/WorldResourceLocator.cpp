@@ -5,6 +5,11 @@ namespace gv
 {
 namespace WorldResourceLocator
 {
+bool operator==(const Resource& a, const Resource& b)
+{
+	return (a.entity == b.entity && a.position.Equals(b.position, POSITION_TOLERANCE));
+}
+
 static const unsigned int DEFAULT_RESOURCELIST_SIZE = 10;
 
 typedef std::map<WorldResourceType, ResourceList*> ResourceMap;
@@ -36,11 +41,9 @@ int NumResourcesInWorld(const WorldResourceType type)
 	return 0;
 }
 
-void AddResource(const WorldResourceType type, const gv::Position& location)
+void AddResource(const WorldResourceType type, Entity entity, const gv::Position& location)
 {
-	gv::Position newResource(location);
-	// Ensure we're not exactly 0,0,0 because I designed this poorly
-	newResource.Z = !newResource ? 0.1f : newResource.Z;
+	Resource newResource = {entity, location};
 
 	if (ResourceListExists(type))
 	{
@@ -55,31 +58,36 @@ void AddResource(const WorldResourceType type, const gv::Position& location)
 	}
 }
 
-void RemoveResource(const WorldResourceType type, const gv::Position& location)
+void RemoveResource(const WorldResourceType type, Entity entity, const gv::Position& location)
 {
 	if (ResourceListExists(type))
 	{
 		ResourceList* resourceList = s_Resources[type];
-		ResourceList::iterator resourceIt =
-		    std::find(resourceList->begin(), resourceList->end(), location);
-		if (resourceIt != resourceList->end())
-			resourceList->erase(resourceIt);
+		Resource resource = {entity, location};
+		for (ResourceList::iterator resourceIt = resourceList->begin();
+		     resourceIt != resourceList->end(); ++resourceIt)
+		{
+			if (resource == (*resourceIt))
+			{
+				resourceList->erase(resourceIt);
+				break;
+			}
+		}
 	}
 }
 
-void MoveResource(const WorldResourceType type, const gv::Position& oldLocation,
+void MoveResource(const WorldResourceType type, Entity entity, const gv::Position& oldLocation,
                   const gv::Position& newLocation)
 {
 	if (ResourceListExists(type))
 	{
-		for (gv::Position& currentResource : *s_Resources[type])
+		Resource resource = {entity, oldLocation};
+		for (Resource& currentResource : *s_Resources[type])
 		{
 			// They should be exactly equal. It's the caller's responsibility to keep track of this
-			if (currentResource.Equals(oldLocation, 1.f))
+			if (currentResource == resource)
 			{
-				currentResource = newLocation;
-				// Ensure we're not exactly 0,0,0 because I designed this poorly
-				currentResource.Z = !currentResource ? 0.1f : currentResource.Z;
+				currentResource.position = newLocation;
 				break;
 			}
 		}
@@ -88,23 +96,22 @@ void MoveResource(const WorldResourceType type, const gv::Position& oldLocation,
 
 // Find the nearest resource. Uses Manhattan distance
 // Manhattan distance of -1 indicates no resource was found
-gv::Position FindNearestResource(const WorldResourceType type, const gv::Position& location,
-                                 bool allowSameLocation, float& manhattanToOut)
+Resource* FindNearestResource(const WorldResourceType type, const gv::Position& location,
+                              bool allowSameLocation, float& manhattanToOut)
 {
-	gv::Position zeroPosition;
 	if (ResourceListExists(type))
 	{
-		gv::Position closestResource;
+		Resource* closestResource = nullptr;
 		float closestResourceDistance = std::numeric_limits<float>::max();
 
-		for (gv::Position& currentResource : *s_Resources[type])
+		for (Resource& currentResource : *s_Resources[type])
 		{
-			float currentResourceDistance = location.ManhattanTo(currentResource);
+			float currentResourceDistance = location.ManhattanTo(currentResource.position);
 			if (currentResourceDistance < closestResourceDistance &&
 			    (allowSameLocation || currentResourceDistance > 0.f))
 			{
 				closestResourceDistance = currentResourceDistance;
-				closestResource = currentResource;
+				closestResource = &currentResource;
 			}
 		}
 
@@ -113,7 +120,7 @@ gv::Position FindNearestResource(const WorldResourceType type, const gv::Positio
 	}
 
 	manhattanToOut = -1.f;
-	return zeroPosition;
+	return nullptr;
 }
 }
 }

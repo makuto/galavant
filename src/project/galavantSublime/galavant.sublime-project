@@ -27,10 +27,46 @@
     ],
     "build_systems":
     [
+        // For galavant/, use
+        // "working_dir": "$project_path/../../.."
+        // Not sure why, but Sublime will actually keep going up across builds if you just do ../ first
+
         // Misc. Commands
         {
             "name": "List",
-            "shell_cmd": "ls -l"
+            "shell_cmd": "ls -l",
+            "working_dir": "$project_path/../../.."
+        },
+
+        // Convenience for Macoy
+        //guake -n MyTabName -e "command args"
+        {
+            "name": "Guake Galavant",
+            "shell_cmd": "guake -n Galavant -e \"cd Development/code/repositories/galavant\"",
+        },
+        {
+            "name": "Guake Galavant Unreal",
+            "shell_cmd": "guake -n GalavantUnreal -e \"cd Development/code/repositories/galavant-unreal/GalavantUnreal\"",
+        },
+
+        // "Full build" 
+        {
+            "name": "Full Unreal Build",
+            "shell_cmd": "cd galavant && jam -j4 -q -sUNREAL=true GalavantPseudotarget && cd ../galavant-unreal/GalavantUnreal && make GalavantUnreal",
+            "working_dir": "$project_path/../../../.."
+        },
+
+        // Unreal
+        {
+            "name": "Unreal Build",
+            "shell_cmd": "make GalavantUnreal",
+            "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"
+        },
+
+        {
+            "name": "Unreal Quick Clean",
+            "shell_cmd": "rm -r Intermediate/Build",
+            "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"
         },
 
         // Jam
@@ -41,17 +77,17 @@
         {
             "name": "Jam Clean All",
             "shell_cmd": "jam clean",
-            "working_dir": "../../../../galavant"
+            "working_dir": "$project_path/../../.."
         },
         {
             "name": "Jam Build (not Unreal)",
             "shell_cmd": "jam -j4 -q",
-            "working_dir": "../../../../galavant"
+            "working_dir": "$project_path/../../.."
         },
         {
-            "name": "Jam Unreal",
+            "name": "Jam Build Unreal",
             "shell_cmd": "jam -j4 -q -sUNREAL=true GalavantPseudotarget",
-            "working_dir": "../../../../galavant"
+            "working_dir": "$project_path/../../.."
         },
 
         // Misc. C++ Commands
@@ -64,7 +100,7 @@
         {
             "name": "Build All Experiments",
             "shell_cmd": "make",
-            "working_dir": "../../../src/experiments"
+            "working_dir": "$project_path/../../../src/experiments"
         },
     ],
 
@@ -74,7 +110,9 @@
         {
             "UnrealEditor":
             {
+                // Find and attach to running UE4 instance:
                 // sudo gdb /home/macoy/Downloads/UnrealEngine/Engine/Binaries/Linux/UE4Editor $(ps -A | grep UE4Editor | awk '{print $1;}')
+                
                 "workingdir": "/home/macoy/Downloads/UnrealEngine/Engine/Binaries/Linux",
                 "commandline": "gdb --interpreter=mi ./UE4Editor /home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
             },
@@ -85,11 +123,11 @@
                 "commandline": "gdb --interpreter=mi ./UE4Editor-Linux-Debug /home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
             },
 
-            "htnTest":
-            {
-                "workingdir": "../../../bin",
-                "commandline": "gdb --interpreter=mi ./htnTest"
-            },
+            //"htnTest":
+            //{
+            //    "workingdir": "../../../bin",
+            //    "commandline": "gdb --interpreter=mi ./htnTest"
+            //},
         }
     }
 }

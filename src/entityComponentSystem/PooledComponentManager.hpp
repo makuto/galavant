@@ -53,15 +53,10 @@ struct PooledComponent
 template <class T>
 class PooledComponentManager : public ComponentManager
 {
-private:
-	// This list is used only to quickly check whether an entity is subscribed; data should actually
-	// be stored in PooledComponents
-	EntityList Subscribers;
-
+protected:
 	// TODO: Replace FragmentedPool with a better pool
 	FragmentedPool<PooledComponent<T>> PooledComponents;
 
-protected:
 	typedef int FragmentedPoolIterator;
 	const int NULL_POOL_ITERATOR = -1;
 

@@ -16,6 +16,7 @@ enum class TaskName
 	// Primitives
 	FindResource,
 	MoveTo,
+	InteractPickup,
 
 	TaskName_count
 };

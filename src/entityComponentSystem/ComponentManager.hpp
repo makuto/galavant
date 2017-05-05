@@ -26,6 +26,8 @@ public:
 	// non-subscribers), then once you're done it removes the entities from the Subscribers list
 	void UnsubscribeEntities(const EntityList& entities);
 
+	bool IsSubscribed(Entity entity);
+
 	ComponentType GetType();
 };
 };

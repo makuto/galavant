@@ -1,4 +1,5 @@
 #include "ComponentManager.hpp"
+#include "util/Logging.hpp"
 
 namespace gv
 {
@@ -13,17 +14,30 @@ void ComponentManager::UnsubscribeEntitiesInternal(const EntityList& entities)
 
 void ComponentManager::UnsubscribeEntities(const EntityList& entities)
 {
-	// Copy for modification
-	EntityList entitiesToUnsubscribe;
-	EntityListAppendList(entitiesToUnsubscribe, entities);
+	if (!entities.empty())
+	{
+		// Copy for modification
+		EntityList entitiesToUnsubscribe;
+		EntityListAppendList(entitiesToUnsubscribe, entities);
 
-	// Make sure they're actually subscribed
-	EntityListRemoveUniqueEntitiesInSuspect(Subscribers, entitiesToUnsubscribe);
+		// Make sure they're actually subscribed
+		EntityListRemoveUniqueEntitiesInSuspect(Subscribers, entitiesToUnsubscribe);
 
-	UnsubscribeEntitiesInternal(entitiesToUnsubscribe);
+		if (!entitiesToUnsubscribe.empty())
+		{
+			UnsubscribeEntitiesInternal(entitiesToUnsubscribe);
 
-	// Remove from subscribers
-	EntityListRemoveNonUniqueEntitiesInSuspect(entitiesToUnsubscribe, Subscribers);
+			// Remove from subscribers
+			EntityListRemoveNonUniqueEntitiesInSuspect(entitiesToUnsubscribe, Subscribers);
+
+			LOGD << "Manager " << (int)Type << " unsubscribed " << entities.size() << " entities";
+		}
+	}
+}
+
+bool ComponentManager::IsSubscribed(Entity entity)
+{
+	return EntityListFindEntity(Subscribers, entity);
 }
 
 ComponentType ComponentManager::GetType()

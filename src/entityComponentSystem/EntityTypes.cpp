@@ -34,7 +34,7 @@ void EntityListSortAndRemoveDuplicates(EntityList& list)
 
 		if (lastEntity != NullEntity && currentEntity == lastEntity)
 		{
-			list.erase(it);
+			it = list.erase(it);
 			continue;
 		}
 
@@ -42,6 +42,17 @@ void EntityListSortAndRemoveDuplicates(EntityList& list)
 			lastEntity = currentEntity;
 
 		++it;
+	}
+}
+
+void EntityListAddUniqueEntitiesToSuspect(const EntityList& list, EntityList& suspectList)
+{
+	for (EntityListConstIterator it = list.begin(); it != list.end(); ++it)
+	{
+		Entity currentEntity = (*it);
+
+		if (!EntityListFindEntity(suspectList, currentEntity))
+			suspectList.push_back(currentEntity);
 	}
 }
 
@@ -57,7 +68,7 @@ void EntityListRemoveNonUniqueEntitiesInSuspect(const EntityList& list, EntityLi
 
 			if (suspectEntity == currentEntity)
 			{
-				suspectList.erase(sIt);
+				sIt = suspectList.erase(sIt);
 
 				// don't assume there's only one non-unique; suspectList could have duplicates
 				// break;
@@ -91,13 +102,13 @@ void EntityListRemoveUniqueEntitiesInSuspect(const EntityList& list, EntityList&
 		if (found)
 			it++;
 		else
-			suspectList.erase(it);
+			it = suspectList.erase(it);
 	}
 }
 
-bool EntityListFindEntity(EntityList& list, Entity entity)
+bool EntityListFindEntity(const EntityList& list, Entity entity)
 {
-	for (EntityListIterator it = list.begin(); it != list.end(); ++it)
+	for (EntityListConstIterator it = list.begin(); it != list.end(); ++it)
 	{
 		Entity currentEntity = (*it);
 		if (currentEntity == entity)
@@ -105,5 +116,4 @@ bool EntityListFindEntity(EntityList& list, Entity entity)
 	}
 	return false;
 }
-
 }

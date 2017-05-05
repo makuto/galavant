@@ -121,14 +121,19 @@ void AgentComponentManager::Update(float deltaSeconds)
 					{
 						if (goal.Type == AgentGoal::GoalType::GetResource)
 						{
-							gv::PooledComponent<PlanComponentData> newPlanComponent;
 							Htn::Parameter resourceToFind;
 							resourceToFind.IntValue = goal.WorldResource;
 							resourceToFind.Type = Htn::Parameter::ParamType::Int;
+							Htn::ParameterList emptyParams;  // TODO: For fuck's sake
 							Htn::ParameterList parameters = {resourceToFind};
 							Htn::TaskCall getResourceCall{
 							    Htn::TaskDb::GetTask(Htn::TaskName::GetResource), parameters};
-							Htn::TaskCallList getResourceTasks = {getResourceCall};
+							Htn::TaskCall pickupResourceCall{
+							    Htn::TaskDb::GetTask(Htn::TaskName::InteractPickup), parameters};
+							Htn::TaskCallList getResourceTasks = {getResourceCall,
+							                                      pickupResourceCall};
+							                                      
+							gv::PooledComponent<PlanComponentData> newPlanComponent;
 							newPlanComponent.entity = currentEntity;
 							newPlanComponent.data.Tasks.insert(newPlanComponent.data.Tasks.end(),
 							                                   getResourceTasks.begin(),
@@ -159,7 +164,8 @@ void AgentComponentManager::Update(float deltaSeconds)
 	if (PlanManager && !newPlans.empty())
 		PlanManager->SubscribeEntities(newPlans);
 
-	UnsubscribeEntities(entitiesToUnsubscribe);
+	if (!entitiesToUnsubscribe.empty())
+		UnsubscribeEntities(entitiesToUnsubscribe);
 }
 
 void AgentComponentManager::SubscribeEntitiesInternal(const EntityList& subscribers,
@@ -223,5 +229,33 @@ void AgentComponentManager::GetAgentConsciousStates(const EntityList& entities,
 		if (!foundEntity)
 			stateListOut.push_back(AgentConsciousState::None);
 	}
+}
+
+Need* AgentComponentManager::GetAgentNeed(Entity entity, NeedType needType)
+{
+	// TODO: Adding true iterator support to pool will drastically help damning this to hell
+	gv::PooledComponentManager<AgentComponentData>::FragmentedPoolIterator it =
+	    gv::PooledComponentManager<AgentComponentData>::NULL_POOL_ITERATOR;
+	for (gv::PooledComponent<AgentComponentData>* currentComponent = ActivePoolBegin(it);
+	     currentComponent != nullptr &&
+	     it != gv::PooledComponentManager<AgentComponentData>::NULL_POOL_ITERATOR;
+	     currentComponent = GetNextActivePooledComponent(it))
+	{
+		if (!currentComponent)
+			continue;
+
+		Entity currentEntity = currentComponent->entity;
+
+		if (currentEntity == entity)
+		{
+			for (Need& need : currentComponent->data.Needs)
+			{
+				if (need.Type == needType)
+					return &need;
+			}
+		}
+	}
+
+	return nullptr;
 }
 }

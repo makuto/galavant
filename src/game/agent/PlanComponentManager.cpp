@@ -169,9 +169,13 @@ void PlanComponentManager::Update(float deltaSeconds)
 		}
 	}
 
-	LOGD_IF(entitiesToUnsubscribe.size()) << "Unsubscribed " << entitiesToUnsubscribe.size()
-	                                      << " entities";
-	UnsubscribeEntities(entitiesToUnsubscribe);
+	if (!entitiesToUnsubscribe.empty())
+	{
+		LOGD << "Unsubscribing " << entitiesToUnsubscribe.size() << " entities (we have "
+		     << Subscribers.size() << " subscribers and " << PooledComponents.GetTotalActiveData()
+		     << " components)";
+		UnsubscribeEntities(entitiesToUnsubscribe);
+	}
 }
 
 // #Callback: TaskEventCallback
@@ -206,12 +210,14 @@ void PlanComponentManager::SubscribeEntitiesInternal(const EntityList& subscribe
 		planner.DebugPrint = DebugPrint;
 	}
 
-	LOGD_IF(DebugPrint) << "Subscribed " << subscribers.size() << " entities";
+	LOGD << "Subscribed " << subscribers.size() << " entities";
 }
 
 void PlanComponentManager::UnsubscribePoolEntitiesInternal(const EntityList& unsubscribers,
                                                            PlanComponentRefList& components)
 {
+	LOGD << "Unsubscribing " << unsubscribers.size() << " unsubscribers (" << components.size()
+	     << " components)";
 	for (gv::PooledComponent<PlanComponentData>* currentComponent : components)
 	{
 		if (!currentComponent)

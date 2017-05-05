@@ -87,5 +87,7 @@ public:
 	virtual void Update(float deltaSeconds);
 
 	void GetAgentConsciousStates(const EntityList& entities, AgentConsciousStateList& stateListOut);
+
+	Need* GetAgentNeed(Entity entity, NeedType needType);
 };
 };

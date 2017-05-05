@@ -3,6 +3,8 @@
 
 namespace gv
 {
+const float POSITION_TOLERANCE = 0.1f;
+
 Position::Position(float x, float y, float z) : X(x), Y(y), Z(z)
 {
 }
