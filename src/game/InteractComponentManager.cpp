@@ -77,10 +77,9 @@ bool InteractComponentManager::PickupDirect(Entity pickupEntity, Entity claimer)
 				// TODO: For testing only
 				if (needPickupAffects)
 				{
-					needPickupAffects->Level += 100;
-					LOGV << "Entity " << claimer << " restored need "
+					needPickupAffects->Level -= 100;
+					LOGD << "Entity " << claimer << " restored need "
 					     << needPickupAffects->Def->Name << " by 100 picking up " << pickupEntity;
-					return true;
 				}
 
 				// TODO: Are we allocating for this? :(
@@ -90,6 +89,8 @@ bool InteractComponentManager::PickupDirect(Entity pickupEntity, Entity claimer)
 
 				if (pickup->DestroySelfOnPickup)
 					entityComponentManager->MarkDestroyEntities(entitiesPickedUp);
+
+				return true;
 			}
 		}
 	}

@@ -26,7 +26,7 @@ typedef std::vector<NeedLevelTrigger> NeedLevelTriggerList;
 
 struct NeedDef
 {
-	NeedType Type;
+	NeedType Type = gv::NeedType::None;
 
 	const char* Name;
 
@@ -39,11 +39,10 @@ struct NeedDef
 
 struct Need
 {
-	NeedType Type = gv::NeedType::None;
 	NeedDef* Def = nullptr;
 
-	float Level = 0;
-	float LastUpdateTime = 0;
+	float Level = 0.f;
+	float LastUpdateTime = 0.f;
 };
 
 typedef std::vector<Need> NeedList;

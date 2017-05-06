@@ -6,12 +6,8 @@ What does agent component manager do with triggers once plan is done? How to kno
 
 statics don't work well with hot reloading
 
-FragmentedPool crashed during in-editor compile hotreload
-
-Still hitting TestMovementComponent segfault. Need a way to detect when an entity is destroyed outside GV control
-	Added code to EndPlay() which unsubscribes shit manually
-
 Play with Polyvox chunk scale
 
 **** LEFT OFF AT:
-InteractTask added, it should be hooked up and working
+Pickups sort of working, sometimes they aren't picked up, Actors are being destroyed strangely
+Agents should be destroyed by the AgentComponentManager if DieNow, but they don't seem to be hitting it

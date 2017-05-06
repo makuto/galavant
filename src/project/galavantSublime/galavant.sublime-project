@@ -10,7 +10,7 @@
         {
             "path": "../../../../galavant-unreal/GalavantUnreal/Source",
             "name": "Source - Galavant Unreal",
-            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "*.cs", "*.md"]
+            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "*.cs", "*.md", "*.sh"]
         },
         {
             "path": "../../../gamedata",
@@ -51,7 +51,7 @@
 
         // "Full build" 
         {
-            "name": "Full Unreal Build",
+            "name": "Full Unreal Build (build Galavant lib and Unreal)",
             "shell_cmd": "cd galavant && jam -j4 -q -sUNREAL=true GalavantPseudotarget && cd ../galavant-unreal/GalavantUnreal && make GalavantUnreal",
             "working_dir": "$project_path/../../../.."
         },
@@ -66,6 +66,12 @@
         {
             "name": "Unreal Quick Clean",
             "shell_cmd": "rm -r Intermediate/Build",
+            "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"
+        },
+
+        {
+            "name": "Unreal Generate Project Files",
+            "shell_cmd": "/home/macoy/Downloads/UnrealEngine/GenerateProjectFiles.sh -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -game -editor",
             "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"
         },
 

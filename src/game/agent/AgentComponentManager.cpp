@@ -4,6 +4,7 @@
 
 #include "../../entityComponentSystem/PooledComponentManager.hpp"
 #include "../../entityComponentSystem/ComponentTypes.hpp"
+#include "../../entityComponentSystem/EntityComponentManager.hpp"
 #include "../../ai/htn/HTNTaskDb.hpp"
 
 namespace gv
@@ -36,6 +37,7 @@ void AddGoalIfUniqueType(AgentGoalList& goals, AgentGoal& goalToAdd)
 void AgentComponentManager::Update(float deltaSeconds)
 {
 	EntityList entitiesToUnsubscribe;
+	EntityList entitiesToDestroy;
 	PlanComponentManager::PlanComponentList newPlans;
 
 	WorldTime += deltaSeconds;
@@ -56,7 +58,10 @@ void AgentComponentManager::Update(float deltaSeconds)
 		AgentGoalList& goals = currentComponent->data.Goals;
 
 		if (!currentComponent->data.IsAlive)
+		{
+			entitiesToDestroy.push_back(currentEntity);
 			continue;
+		}
 
 		// Update Needs
 		for (Need& need : needs)
@@ -95,7 +100,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 							{
 								currentComponent->data.IsAlive = false;
 								LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
-								                    << " has died!";
+								                    << " has died from need " << need.Def->Name;
 							}
 						}
 					}
@@ -132,7 +137,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 							    Htn::TaskDb::GetTask(Htn::TaskName::InteractPickup), parameters};
 							Htn::TaskCallList getResourceTasks = {getResourceCall,
 							                                      pickupResourceCall};
-							                                      
+
 							gv::PooledComponent<PlanComponentData> newPlanComponent;
 							newPlanComponent.entity = currentEntity;
 							newPlanComponent.data.Tasks.insert(newPlanComponent.data.Tasks.end(),
@@ -166,6 +171,13 @@ void AgentComponentManager::Update(float deltaSeconds)
 
 	if (!entitiesToUnsubscribe.empty())
 		UnsubscribeEntities(entitiesToUnsubscribe);
+
+	if (!entitiesToDestroy.empty())
+	{
+		EntityComponentManager* entityComponentManager = EntityComponentManager::GetSingleton();
+		if (entityComponentManager)
+			entityComponentManager->MarkDestroyEntities(entitiesToDestroy);
+	}
 }
 
 void AgentComponentManager::SubscribeEntitiesInternal(const EntityList& subscribers,
@@ -250,7 +262,7 @@ Need* AgentComponentManager::GetAgentNeed(Entity entity, NeedType needType)
 		{
 			for (Need& need : currentComponent->data.Needs)
 			{
-				if (need.Type == needType)
+				if (need.Def->Type == needType)
 					return &need;
 			}
 		}
