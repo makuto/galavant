@@ -1,5 +1,7 @@
 #include "EntityComponentManager.hpp"
 
+#include "util/Logging.hpp"
+
 #include <cassert>
 
 namespace gv
@@ -34,6 +36,10 @@ bool EntityComponentManager::AddComponentManagerOfType(ComponentType type,
 		assert(findIt == ComponentManagers.end());
 
 		ComponentManagers[type] = manager;
+
+		if (type != manager->GetType())
+			LOGW << "ComponentManager of type " << (int)manager->GetType()
+			     << " registered for type " << (int)type;
 	}
 
 	return false;
@@ -41,6 +47,12 @@ bool EntityComponentManager::AddComponentManagerOfType(ComponentType type,
 
 bool EntityComponentManager::AddComponentManager(ComponentManager *manager)
 {
+	if (!manager)
+		return false;
+
+	if (manager->GetType() == ComponentType::None)
+		LOGE << "Registered ComponentManager " << manager << " with no Type!";
+
 	return AddComponentManagerOfType(manager->GetType(), manager);
 }
 

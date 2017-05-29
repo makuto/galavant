@@ -7,6 +7,8 @@
 namespace gv
 {
 extern const float POSITION_TOLERANCE;
+
+// Galavant will use Z as the up axis
 struct Position
 {
 	float X = 0.f;

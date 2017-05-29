@@ -1,13 +1,32 @@
+----------------------------------------------------------------------------------------------------
 TODO
+----------------------------------------------------------------------------------------------------
 
 Soak test editor - after ~1 hour it was looking pretty glitchy
 
 What does agent component manager do with triggers once plan is done? How to know plan is done?
 
 statics don't work well with hot reloading
+	Need some sort of system which makes it easy to tell static shit to reload?
 
-Play with Polyvox chunk scale
-
-**** LEFT OFF AT:
 Pickups sort of working, sometimes they aren't picked up, Actors are being destroyed strangely
-Agents should be destroyed by the AgentComponentManager if DieNow, but they don't seem to be hitting it
+	Possibility that pickup actor is falling through the floor (invisible other component hitting KillZ?) YES, it's KillZ
+
+Chunks are fucked
+
+----------------------------------------------------------------------------------------------------
+DOING
+----------------------------------------------------------------------------------------------------
+
+Added TrackActorLifetime, which is untested
+	Is this executed when pending kills will be sitting around, or right after cleanup?
+
+Added Interact to player, but does not seem to work
+
+Added UnrealMovementComponent Actor/Character spawning
+
+----------------------------------------------------------------------------------------------------
+DONE
+----------------------------------------------------------------------------------------------------
+
+Added EntityPlayerSharedData, which is untested

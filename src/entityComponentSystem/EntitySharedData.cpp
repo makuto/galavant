@@ -15,6 +15,8 @@ struct EntitySharedData
 
 	// Entity positions owned by an external module
 	EntityPositionRefMap EntityPositionRefs;
+
+	EntityPlayerSharedData PlayerData;
 };
 
 static EntitySharedData s_Data;
@@ -126,5 +128,38 @@ Position* EntityGetPosition(const Entity& entity)
 	}
 
 	return &findUnowned->second;
+}
+
+const EntityPlayerSharedData& EntityPlayerGetSharedData()
+{
+	return s_Data.PlayerData;
+}
+
+void EntityPlayerRegisterPosition(const Entity entity, Position* position)
+{
+	if (s_Data.PlayerData.PlayerEntity)
+	{
+		LOGE << "A Player Entity " << s_Data.PlayerData.PlayerEntity
+		     << " has already been registered (tried to register " << entity << ")!";
+		return;
+	}
+
+	s_Data.PlayerData.PlayerEntity = entity;
+	s_Data.PlayerData.PlayerPosition = position;
+
+	// Add to owned lists as well
+	gv::EntityList playerEntities = {entity};
+	gv::PositionRefList playerPositionList = {position};
+	gv::EntityCreatePositions(playerEntities, playerPositionList);
+}
+void EntityPlayerUnregisterPosition()
+{
+	if (s_Data.PlayerData.PlayerEntity)
+	{
+		gv::EntityList playerEntities = {s_Data.PlayerData.PlayerEntity};
+		gv::EntityDestroyPositions(playerEntities);
+		s_Data.PlayerData.PlayerEntity = 0;
+		s_Data.PlayerData.PlayerPosition = nullptr;
+	}
 }
 }

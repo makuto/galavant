@@ -24,6 +24,8 @@ private:
 	PickupList Pickups;
 
 protected:
+	ComponentType Type = ComponentType::Interact;
+
 	virtual void UnsubscribeEntitiesInternal(const EntityList& entities);
 
 public:

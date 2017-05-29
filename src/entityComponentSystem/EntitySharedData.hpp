@@ -7,7 +7,7 @@ namespace gv
 {
 // TODO: Make it such that things can own the position and this module is used for lookup externally
 // only. If nothing owns the position this module will anonymously own it until someone steps up
-// This is so I can follow the principle that "That which changes the data, owns the data". It also 
+// This is so I can follow the principle that "That which changes the data, owns the data". It also
 // seems fucking awful to do a map lookup every time anyone wants to read or write a position
 
 // TODO: Make it clear that we expect the given positions to hang around
@@ -20,4 +20,15 @@ void EntitySetPosition(const Entity& entity, const Position& position);
 void EntityGetPositions(const EntityList& entities, PositionRefList& positionsOut);
 // If an entity doesn't have a position, it will be created at 0, 0, 0
 Position* EntityGetPosition(const Entity& entity);
+
+struct EntityPlayerSharedData
+{
+	// For ease of access
+	Entity PlayerEntity;
+	const Position* PlayerPosition;
+};
+
+const EntityPlayerSharedData& EntityPlayerGetSharedData();
+void EntityPlayerRegisterPosition(const Entity entity, Position* position);
+void EntityPlayerUnregisterPosition();
 };

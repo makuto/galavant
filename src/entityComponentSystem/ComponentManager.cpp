@@ -30,7 +30,8 @@ void ComponentManager::UnsubscribeEntities(const EntityList& entities)
 			// Remove from subscribers
 			EntityListRemoveNonUniqueEntitiesInSuspect(entitiesToUnsubscribe, Subscribers);
 
-			LOGD << "Manager " << (int)Type << " unsubscribed " << entities.size() << " entities";
+			LOGD << "Manager " << (int)Type << " unsubscribed " << entitiesToUnsubscribe.size()
+			     << " entities";
 		}
 	}
 }

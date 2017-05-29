@@ -82,6 +82,9 @@ void AgentComponentManager::Update(float deltaSeconds)
 				{
 					need.LastUpdateTime = WorldTime;
 
+					LOGV_IF(DebugPrint) << "Agent Entity " << currentEntity << " updated need "
+					                    << need.Def->Name << " to level " << need.Level;
+
 					for (const NeedLevelTrigger& needLevelTrigger : need.Def->LevelTriggers)
 					{
 						bool needTriggerHit = (needLevelTrigger.GreaterThanLevel &&
@@ -95,6 +98,9 @@ void AgentComponentManager::Update(float deltaSeconds)
 								                              AgentGoal::GoalType::GetResource,
 								                              needLevelTrigger.WorldResource};
 								AddGoalIfUniqueType(goals, newNeedResourceGoal);
+								LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
+								                    << " has hit need trigger for need "
+								                    << need.Def->Name;
 							}
 							else if (needLevelTrigger.DieNow)
 							{

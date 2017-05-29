@@ -24,7 +24,7 @@ private:
 	typedef std::map<ComponentType, ComponentManager *> ComponentManagerMap;
 	typedef ComponentManagerMap::iterator ComponentManagerMapIterator;
 
-	static EntityComponentManager* Singleton;
+	static EntityComponentManager *Singleton;
 
 	ComponentManagerMap ComponentManagers;
 
@@ -71,6 +71,23 @@ public:
 	// the ActiveEntities list)
 	void DestroyAllEntities();
 
-	static EntityComponentManager* GetSingleton();
+	static EntityComponentManager *GetSingleton();
 };
+
+// Convenience function
+// TODO: Make it so ComponentManagers can just be functions instead of singletons
+template <class T>
+T *GetComponentManagerForType(ComponentType type)
+{
+	EntityComponentManager *entityComponentManager = EntityComponentManager::GetSingleton();
+	if (entityComponentManager)
+	{
+		T *componentManager =
+		    static_cast<T *>(entityComponentManager->GetComponentManagerForType(type));
+
+		return componentManager;
+	}
+
+	return nullptr;
+}
 };

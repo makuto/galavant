@@ -81,8 +81,8 @@ float gv::Noise2d::scaledRawNoise2d(float x, float y, float lowBound, float high
 }
 
 float gv::Noise2d::scaledOctaveNoise2d(float x, float y, float lowBound, float highBound,
-									   int octaves, float scale, float persistence,
-									   float lacunarity)
+                                       int octaves, float scale, float persistence,
+                                       float lacunarity)
 {
 	float frequency = scale;
 	float amplitude = 1;
@@ -99,6 +99,12 @@ float gv::Noise2d::scaledOctaveNoise2d(float x, float y, float lowBound, float h
 	}
 
 	return scaleNoiseValue(value / maxAmplitude, lowBound, highBound);
+}
+
+float gv::Noise2d::scaledOctaveNoise2d(float x, float y, ScaledOctaveNoiseParams& params)
+{
+	return scaledOctaveNoise2d(x, y, params.lowBound, params.highBound, params.octaves,
+	                           params.scale, params.persistence, params.lacunarity);
 }
 
 class noise3dHolder : public gv::noiseHolder
@@ -140,8 +146,8 @@ float gv::Noise3d::scaledRawNoise3d(float x, float y, float z, float lowBound, f
 }
 
 float gv::Noise3d::scaledOctaveNoise3d(float x, float y, float z, float lowBound, float highBound,
-									   int octaves, float scale, float persistence,
-									   float lacunarity)
+                                       int octaves, float scale, float persistence,
+                                       float lacunarity)
 {
 	float frequency = scale;
 	float amplitude = 1;
@@ -158,5 +164,11 @@ float gv::Noise3d::scaledOctaveNoise3d(float x, float y, float z, float lowBound
 	}
 
 	return scaleNoiseValue(value / maxAmplitude, lowBound, highBound);
+}
+
+float gv::Noise3d::scaledOctaveNoise3d(float x, float y, float z, ScaledOctaveNoiseParams& params)
+{
+	return scaledOctaveNoise3d(x, y, z, params.lowBound, params.highBound, params.octaves,
+	                           params.scale, params.persistence, params.lacunarity);
 }
 #endif

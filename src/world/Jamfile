@@ -2,6 +2,8 @@ SubDir . src world ;
 
 SubDirC++Flags $(ALLLIBSC++FLAGS) ;
 
-Library libGalaWorld : Position.cpp WorldResourceLocator.cpp ;
+Library libGalaWorld : Position.cpp 
+                       WorldResourceLocator.cpp
+                       ProceduralWorld.cpp ;
 
 MakeLocate libGalaWorld.a : lib ;

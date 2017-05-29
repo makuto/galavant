@@ -10,6 +10,7 @@ enum class ComponentType : unsigned int
 	Movement,
 	Agent,
 	Plan,
+	Interact,
 
 	ComponentType_count
 };
