@@ -17,6 +17,7 @@ struct Position
 
 	Position() = default;
 	Position(float x, float y, float z);
+	Position(float floatArray[3]);
 	~Position() = default;
 
 	bool Equals(const Position& otherPosition, float tolerance) const;

@@ -12,8 +12,9 @@ enum WorldResourceType
 {
 	None = 0,
 
-	Agent = 1,
-	Food = 2,
+	Agent,
+	Food,
+	Player,
 
 	WorldResourceType_count
 };
@@ -43,5 +44,7 @@ void MoveResource(const WorldResourceType type, Entity entity, const Position& o
 // Returns nullptr if no reasource nearby
 Resource* FindNearestResource(const WorldResourceType type, const Position& location,
                               bool allowSameLocation, float& manhattanToOut);
+
+const ResourceList* GetResourceList(const WorldResourceType type);
 }
 }

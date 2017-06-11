@@ -122,5 +122,13 @@ Resource* FindNearestResource(const WorldResourceType type, const gv::Position& 
 	manhattanToOut = -1.f;
 	return nullptr;
 }
+
+const ResourceList* GetResourceList(const WorldResourceType type)
+{
+	if (ResourceListExists(type))
+		return s_Resources[type];
+
+	return nullptr;
+}
 }
 }

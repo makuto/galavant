@@ -14,19 +14,29 @@ Pickups sort of working, sometimes they aren't picked up, Actors are being destr
 
 Chunks are fucked
 
+HUD Minimap is difficult to use with regards to rotation
+
 ----------------------------------------------------------------------------------------------------
 DOING
 ----------------------------------------------------------------------------------------------------
 
-Added TrackActorLifetime, which is untested
-	Is this executed when pending kills will be sitting around, or right after cleanup?
 
-Added Interact to player, but does not seem to work
-
-Added UnrealMovementComponent Actor/Character spawning
 
 ----------------------------------------------------------------------------------------------------
 DONE
 ----------------------------------------------------------------------------------------------------
 
+HUD Minimap rotation indicator doesn't work right when pitching the camera
+
+Added coloring for errors, but I'm not sure it works
+
+Added UnrealMovementComponent Actor/Character spawning
+	First time you run the game or after hotreload it doesn't spawn anyone
+	This seems to have gone away
+
+Added TrackActorLifetime, which is untested
+	Is this executed when pending kills will be sitting around, or right after cleanup?
+
 Added EntityPlayerSharedData, which is untested
+
+Added Interact to player, but does not seem to work

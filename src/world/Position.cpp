@@ -9,6 +9,10 @@ Position::Position(float x, float y, float z) : X(x), Y(y), Z(z)
 {
 }
 
+Position::Position(float floatArray[3]) : X(floatArray[0]), Y(floatArray[1]), Z(floatArray[2])
+{
+}
+
 bool Position::Equals(const Position& otherPosition, float tolerance) const
 {
 	return (fabs(X - otherPosition.X) <= tolerance && fabs(Y - otherPosition.Y) <= tolerance &&

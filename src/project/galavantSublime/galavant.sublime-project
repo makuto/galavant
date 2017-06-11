@@ -23,7 +23,15 @@
         {
             "path": "../../../assets",
             "name": "Assets"
-        }
+        },
+        // Note that this is at the bottom; this means Galavant results will appear first
+        //  when doing thigns like ctrl+p
+        {
+            "path": "/home/macoy/Downloads/UnrealEngine/Engine/Source",
+            "name": "Unreal Engine Source",
+            //"folder_exclude_patterns": ["project", "thirdParty"],
+            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "Jam*", "*.md"]
+        },
     ],
     "build_systems":
     [

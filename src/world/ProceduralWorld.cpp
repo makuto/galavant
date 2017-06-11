@@ -7,7 +7,7 @@ namespace ProceduralWorld
 static ProceduralWorldParams s_WorldParams;
 
 // This isn't fantastic, but I can replace it with a better system once one is needed
-ProceduralWorldParams& GetCurrentActiveWorldParams()
+ProceduralWorldParams& GetActiveWorldParams()
 {
 	return s_WorldParams;
 }

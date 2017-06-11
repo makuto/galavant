@@ -21,7 +21,7 @@ struct ProceduralWorldParams
 	float WorldCellTileSize[3];
 };
 
-ProceduralWorldParams& GetCurrentActiveWorldParams();
+ProceduralWorldParams& GetActiveWorldParams();
 
 // TODO: This assumes a 2D world. We need to figure the world out
 struct WorldCellTileMap
