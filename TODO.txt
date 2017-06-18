@@ -12,9 +12,9 @@ statics don't work well with hot reloading
 Pickups sort of working, sometimes they aren't picked up, Actors are being destroyed strangely
 	Possibility that pickup actor is falling through the floor (invisible other component hitting KillZ?) YES, it's KillZ
 
-Chunks are fucked
-
 HUD Minimap is difficult to use with regards to rotation
+
+Minimap noise doesn't match world
 
 ----------------------------------------------------------------------------------------------------
 DOING
@@ -25,6 +25,8 @@ DOING
 ----------------------------------------------------------------------------------------------------
 DONE
 ----------------------------------------------------------------------------------------------------
+
+Chunks are fucked
 
 HUD Minimap rotation indicator doesn't work right when pitching the camera
 

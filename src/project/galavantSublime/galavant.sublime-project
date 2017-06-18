@@ -131,11 +131,11 @@
                 "commandline": "gdb --interpreter=mi ./UE4Editor /home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
             },
 
-            "UnrealEditor Debug":
-            {
-                "workingdir": "/home/macoy/Downloads/UnrealEngine/Engine/Binaries/Linux",
-                "commandline": "gdb --interpreter=mi ./UE4Editor-Linux-Debug /home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
-            },
+            //"UnrealEditor Debug":
+            //{
+            //    "workingdir": "/home/macoy/Downloads/UnrealEngine/Engine/Binaries/Linux",
+            //    "commandline": "gdb --interpreter=mi ./UE4Editor-Linux-Debug /home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
+            //},
 
             //"htnTest":
             //{

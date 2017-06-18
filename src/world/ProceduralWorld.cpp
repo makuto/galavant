@@ -19,14 +19,17 @@ static float GetTileHeightForWorldPosition(const Position& tileWorldPosition)
 
 	if (!noise2dGenerator || seed != s_WorldParams.Seed)
 	{
+		if (noise2dGenerator)
+			delete noise2dGenerator;
+		
 		seed = s_WorldParams.Seed;
 		noise2dGenerator = new gv::Noise2d(seed);
 	}
 
-	/*float tileHeight = noise2dGenerator->scaledOctaveNoise2d(
-	    tileWorldPosition.X, tileWorldPosition.Y, s_WorldParams.ScaledNoiseParams);*/
+	float tileHeight = noise2dGenerator->scaledOctaveNoise2d(
+	    tileWorldPosition.X, tileWorldPosition.Y, s_WorldParams.ScaledNoiseParams);
 
-	float tileHeight = 128.f;  // FOR DEBUGGING ONLY; DELETE ME!
+	//float tileHeight = 128.f;  // FOR DEBUGGING ONLY; DELETE ME!
 
 	return tileHeight;
 }
