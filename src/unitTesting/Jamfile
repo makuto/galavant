@@ -15,7 +15,15 @@ LinkLibraries positionTest : libGalaWorld ;
 
 Main logTest : Log_test.cpp ;
 
-MakeLocate objectComponentTest entityComponentTest objectPoolTest htnTest positionTest logTest : bin ;
+Main stringHashTest : StringHashing_test.cpp ;
+
+MakeLocate objectComponentTest 
+           entityComponentTest 
+           objectPoolTest 
+           htnTest 
+           positionTest
+           logTest
+           stringHashTest : bin ;
 
 SubInclude . src entityComponentSystem ;
 SubInclude . src ai ;

@@ -28,7 +28,7 @@ void EntityListAddUniqueEntitiesToSuspect(const EntityList& list, EntityList& su
 void EntityListRemoveNonUniqueEntitiesInSuspect(const EntityList& list, EntityList& suspectList);
 void EntityListRemoveUniqueEntitiesInSuspect(const EntityList& list, EntityList& suspectList);
 
-// Linear search for entity. I'll eventually add a binary search function if it can be assumed that
-// the list is sorted
+// Linear search for entity.
+// TODO: Add binary search (need to figure out when to sort these lists)
 bool EntityListFindEntity(const EntityList& list, Entity entity);
 };

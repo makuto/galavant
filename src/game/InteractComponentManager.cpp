@@ -82,7 +82,6 @@ bool InteractComponentManager::PickupDirect(Entity pickupEntity, Entity claimer)
 					     << needPickupAffects->Def->Name << " by 100 picking up " << pickupEntity;
 				}
 
-				// TODO: Are we allocating for this? :(
 				EntityList entitiesPickedUp;
 				entitiesPickedUp.push_back(pickupEntity);
 				UnsubscribeEntities(entitiesPickedUp);

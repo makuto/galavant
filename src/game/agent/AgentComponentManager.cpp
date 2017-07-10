@@ -25,9 +25,15 @@ void AgentComponentManager::Initialize(PlanComponentManager* newPlanComponentMan
 
 void AddGoalIfUniqueType(AgentGoalList& goals, AgentGoal& goalToAdd)
 {
+	if (!goalToAdd.Def)
+	{
+		LOGE << "Tried to add AgentGoal with no def!";
+		return;
+	}
+
 	for (const AgentGoal& goal : goals)
 	{
-		if (goalToAdd.Type == goal.Type)
+		if (goalToAdd.Def->Type == goal.Def->Type)
 			return;
 	}
 
@@ -39,6 +45,13 @@ void AgentComponentManager::Update(float deltaSeconds)
 	EntityList entitiesToUnsubscribe;
 	EntityList entitiesToDestroy;
 	PlanComponentManager::PlanComponentList newPlans;
+	const PlanExecutionEventList& planExecutionEvents = PlanManager->GetExecutionEvents();
+
+	if (!PlanManager)
+	{
+		LOGE << "Cannot update Agents without PlanManager!";
+		return;
+	}
 
 	WorldTime += deltaSeconds;
 
@@ -66,54 +79,57 @@ void AgentComponentManager::Update(float deltaSeconds)
 		// Update Needs
 		for (Need& need : needs)
 		{
-			if (need.Def)
+			if (!need.Def)
 			{
-				bool needUpdated = false;
-				float updateDelta = WorldTime - need.LastUpdateTime;
-				while (updateDelta >= need.Def->UpdateRate)
+				LOG_ERROR << "Need on entity " << currentEntity << " has no def!";
+				continue;
+			}
+
+			bool needUpdated = false;
+			float updateDelta = WorldTime - need.LastUpdateTime;
+			while (updateDelta >= need.Def->UpdateRate)
+			{
+				need.Level += need.Def->AddPerUpdate;
+
+				updateDelta -= need.Def->UpdateRate;
+				needUpdated = true;
+			}
+
+			if (needUpdated)
+			{
+				need.LastUpdateTime = WorldTime;
+
+				LOGV_IF(DebugPrint) << "Agent Entity " << currentEntity << " updated need "
+				                    << need.Def->Name << " to level " << need.Level;
+
+				for (const NeedLevelTrigger& needLevelTrigger : need.Def->LevelTriggers)
 				{
-					need.Level += need.Def->AddPerUpdate;
+					bool needTriggerHit =
+					    (needLevelTrigger.GreaterThanLevel && need.Level > needLevelTrigger.Level);
 
-					updateDelta -= need.Def->UpdateRate;
-					needUpdated = true;
-				}
+					if (!needTriggerHit)
+						continue;
 
-				if (needUpdated)
-				{
-					need.LastUpdateTime = WorldTime;
-
-					LOGV_IF(DebugPrint) << "Agent Entity " << currentEntity << " updated need "
-					                    << need.Def->Name << " to level " << need.Level;
-
-					for (const NeedLevelTrigger& needLevelTrigger : need.Def->LevelTriggers)
+					if (needLevelTrigger.NeedsResource && needLevelTrigger.WorldResource)
 					{
-						bool needTriggerHit = (needLevelTrigger.GreaterThanLevel &&
-						                       need.Level > needLevelTrigger.Level);
-
-						if (needTriggerHit)
-						{
-							if (needLevelTrigger.NeedsResource && needLevelTrigger.WorldResource)
-							{
-								AgentGoal newNeedResourceGoal{AgentGoal::GoalStatus::Initialized,
-								                              AgentGoal::GoalType::GetResource,
-								                              needLevelTrigger.WorldResource};
-								AddGoalIfUniqueType(goals, newNeedResourceGoal);
-								LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
-								                    << " has hit need trigger for need "
-								                    << need.Def->Name;
-							}
-							else if (needLevelTrigger.DieNow)
-							{
-								currentComponent->data.IsAlive = false;
-								LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
-								                    << " has died from need " << need.Def->Name;
-							}
-						}
+						AgentGoal newNeedResourceGoal{
+						    AgentGoal::GoalStatus::Initialized,
+						    /*NumFailureRetries=*/0,
+						    gv::g_AgentGoalDefDictionary.GetResource(RESKEY("GetResource")),
+						    needLevelTrigger.WorldResource};
+						AddGoalIfUniqueType(goals, newNeedResourceGoal);
+						LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
+						                    << " has hit need trigger for need " << need.Def->Name;
+					}
+					else if (needLevelTrigger.DieNow)
+					{
+						currentComponent->data.IsAlive = false;
+						currentComponent->data.ConsciousState = AgentConsciousState::Dead;
+						LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
+						                    << " has died from need " << need.Def->Name;
 					}
 				}
 			}
-			else
-				LOG_ERROR << "Need on entity " << currentEntity << " has no def!";
 		}
 
 		// Update head goal
@@ -128,14 +144,13 @@ void AgentComponentManager::Update(float deltaSeconds)
 					// TODO: This IsSubscribed call will go away once PlanManager manages multiple
 					// plans for a single entity. For now, we'll just wait until the entity is no
 					// longer subscribed before adding our goal
-					if (PlanManager && !PlanManager->IsSubscribed(currentEntity))
+					if (!PlanManager->IsSubscribed(currentEntity))
 					{
-						if (goal.Type == AgentGoal::GoalType::GetResource)
+						if (goal.Def->Type == AgentGoalDef::GoalType::GetResource)
 						{
 							Htn::Parameter resourceToFind;
 							resourceToFind.IntValue = goal.WorldResource;
 							resourceToFind.Type = Htn::Parameter::ParamType::Int;
-							Htn::ParameterList emptyParams;  // TODO: For fuck's sake
 							Htn::ParameterList parameters = {resourceToFind};
 							Htn::TaskCall getResourceCall{
 							    Htn::TaskDb::GetTask(Htn::TaskName::GetResource), parameters};
@@ -156,23 +171,51 @@ void AgentComponentManager::Update(float deltaSeconds)
 							goal.Status = AgentGoal::GoalStatus::InProgress;
 						}
 					}
-					else
-					{
-						LOG_ERROR << "Agent trying to start goal but no Plan Manager is set!";
-						goals.erase(headGoalIt);
-					}
 					break;
+				case AgentGoal::GoalStatus::InProgress:
+				{
+					// While goal is in progress, watch planner events for a conclusive status
+					bool entityConcludedPlan = false;
+					for (PlanExecutionEvent planEvent : planExecutionEvents)
+					{
+						if (planEvent.entity != currentEntity)
+							continue;
+
+						entityConcludedPlan = true;
+
+						if (planEvent.status == PlanExecuteStatus::Failed)
+						{
+							if (goal.Def->NumRetriesIfFailed &&
+							    goal.NumFailureRetries < goal.Def->NumRetriesIfFailed)
+							{
+								LOGD_IF(DebugPrint)
+								    << "Entity " << currentEntity << " retrying goal (tried "
+								    << goal.NumFailureRetries << " times already; "
+								    << goal.Def->NumRetriesIfFailed << " max tries)";
+
+								goal.NumFailureRetries++;
+								goal.Status = AgentGoal::GoalStatus::Initialized;
+								entityConcludedPlan = false;
+							}
+						}
+
+						break;
+					}
+
+					// Fall through if we finished the plan (failed or otherwise)
+					if (!entityConcludedPlan)
+						break;
+				}
 				case AgentGoal::GoalStatus::Failed:
 				case AgentGoal::GoalStatus::Succeeded:
-					goals.erase(headGoalIt);
-					break;
 				default:
+					goals.erase(headGoalIt);
 					break;
 			}
 		}
 	}
 
-	if (PlanManager && !newPlans.empty())
+	if (!newPlans.empty())
 		PlanManager->SubscribeEntities(newPlans);
 
 	if (!entitiesToUnsubscribe.empty())

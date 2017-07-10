@@ -4,7 +4,8 @@
 
 #include <vector>
 
-#include "../../world/WorldResourceLocator.hpp"
+#include "world/WorldResourceLocator.hpp"
+#include "util/ResourceDictionary.hpp"
 
 namespace gv
 {
@@ -46,4 +47,6 @@ struct Need
 };
 
 typedef std::vector<Need> NeedList;
+
+extern ResourceDictionary<NeedDef> g_NeedDefDictionary;
 }

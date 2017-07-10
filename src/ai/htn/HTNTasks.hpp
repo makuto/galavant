@@ -4,7 +4,6 @@
 #include "../WorldState.hpp"
 #include "../../util/CallbackContainer.hpp"
 
-
 // For std::ostream
 #include <iostream>
 
@@ -111,7 +110,7 @@ struct TaskExecuteStatus
 		Failed = 0,
 		Succeeded,
 		Running,
-		Subscribe,
+		WaitForEvent,
 		Reexecute
 	};
 

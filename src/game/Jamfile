@@ -4,6 +4,7 @@ SubDirC++Flags $(ALLLIBSC++FLAGS) ;
 
 Library libGalaGame : agent/PlanComponentManager.cpp 
                       agent/AgentComponentManager.cpp 
+                      agent/Needs.cpp
                       agent/htnTasks/MovementTasks.cpp
                       agent/htnTasks/InteractTasks.cpp
                       InteractComponentManager.cpp 

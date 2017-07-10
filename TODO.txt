@@ -4,22 +4,35 @@ TODO
 
 Soak test editor - after ~1 hour it was looking pretty glitchy
 
-What does agent component manager do with triggers once plan is done? How to know plan is done?
-
 statics don't work well with hot reloading
 	Need some sort of system which makes it easy to tell static shit to reload?
+
+What does agent component manager do with triggers once plan is done? How to know plan is done?
 
 Pickups sort of working, sometimes they aren't picked up, Actors are being destroyed strangely
 	Possibility that pickup actor is falling through the floor (invisible other component hitting KillZ?) YES, it's KillZ
 
-HUD Minimap is difficult to use with regards to rotation
+HUD Minimap is difficult to use with regards to rotation (needs better view cone)
 
 Minimap noise doesn't match world
+	Scaling is completely wrong between WorldResource position and noise sample
+		Actually, this doesn't seem to be the problem
+
+Some sort of resource system
+	Could be something like ResourceDictionary<key, ResourceType> resources
+	then things could stuff in things from load or even hard coded (via resources["new thing"] = {})
+
+Put HTN Tasks etc. in resource dictionaries? Who owns them?
+
 
 ----------------------------------------------------------------------------------------------------
 DOING
 ----------------------------------------------------------------------------------------------------
 
+Logging broke as shit
+	https://answers.unrealengine.com/questions/435366/linux-crash-in-stdstring-destructor.html ?
+
+Test PlanComponent event stuff
 
 
 ----------------------------------------------------------------------------------------------------

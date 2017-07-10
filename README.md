@@ -35,6 +35,8 @@ The following libraries are required by Galavant and included in /thirdParty:
 - [Catch](https://github.com/philsquared/Catch), created by various contributors/a dude named Travis (Boost Software License)
 - [PLog](https://github.com/SergiusTheBest/plog), created by Sergey Podobry (Mozilla Public License v2.0)
 
+Unfortunately, some third party library files needed modification in order to be included. These modifications are kept in src/thirdPartyModifiedFiles. You'll have to diff the modified files with the repository files and copy over my changes.
+
 ## License
 
 The code is MIT licensed. I intend on keeping all data (images, sprites, gameplay/design data) private, following the Doom/Quake model, but for now, consider those to be MIT Licensed.

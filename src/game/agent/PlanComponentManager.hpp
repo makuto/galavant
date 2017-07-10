@@ -19,6 +19,24 @@ protected:
 	bool WaitingForEvent = false;
 };
 
+enum class PlanExecuteStatus
+{
+	None = 0,
+
+	Running,
+	
+	Begin_Conclusive,
+	Succeeded,
+	Failed,
+};
+
+struct PlanExecutionEvent
+{
+	Entity entity;
+	PlanExecuteStatus status;
+};
+typedef std::vector<PlanExecutionEvent> PlanExecutionEventList;
+
 /* --PlanComponentManager--
 Prepare, manage, and execute plan(s) for Entities.
 
@@ -29,6 +47,11 @@ class PlanComponentManager : public gv::PooledComponentManager<PlanComponentData
 {
 private:
 	WorldStateManager* worldStateManager;
+
+	PlanExecutionEventList PlanExecutionEvents;
+
+	PlanExecuteStatus ExecutePlan(Entity currentEntity, PlanComponentData& currentComponent,
+	                              EntityList& entitiesToUnsubscribe);
 
 protected:
 	typedef std::vector<gv::PooledComponent<PlanComponentData>*> PlanComponentRefList;
@@ -48,6 +71,8 @@ public:
 	void Initialize(WorldStateManager* newWorldStateManager,
 	                CallbackContainer<Htn::TaskEventCallback>* taskEventCallbacks);
 	virtual void Update(float deltaSeconds);
+
+	const PlanExecutionEventList& GetExecutionEvents() const;
 
 	Htn::TaskEventList ReceivedEvents;
 };

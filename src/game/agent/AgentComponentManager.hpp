@@ -9,6 +9,23 @@
 
 namespace gv
 {
+struct AgentGoalDef
+{
+	enum class GoalType
+	{
+		None = 0,
+		GetResource,
+
+		GoalType_Count
+	};
+	GoalType Type;
+
+	// TODO: Some sort of waiting period might be a good idea
+	int NumRetriesIfFailed;
+};
+
+extern ResourceDictionary<AgentGoalDef> g_AgentGoalDefDictionary;
+
 struct AgentGoal
 {
 	enum class GoalStatus
@@ -21,14 +38,9 @@ struct AgentGoal
 	};
 	GoalStatus Status;
 
-	enum class GoalType
-	{
-		None = 0,
-		GetResource,
+	int NumFailureRetries;
 
-		GoalType_Count
-	};
-	GoalType Type;
+	AgentGoalDef* Def;
 
 	WorldResourceType WorldResource;
 };

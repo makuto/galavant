@@ -83,7 +83,7 @@ Htn::TaskExecuteStatus MoveToTask::Execute(gv::WorldState& state,
 		LOGD << "Moving Ent[" << state.SourceAgent.SourceEntity << "] to "
 		     << state.SourceAgent.TargetPosition;
 		movementManager->PathEntitiesTo(entitiesToMove, positions);
-		Htn::TaskExecuteStatus status{Htn::TaskExecuteStatus::ExecutionStatus::Subscribe};
+		Htn::TaskExecuteStatus status{Htn::TaskExecuteStatus::ExecutionStatus::WaitForEvent};
 		return status;
 	}
 
