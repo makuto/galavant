@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "../util/Logging.hpp"
+#include "util/Logging.hpp"
 
 namespace gv
 {
@@ -45,6 +45,7 @@ struct Position
 	bool operator==(const Position& otherPosition) const;
 };
 
+// TODO: Chunk/global position
 struct GlobalPosition
 {
 	Position LocalPosition;
@@ -59,7 +60,5 @@ typedef std::vector<Position> PositionList;
 typedef std::vector<Position*> PositionRefList;
 };
 
-namespace plog
-{
-Record& operator<<(Record& record, const gv::Position& position);
-}
+template <>
+gv::Logging::Record& gv::Logging::Record::operator<<<gv::Position>(const gv::Position& data);

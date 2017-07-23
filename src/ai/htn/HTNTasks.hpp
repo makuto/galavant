@@ -41,7 +41,7 @@ struct Task
 
 	friend std::ostream& operator<<(std::ostream& os, const Task& task);
 
-private:
+protected:
 	union
 	{
 		GoalTask* Goal;
@@ -141,3 +141,6 @@ std::ostream& operator<<(std::ostream& os, const Task& task);
 void PrintTaskList(const TaskList& tasks);
 void PrintTaskCallList(const TaskCallList& tasks);
 }
+
+template <>
+gv::Logging::Record& gv::Logging::Record::operator<<<Htn::Task>(const Htn::Task& task);

@@ -9,6 +9,8 @@
 
 namespace gv
 {
+ResourceDictionary<AgentGoalDef> g_AgentGoalDefDictionary;
+
 AgentComponentManager::AgentComponentManager() : gv::PooledComponentManager<AgentComponentData>(100)
 {
 	Type = gv::ComponentType::Agent;
@@ -45,13 +47,14 @@ void AgentComponentManager::Update(float deltaSeconds)
 	EntityList entitiesToUnsubscribe;
 	EntityList entitiesToDestroy;
 	PlanComponentManager::PlanComponentList newPlans;
-	const PlanExecutionEventList& planExecutionEvents = PlanManager->GetExecutionEvents();
 
 	if (!PlanManager)
 	{
 		LOGE << "Cannot update Agents without PlanManager!";
 		return;
 	}
+
+	const PlanExecutionEventList& planExecutionEvents = PlanManager->GetExecutionEvents();
 
 	WorldTime += deltaSeconds;
 

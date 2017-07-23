@@ -3,7 +3,7 @@ SubDir . src unitTesting ;
 SubDirC++Flags $(TESTSC++FLAGS) ;
 
 Main entityComponentTest : EntityComponentSystem_test.cpp ;
-LinkLibraries entityComponentTest : libGalaEntityComponent ;
+LinkLibraries entityComponentTest : libGalaEntityComponent libGalaUtil ;
 
 Main objectPoolTest : ObjectPoolTest.cpp ;
 
@@ -11,11 +11,13 @@ Main htnTest : HTN_test.cpp ;
 LinkLibraries htnTest : libGalaAi libGalaUtil ;
 
 Main positionTest : Position_test.cpp ;
-LinkLibraries positionTest : libGalaWorld ;
+LinkLibraries positionTest : libGalaWorld libGalaUtil ;
 
 Main logTest : Log_test.cpp ;
+LinkLibraries logTest : libGalaUtil ;
 
 Main stringHashTest : StringHashing_test.cpp ;
+LinkLibraries stringHashTest : libGalaUtil ;
 
 MakeLocate objectComponentTest 
            entityComponentTest 

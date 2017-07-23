@@ -58,7 +58,7 @@ struct ConstCrc<size, size>
     }
 };
 
-// This don't take into account the nul char
+// This doesn't take into account the nul char
 #define COMPILE_TIME_CRC32_STR(x) (ConstCrc<sizeof(x) - 1>::crc32(x))
 
 // Runtime string hashing

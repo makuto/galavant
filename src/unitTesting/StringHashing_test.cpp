@@ -1,5 +1,3 @@
-#pragma once
-
 #include <iostream>
 
 #define CATCH_CONFIG_MAIN

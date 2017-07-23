@@ -3,11 +3,13 @@
 #define CATCH_CONFIG_MAIN
 #include "../../thirdParty/Catch/single_include/catch.hpp"
 
-#include "../util/Logging.hpp"
+#include "util/Logging.hpp"
 
-#include "../ai/htn/HTNTypes.hpp"
-#include "../ai/htn/HTNTasks.hpp"
-#include "../ai/htn/HTNPlanner.hpp"
+#include "ai/htn/HTNTypes.hpp"
+#include "ai/htn/HTNTasks.hpp"
+#include "ai/htn/HTNPlanner.hpp"
+
+static gv::Logging::Logger s_logger;
 
 class AlwaysFailPrimitiveTask : public Htn::PrimitiveTask
 {

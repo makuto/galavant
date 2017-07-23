@@ -4,6 +4,3 @@
 [submodule "thirdParty/Catch"]
 	path = thirdParty/Catch
 	url = https://github.com/philsquared/Catch.git
-[submodule "thirdParty/plog"]
-	path = thirdParty/plog
-	url = https://github.com/SergiusTheBest/plog

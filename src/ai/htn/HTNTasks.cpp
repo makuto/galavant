@@ -145,3 +145,24 @@ void PrintTaskCallList(const TaskCallList& tasks)
 		LOGD << "    [" << i << "] " << *tasks[i].TaskToCall;
 }
 }
+
+template <>
+gv::Logging::Record& gv::Logging::Record::operator<<<Htn::Task>(const Htn::Task& task)
+{
+	switch (task.GetType())
+	{
+		case Htn::TaskType::None:
+			*this << "Task Type:None " << &task;
+			break;
+		case Htn::TaskType::Goal:
+			*this << "Task Type:Goal task addr " << &task << " Goal";  // << task.Goal;
+			break;
+		case Htn::TaskType::Compound:
+			*this << "Task Type:Compound addr " << &task << " Compound";  // << task.Compound;
+			break;
+		case Htn::TaskType::Primitive:
+			*this << "Task Type:Primitive addr " << &task << " Primitive";  // << task.Primitive;
+			break;
+	}
+	return *this;
+}

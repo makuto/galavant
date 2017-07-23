@@ -12,11 +12,11 @@ What does agent component manager do with triggers once plan is done? How to kno
 Pickups sort of working, sometimes they aren't picked up, Actors are being destroyed strangely
 	Possibility that pickup actor is falling through the floor (invisible other component hitting KillZ?) YES, it's KillZ
 
-HUD Minimap is difficult to use with regards to rotation (needs better view cone)
-
-Minimap noise doesn't match world
-	Scaling is completely wrong between WorldResource position and noise sample
-		Actually, this doesn't seem to be the problem
+Minimap
+	HUD Minimap is difficult to use with regards to rotation (needs better view cone)
+	Minimap noise doesn't match world
+		Scaling is completely wrong between WorldResource position and noise sample
+			Actually, this doesn't seem to be the problem
 
 Some sort of resource system
 	Could be something like ResourceDictionary<key, ResourceType> resources
@@ -24,20 +24,24 @@ Some sort of resource system
 
 Put HTN Tasks etc. in resource dictionaries? Who owns them?
 
+Sublime "syntax" tag for build systems
+
 
 ----------------------------------------------------------------------------------------------------
 DOING
 ----------------------------------------------------------------------------------------------------
 
-Logging broke as shit
-	https://answers.unrealengine.com/questions/435366/linux-crash-in-stdstring-destructor.html ?
 
 Test PlanComponent event stuff
+	It seems to have broken things
 
 
 ----------------------------------------------------------------------------------------------------
 DONE
 ----------------------------------------------------------------------------------------------------
+
+Logging broke as shit
+	https://answers.unrealengine.com/questions/435366/linux-crash-in-stdstring-destructor.html ?
 
 Chunks are fucked
 
