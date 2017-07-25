@@ -411,4 +411,15 @@ Planner::Status Planner::PlanStep()
 	CurrentStatus = status;
 	return status;
 }
+
+void Planner::Clear()
+{
+	InitialCallList.clear();
+	FinalCallList.clear();
+	DecompositionStack.clear();
+	WorkingCallList.clear();
+	State = {};
+	StacklessState = {};
+	CurrentStatus = Status::None;
+}
 }

@@ -99,7 +99,7 @@ PlanExecuteStatus PlanComponentManager::ExecutePlan(Entity currentEntity,
 					currentComponent.Planner.FinalCallList.erase(currentStep);
 
 					// We have finished all tasks
-					if (!currentComponent.Planner.FinalCallList.empty())
+					if (currentComponent.Planner.FinalCallList.empty())
 						planStatus = PlanExecuteStatus::Succeeded;
 
 					break;
@@ -111,16 +111,13 @@ PlanExecuteStatus PlanComponentManager::ExecutePlan(Entity currentEntity,
 	}
 	else
 	{
-		// We have finished all tasks; remove this entity from the manager
 		LOGE_IF(DebugPrint) << "Call list empty; something weird happened";
 		planStatus = PlanExecuteStatus::Failed;
 	}
 
+	// We've finished in a conclusive way; unsubscribe the entity
 	if (planStatus == PlanExecuteStatus::Succeeded || planStatus == PlanExecuteStatus::Failed)
-	{
-		// TODO: Send event or callback that the plan execution has concluded
 		entitiesToUnsubscribe.push_back(currentEntity);
-	}
 
 	return planStatus;
 }
@@ -130,7 +127,7 @@ void PlanComponentManager::Update(float deltaSeconds)
 	EntityList entitiesToUnsubscribe;
 
 	// Things had their chance to read these
-	PlanExecutionEvents.clear();
+	PlanConclusiveExecutionEvents.clear();
 
 	if (!worldStateManager)
 		return;
@@ -149,8 +146,9 @@ void PlanComponentManager::Update(float deltaSeconds)
 		Htn::Planner& componentPlanner = currentComponent->data.Planner;
 		Entity currentEntity = currentComponent->entity;
 		PlanExecuteStatus planStatus = PlanExecuteStatus::Running;
+		bool shouldStartPlanner = (componentPlanner.CurrentStatus == Htn::Planner::Status::None);
 
-		if (componentPlanner.IsPlannerRunning())
+		if (shouldStartPlanner || componentPlanner.IsPlannerRunning())
 		{
 			Htn::Planner::Status status = componentPlanner.PlanStep();
 			if (!componentPlanner.IsPlannerRunning())
@@ -199,7 +197,7 @@ void PlanComponentManager::Update(float deltaSeconds)
 		if (planStatus > PlanExecuteStatus::Begin_Conclusive)
 		{
 			PlanExecutionEvent executionEvent = {currentEntity, planStatus};
-			PlanExecutionEvents.push_back(executionEvent);
+			PlanConclusiveExecutionEvents.push_back(executionEvent);
 		}
 	}
 
@@ -242,11 +240,9 @@ void PlanComponentManager::SubscribeEntitiesInternal(const EntityList& subscribe
 		Htn::TaskCallList& goalCallList = currentComponent->data.Tasks;
 
 		planner.State = worldStateManager->GetWorldStateForAgent(currentComponent->entity);
+		// @Performance: Could possibly make planner look directly at lists given instead of copying
 		planner.InitialCallList.insert(planner.InitialCallList.end(), goalCallList.begin(),
 		                               goalCallList.end());
-
-		// TODO: This is not kosher
-		planner.CurrentStatus = Htn::Planner::Status::Running_SuccessfulPrimitive;
 
 		planner.DebugPrint = DebugPrint;
 	}
@@ -268,8 +264,8 @@ void PlanComponentManager::UnsubscribePoolEntitiesInternal(const EntityList& uns
 	}
 }
 
-const PlanExecutionEventList& PlanComponentManager::GetExecutionEvents() const
+const PlanExecutionEventList& PlanComponentManager::GetConclusiveExecutionEvents() const
 {
-	return PlanExecutionEvents;
+	return PlanConclusiveExecutionEvents;
 }
 }

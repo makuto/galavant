@@ -54,7 +54,8 @@ void AgentComponentManager::Update(float deltaSeconds)
 		return;
 	}
 
-	const PlanExecutionEventList& planExecutionEvents = PlanManager->GetExecutionEvents();
+	const PlanExecutionEventList& planConclusiveExecutionEvents =
+	    PlanManager->GetConclusiveExecutionEvents();
 
 	WorldTime += deltaSeconds;
 
@@ -116,7 +117,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 					if (needLevelTrigger.NeedsResource && needLevelTrigger.WorldResource)
 					{
 						AgentGoal newNeedResourceGoal{
-						    AgentGoal::GoalStatus::Initialized,
+						    AgentGoal::GoalStatus::StartGoal,
 						    /*NumFailureRetries=*/0,
 						    gv::g_AgentGoalDefDictionary.GetResource(RESKEY("GetResource")),
 						    needLevelTrigger.WorldResource};
@@ -142,8 +143,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 			AgentGoal& goal = (*headGoalIt);
 			switch (goal.Status)
 			{
-				// Start up the goal
-				case AgentGoal::GoalStatus::Initialized:
+				case AgentGoal::GoalStatus::StartGoal:
 					// TODO: This IsSubscribed call will go away once PlanManager manages multiple
 					// plans for a single entity. For now, we'll just wait until the entity is no
 					// longer subscribed before adding our goal
@@ -179,11 +179,12 @@ void AgentComponentManager::Update(float deltaSeconds)
 				{
 					// While goal is in progress, watch planner events for a conclusive status
 					bool entityConcludedPlan = false;
-					for (PlanExecutionEvent planEvent : planExecutionEvents)
+					for (PlanExecutionEvent planEvent : planConclusiveExecutionEvents)
 					{
 						if (planEvent.entity != currentEntity)
 							continue;
 
+						// If we got this far we received a relevant conclusive event
 						entityConcludedPlan = true;
 
 						if (planEvent.status == PlanExecuteStatus::Failed)
@@ -197,10 +198,14 @@ void AgentComponentManager::Update(float deltaSeconds)
 								    << goal.Def->NumRetriesIfFailed << " max tries)";
 
 								goal.NumFailureRetries++;
-								goal.Status = AgentGoal::GoalStatus::Initialized;
+								goal.Status = AgentGoal::GoalStatus::StartGoal;
 								entityConcludedPlan = false;
 							}
+							else
+								goal.Status = AgentGoal::GoalStatus::Failed;
 						}
+						else if (planEvent.status == PlanExecuteStatus::Succeeded)
+							goal.Status = AgentGoal::GoalStatus::Succeeded;
 
 						break;
 					}

@@ -111,26 +111,6 @@ PrimitiveTask* Task::GetPrimitive()
 	return Primitive;
 }
 
-std::ostream& operator<<(std::ostream& os, const Task& task)
-{
-	switch (task.GetType())
-	{
-		case TaskType::None:
-			os << "Task Type:None " << &task;
-			break;
-		case TaskType::Goal:
-			os << "Task Type:Goal task addr " << &task << " Goal addr " << task.Goal;
-			break;
-		case TaskType::Compound:
-			os << "Task Type:Compound addr " << &task << " Compound addr " << task.Compound;
-			break;
-		case TaskType::Primitive:
-			os << "Task Type:Primitive addr " << &task << " Primitive addr " << task.Primitive;
-			break;
-	}
-	return os;
-}
-
 void PrintTaskList(const TaskList& tasks)
 {
 	LOGD << "TaskList size = " << tasks.size() << " addr " << &tasks << ":";
@@ -146,6 +126,7 @@ void PrintTaskCallList(const TaskCallList& tasks)
 }
 }
 
+// TODO: This might not actually work right now. Not very important
 template <>
 gv::Logging::Record& gv::Logging::Record::operator<<<Htn::Task>(const Htn::Task& task)
 {

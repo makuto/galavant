@@ -31,7 +31,7 @@ struct AgentGoal
 	enum class GoalStatus
 	{
 		None = 0,
-		Initialized,
+		StartGoal,
 		InProgress,
 		Failed,
 		Succeeded

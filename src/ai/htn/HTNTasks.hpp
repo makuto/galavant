@@ -39,9 +39,7 @@ struct Task
 	CompoundTask* GetCompound();
 	PrimitiveTask* GetPrimitive();
 
-	friend std::ostream& operator<<(std::ostream& os, const Task& task);
-
-protected:
+private:
 	union
 	{
 		GoalTask* Goal;
@@ -135,8 +133,6 @@ public:
 
 	Task* GetTask();
 };
-
-std::ostream& operator<<(std::ostream& os, const Task& task);
 
 void PrintTaskList(const TaskList& tasks);
 void PrintTaskCallList(const TaskCallList& tasks);

@@ -35,15 +35,12 @@ Given the world state and a set of goal tasks, decompose them into a list of pri
 when executed, will result in the desired goal tasks being completed. Note that the initial goal
 task set can include compound and primitive tasks.
 
-TODO: Either make planner allow making multiple plans with the same instance, or make it clear
-that it is for a single plan only
+You must call Clear() before using the Planner for another plan. Note that Planner allocates memory
+dynamically due to its usage of vector
 */
 class Planner
 {
 public:
-	Planner() = default;
-	~Planner() = default;
-
 	gv::WorldState State;
 
 	TaskCallList InitialCallList;
@@ -69,8 +66,10 @@ public:
 
 	enum class Status
 	{
+		None = 0,
+
 		// Bad
-		Failed_BadData = 0,
+		Failed_BadData,
 		Failed_NoPossiblePlan,
 		Failed_NoTasks,
 
@@ -89,12 +88,17 @@ public:
 		PlanComplete
 	};
 
+	Status CurrentStatus = Status::None;
+
 	bool IsPlannerRunning();
 	bool IsPlannerRunning(Status status);
 
-	Status CurrentStatus;
-
 	Status PlanStep();
+
+	void Clear();
+
+	Planner() = default;
+	~Planner() = default;
 
 private:
 	GoalDecompositionStack DecompositionStack;

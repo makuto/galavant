@@ -24,7 +24,7 @@ enum class PlanExecuteStatus
 	None = 0,
 
 	Running,
-	
+
 	Begin_Conclusive,
 	Succeeded,
 	Failed,
@@ -48,7 +48,7 @@ class PlanComponentManager : public gv::PooledComponentManager<PlanComponentData
 private:
 	WorldStateManager* worldStateManager;
 
-	PlanExecutionEventList PlanExecutionEvents;
+	PlanExecutionEventList PlanConclusiveExecutionEvents;
 
 	PlanExecuteStatus ExecutePlan(Entity currentEntity, PlanComponentData& currentComponent,
 	                              EntityList& entitiesToUnsubscribe);
@@ -72,7 +72,7 @@ public:
 	                CallbackContainer<Htn::TaskEventCallback>* taskEventCallbacks);
 	virtual void Update(float deltaSeconds);
 
-	const PlanExecutionEventList& GetExecutionEvents() const;
+	const PlanExecutionEventList& GetConclusiveExecutionEvents() const;
 
 	Htn::TaskEventList ReceivedEvents;
 };
