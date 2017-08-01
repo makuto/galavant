@@ -63,6 +63,7 @@
             "shell_cmd": "cd galavant && jam -j4 -q -sUNREAL=true GalavantPseudotarget && cd ../galavant-unreal/GalavantUnreal && make GalavantUnreal",
             "working_dir": "$project_path/../../../..",
             "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
 
         // Unreal
@@ -71,6 +72,7 @@
             "shell_cmd": "make GalavantUnreal",
             "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal",
             "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
 
         {
@@ -90,24 +92,28 @@
             "name": "Jam Current Directory",
             "shell_cmd": "jam -j4 -q",
             "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
         {
             "name": "Jam Clean All",
             "shell_cmd": "jam clean",
             "working_dir": "$project_path/../../..",
             "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
         {
             "name": "Jam Build (not Unreal)",
             "shell_cmd": "jam -j4 -q",
             "working_dir": "$project_path/../../..",
             "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
         {
             "name": "Jam Build Unreal",
             "shell_cmd": "jam -j4 -q -sUNREAL=true GalavantPseudotarget",
             "working_dir": "$project_path/../../..",
             "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
 
         // Misc. C++ Commands

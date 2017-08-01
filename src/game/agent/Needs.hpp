@@ -9,10 +9,20 @@
 
 namespace gv
 {
+struct Need;
 struct NeedLevelTrigger
 {
 	// Conditions
-	bool GreaterThanLevel;
+	enum class ConditionType
+	{
+		None = 0,
+
+		Zero,
+		GreaterThanLevel,
+		LessThanLevel
+	};
+
+	ConditionType Condition;
 
 	float Level;
 
@@ -21,6 +31,8 @@ struct NeedLevelTrigger
 	WorldResourceType WorldResource;
 
 	bool DieNow;
+
+	bool ConditionsMet(Need& need) const;
 };
 
 typedef std::vector<NeedLevelTrigger> NeedLevelTriggerList;
@@ -30,6 +42,10 @@ struct NeedDef
 	NeedType Type = gv::NeedType::None;
 
 	const char* Name;
+
+	float InitialLevel;
+	float MaxLevel;
+	float MinLevel;
 
 	float UpdateRate;
 

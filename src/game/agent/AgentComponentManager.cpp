@@ -1,11 +1,13 @@
 #include "AgentComponentManager.hpp"
 
-#include "../../util/Logging.hpp"
+#include "util/Logging.hpp"
 
-#include "../../entityComponentSystem/PooledComponentManager.hpp"
-#include "../../entityComponentSystem/ComponentTypes.hpp"
-#include "../../entityComponentSystem/EntityComponentManager.hpp"
-#include "../../ai/htn/HTNTaskDb.hpp"
+#include "entityComponentSystem/PooledComponentManager.hpp"
+#include "entityComponentSystem/ComponentTypes.hpp"
+#include "entityComponentSystem/EntityComponentManager.hpp"
+#include "ai/htn/HTNTaskDb.hpp"
+
+#include "util/Math.hpp"
 
 namespace gv
 {
@@ -101,6 +103,8 @@ void AgentComponentManager::Update(float deltaSeconds)
 
 			if (needUpdated)
 			{
+				CLAMP(need.Level, need.Def->MinLevel, need.Def->MaxLevel);
+
 				need.LastUpdateTime = WorldTime;
 
 				LOGV_IF(DebugPrint) << "Agent Entity " << currentEntity << " updated need "
@@ -108,10 +112,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 
 				for (const NeedLevelTrigger& needLevelTrigger : need.Def->LevelTriggers)
 				{
-					bool needTriggerHit =
-					    (needLevelTrigger.GreaterThanLevel && need.Level > needLevelTrigger.Level);
-
-					if (!needTriggerHit)
+					if (!needLevelTrigger.ConditionsMet(need))
 						continue;
 
 					if (needLevelTrigger.NeedsResource && needLevelTrigger.WorldResource)

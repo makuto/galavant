@@ -24,19 +24,24 @@ Some sort of resource system
 
 Put HTN Tasks etc. in resource dictionaries? Who owns them?
 
-Sublime "syntax" tag for build systems
+
+Position vs GlobalPosition
+	As soon as possible, I need to decide if I need Chunk XYZ with Position XYZ
+	This depends on whether I ever want to support really large worlds
+		How large? I'd have to do the math (yes, the monster math)
 
 
 ------------------
 Doing
 ------------------
 
-
-
+Add player HUD UI - Only needs Minimap, Need bars
 
 ------------------
 Done
 ------------------
+
+Sublime "syntax" tag for build systems
 
 Test PlanComponent event stuff
 	It seems to have broken things

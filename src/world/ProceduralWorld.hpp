@@ -19,6 +19,9 @@ struct ProceduralWorldParams
 
 	// The size of a single 3D tile.
 	float WorldCellTileSize[3];
+
+	float WorldCellMaxHeight;
+	float WorldCellMinHeight;
 };
 
 ProceduralWorldParams& GetActiveWorldParams();
