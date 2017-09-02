@@ -14,13 +14,15 @@ Pickups sort of working, sometimes they aren't picked up, Actors are being destr
 
 Minimap
 	HUD Minimap is difficult to use with regards to rotation (needs better view cone)
+		Instead of doing this weird shit, just render the world and have UI create icons for player 
+		 and things
 	Minimap noise doesn't match world
 		Scaling is completely wrong between WorldResource position and noise sample
 			Actually, this doesn't seem to be the problem
 
 Some sort of resource system
 	Could be something like ResourceDictionary<key, ResourceType> resources
-	then things could stuff in things from load or even hard coded (via resources["new thing"] = {})
+	 then things could stuff in things from load or even hard coded (via resources["new thing"] = {})
 
 Put HTN Tasks etc. in resource dictionaries? Who owns them?
 
@@ -30,6 +32,27 @@ Position vs GlobalPosition
 	This depends on whether I ever want to support really large worlds
 		How large? I'd have to do the math (yes, the monster math)
 
+Combat System
+	Input
+		Make callbacks in player character which talk to combat system/do things. For now, maybe
+	     make this step control timing and pull it out into combat later
+	Animations
+		This is going to be tricky. Procedural would be cool, but difficult. At least shoot for
+		 procedural impact effects
+		Figure out how to actually make animations in Blender (try Unreal .fbx export/import)
+			Note on .fbx import/export: I had to add the following to SSlateFileOpenDlg::GetFilterExtension:
+				if (!FilterExt)
+					return false;
+				(this is fixed on 4.17 now)
+		Could do UI only for now to experiment with timing
+		Hook up ragdoll physics for deaths/unconscious
+	Sound
+		Can start with simple sounds: blood hit, sword hit/parry, sword swing
+	Milestones
+		Goal #1: Minecraft-quality
+		Goal #2: Minecraft but with strategy (this can be the stopping point for now)
+		Goal #3: Something closer to Chivalry instead of Minecraft
+ 
 
 ------------------
 Doing

@@ -1,10 +1,14 @@
 {
+    // You'll need to replace all instances of /home/macoy/Development/code/3rdParty/repositories/UnrealEngine
+    //  with your Unreal Engine install location. There may be other folders that need correction
+    // You'll also need to copy JamUnrealBuildOutput.sublime-syntax to your Sublime User folder 
+    //  (Preferences -> Browse Packages... -> User) to build using the provided build systems
     "folders":
     [
         {
             "path": "../../../../galavant",
             "name": "Galavant",
-            "folder_exclude_patterns": ["project"],//, "thirdParty"],
+            "folder_exclude_patterns": ["project", "thirdParty"],
             "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "Jam*", "*.md"]
         },
         {
@@ -24,51 +28,49 @@
             "path": "../../../assets",
             "name": "Assets"
         },
-        // Note that this is at the bottom; this means Galavant results will appear first
-        //  when doing thigns like ctrl+p
+        // Note that Unreal and other 3rd Party sources come after our folders; this means Galavant 
+        //  results will appear first when doing things like ctrl+p, which is what we want
         {
-            "path": "/home/macoy/Downloads/UnrealEngine/Engine/Source",
+            "path": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Source",
             "name": "Unreal Engine Source",
-            //"folder_exclude_patterns": ["project", "thirdParty"],
+            "folder_exclude_patterns": ["ThirdParty"],
             "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "Jam*", "*.md"]
         },
+        {
+            "path": "../../../../galavant/thirdParty",
+            "name": "Third Party - Galavant",
+            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "Jam*", "*.md"]
+        },
+        {
+            "path": "../../../../galavant-unreal/GalavantUnreal",
+            "name": "Config - Galavant Unreal",
+            "file_include_patterns": ["*.ini"]
+        },
     ],
+    
     "build_systems":
     [
         // For galavant/, use
         // "working_dir": "$project_path/../../.."
         // Not sure why, but Sublime will actually keep going up across builds if you just do ../ first
 
-        // Misc. Commands
+        //
+        // "Full build". This is what you want to run normally.
+        // Note that if you are using the Unreal Editor you're not running the targets
+        //  GalavantUnreal is making; you're only using the Galavant library
         {
-            "name": "List",
-            "shell_cmd": "ls -l",
-            "working_dir": "$project_path/../../.."
-        },
-
-        // Convenience for Macoy
-        //guake -n MyTabName -e "command args"
-        {
-            "name": "Guake Galavant",
-            "shell_cmd": "guake -n Galavant -e \"cd Development/code/repositories/galavant\"",
-        },
-        {
-            "name": "Guake Galavant Unreal",
-            "shell_cmd": "guake -n GalavantUnreal -e \"cd Development/code/repositories/galavant-unreal/GalavantUnreal\"",
-        },
-
-        // "Full build" 
-        {
-            "name": "Full Unreal Build (build Galavant lib and Unreal)",
+            "name": "Full Build (build Galavant lib and Unreal)",
             "shell_cmd": "cd galavant && jam -j4 -q -sUNREAL=true GalavantPseudotarget && cd ../galavant-unreal/GalavantUnreal && make GalavantUnreal",
             "working_dir": "$project_path/../../../..",
             "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
             "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
 
-        // Unreal
+        //
+        // Galavant Unreal
+        //
         {
-            "name": "Unreal Build",
+            "name": "GalavantUnreal Build",
             "shell_cmd": "make GalavantUnreal",
             "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal",
             "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
@@ -76,18 +78,47 @@
         },
 
         {
-            "name": "Unreal Quick Clean",
+            "name": "GalavantUnreal Quick Clean",
             "shell_cmd": "rm -r Intermediate/Build",
             "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"
         },
 
         {
-            "name": "Unreal Generate Project Files",
-            "shell_cmd": "/home/macoy/Downloads/UnrealEngine/GenerateProjectFiles.sh -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -game -editor",
+            "name": "GalavantUnreal Generate Project Files",
+            "shell_cmd": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/GenerateProjectFiles.sh -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -game -editor",
             "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"
         },
 
+        //
+        // Unreal Engine
+        //
+        {
+            "name": "Unreal Engine Get Latest",
+            "shell_cmd": "guake -n UnrealLatest -e \"cd /home/macoy/Development/code/3rdParty/repositories/UnrealEngine && git pull && ./Setup.sh && ./GenerateProjectFiles.sh && make\"",
+            "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
+        {
+            "name": "Unreal Engine Build",
+            "shell_cmd": "make",
+            "working_dir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine",
+            "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
+        {
+            "name": "Unreal Engine Run (no debug)",
+            "shell_cmd": "./Engine/Binaries/Linux/UE4Editor",
+            "working_dir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine",
+            //"working_dir": "/home/macoy/Downloads/UnrealEngine",
+            "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
+        //
         // Jam
+        //
         {
             "name": "Jam Current Directory",
             "shell_cmd": "jam -j4 -q",
@@ -116,7 +147,21 @@
             "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
 
-        // Misc. C++ Commands
+        //
+        // Convenience for Macoy (Guake is my terminal)
+        //guake -n MyTabName -e "command args"
+        {
+            "name": "Guake Galavant",
+            "shell_cmd": "guake -n Galavant -e \"cd Development/code/repositories/galavant\"",
+        },
+        {
+            "name": "Guake Galavant Unreal",
+            "shell_cmd": "guake -n GalavantUnreal -e \"cd Development/code/repositories/galavant-unreal/GalavantUnreal\"",
+        },
+
+        //
+        // Misc. Commands
+        //
         {
         	"name": "Compile C++11 File",
 		    "cmd": ["g++", "-c", "-std=c++11", "-g", "-Os", "-Wall", "$file"],
@@ -128,6 +173,11 @@
             "shell_cmd": "make",
             "working_dir": "$project_path/../../../src/experiments"
         },
+        {
+            "name": "List",
+            "shell_cmd": "ls -l",
+            "working_dir": "$project_path/../../.."
+        },
     ],
 
     "settings":
@@ -137,15 +187,15 @@
             "UnrealEditor":
             {
                 // Find and attach to running UE4 instance:
-                // sudo gdb /home/macoy/Downloads/UnrealEngine/Engine/Binaries/Linux/UE4Editor $(ps -A | grep UE4Editor | awk '{print $1;}')
+                // sudo gdb /home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/Linux/UE4Editor $(ps -A | grep UE4Editor | awk '{print $1;}')
                 
-                "workingdir": "/home/macoy/Downloads/UnrealEngine/Engine/Binaries/Linux",
+                "workingdir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/Linux",
                 "commandline": "gdb --interpreter=mi ./UE4Editor /home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
             },
 
             //"UnrealEditor Debug":
             //{
-            //    "workingdir": "/home/macoy/Downloads/UnrealEngine/Engine/Binaries/Linux",
+            //    "workingdir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/Linux",
             //    "commandline": "gdb --interpreter=mi ./UE4Editor-Linux-Debug /home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
             //},
 
