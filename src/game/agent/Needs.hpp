@@ -60,6 +60,11 @@ struct Need
 
 	float Level = 0.f;
 	float LastUpdateTime = 0.f;
+
+	Need() = default;
+	// Construct a Need from a NeedDef
+	Need(ResourceKey needDefKey);
+	~Need() = default;
 };
 
 typedef std::vector<Need> NeedList;

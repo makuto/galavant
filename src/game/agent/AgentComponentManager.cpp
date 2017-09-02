@@ -78,6 +78,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 
 		if (!currentComponent->data.IsAlive)
 		{
+			// TODO: Figure out what to do about dead agents/bodies
 			entitiesToDestroy.push_back(currentEntity);
 			continue;
 		}

@@ -36,6 +36,10 @@ contexts:
     - match: \b(clang|undefined|target|Makefile|expected|unknown|type|expression|unused|seconds)\b
       scope: storage.type.class.jamunrealbuildout
 
+    # Unreal Log keywords
+    - match: \b(LogGalavantUnreal|LogGameMode|LogGameState|LogWorld|LogContentBrowser|LogLoad|LogInit|LogLinux|CompilerResultsLog|LogMainFrame|Display|LogTemp|LogBlueprintUserMessages|PIE|LogPlayLevel|LogAIModule)\b
+      scope: storage.type.class.jamunrealbuildout
+
     # Errors
     - match: \b(error|warning|Error|Warning|failed|errors)\b
       scope: invalid.jamunrealbuildout

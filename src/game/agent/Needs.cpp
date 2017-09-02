@@ -13,4 +13,13 @@ bool NeedLevelTrigger::ConditionsMet(Need& need) const
 	    (Condition == NeedLevelTrigger::ConditionType::GreaterThanLevel && need.Level > Level) ||
 	    (Condition == NeedLevelTrigger::ConditionType::LessThanLevel && need.Level < Level));
 }
+
+Need::Need(ResourceKey needDefKey)
+{
+	Def = g_NeedDefDictionary.GetResource(needDefKey);
+	if (Def)
+	{
+		Level = Def->InitialLevel;
+	}
+}
 }
