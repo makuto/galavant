@@ -1,10 +1,22 @@
 #include "ComponentManager.hpp"
+#include "entityComponentSystem/EntityComponentManager.hpp"
 #include "util/Logging.hpp"
 
 namespace gv
 {
+ComponentManager::ComponentManager()
+{
+	EntityComponentManager::AddComponentManager(this);
+}
+
+ComponentManager::ComponentManager(const char* debugName) : DebugName(debugName)
+{
+	EntityComponentManager::AddComponentManager(this);
+}
+
 ComponentManager::~ComponentManager()
 {
+	EntityComponentManager::RemoveComponentManager(this);
 }
 
 void ComponentManager::UnsubscribeEntitiesInternal(const EntityList& entities)
@@ -30,8 +42,12 @@ void ComponentManager::UnsubscribeEntities(const EntityList& entities)
 			// Remove from subscribers
 			EntityListRemoveNonUniqueEntitiesInSuspect(entitiesToUnsubscribe, Subscribers);
 
-			LOGD << "Manager " << (int)Type << " unsubscribed " << entitiesToUnsubscribe.size()
-			     << " entities";
+			if (DebugName)
+				LOGD << "Manager " << DebugName << " unsubscribed " << entitiesToUnsubscribe.size()
+				     << " entities";
+			else
+				LOGD << "Manager (UNNAMED) unsubscribed " << entitiesToUnsubscribe.size()
+				     << " entities";
 		}
 	}
 }
@@ -39,10 +55,5 @@ void ComponentManager::UnsubscribeEntities(const EntityList& entities)
 bool ComponentManager::IsSubscribed(Entity entity)
 {
 	return EntityListFindEntity(Subscribers, entity);
-}
-
-ComponentType ComponentManager::GetType()
-{
-	return Type;
 }
 }

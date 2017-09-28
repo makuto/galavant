@@ -1,15 +1,16 @@
 #include "PlanComponentManager.hpp"
 
-#include "../../util/Logging.hpp"
+#include "util/Logging.hpp"
 
-#include "../../entityComponentSystem/PooledComponentManager.hpp"
-#include "../../entityComponentSystem/ComponentTypes.hpp"
+#include "entityComponentSystem/PooledComponentManager.hpp"
 
 namespace gv
 {
+PlanComponentManager g_PlanComponentManager;
+
 PlanComponentManager::PlanComponentManager() : gv::PooledComponentManager<PlanComponentData>(100)
 {
-	Type = ComponentType::Plan;
+	DebugName = "PlanComponentManager";
 }
 
 PlanComponentManager::~PlanComponentManager()

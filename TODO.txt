@@ -52,13 +52,27 @@ Combat System
 		Goal #1: Minecraft-quality
 		Goal #2: Minecraft but with strategy (this can be the stopping point for now)
 		Goal #3: Something closer to Chivalry instead of Minecraft
- 
+
+Seemed to see multiple actors spawned for a single berry
+
+Massive convenience feature: Fuck, totally forgot as I was writing this. Fuck! 
+	Was it Entity Actor integration?
+
+Add player HUD UI - Only needs Minimap, Need bars
+
+Actually important: Put Entity integration into AActor!
 
 ------------------
 Doing
 ------------------
 
-Add player HUD UI - Only needs Minimap, Need bars
+Combat
+
+Agent goals are broken after refactor
+
+Segfault every time you replay in editor on scene component thing
+
+Remember to put Galavant-specific UE code into a patch or something
 
 ------------------
 Done

@@ -7,65 +7,37 @@
 namespace gv
 {
 Entity EntityComponentManager::NextNewEntity = 1;
-EntityComponentManager *EntityComponentManager::Singleton = nullptr;
+ComponentManagerList EntityComponentManager::ComponentManagers;
+EntityComponentManager g_EntityComponentManager;
 
 EntityComponentManager::EntityComponentManager()
 {
-	// Should not create more than one ECM! Commented due to Unreal's hotreloading :(
-	// assert(!Singleton);
-	Singleton = this;
 }
 
 EntityComponentManager::~EntityComponentManager()
 {
 	DestroyAllEntities();
-
-	Singleton = nullptr;
 }
 
-// Sets the ComponentManager for a ComponentType. Returns false if there is already a manager
-// for that type (it will not be set)
-bool EntityComponentManager::AddComponentManagerOfType(ComponentType type,
-                                                       ComponentManager *manager)
-{
-	if (manager)
-	{
-		EntityComponentManager::ComponentManagerMapIterator findIt = ComponentManagers.find(type);
-
-		// Make sure there isn't already a ComponentManager for the type
-		assert(findIt == ComponentManagers.end());
-
-		ComponentManagers[type] = manager;
-
-		if (type != manager->GetType())
-			LOGW << "ComponentManager of type " << (int)manager->GetType()
-			     << " registered for type " << (int)type;
-	}
-
-	return false;
-}
-
-bool EntityComponentManager::AddComponentManager(ComponentManager *manager)
+void EntityComponentManager::AddComponentManager(ComponentManager *manager)
 {
 	if (!manager)
-		return false;
+		return;
 
-	if (manager->GetType() == ComponentType::None)
-		LOGE << "Registered ComponentManager " << manager << " with no Type!";
-
-	return AddComponentManagerOfType(manager->GetType(), manager);
+	ComponentManagers.push_back(manager);
 }
 
-// Returns the ComponentManager assigned to the provided type, or nullptr if there isn't one
-// assigned. If your ComponentManager needs another, it is preferable to get its dependencies
-// directly (i.e. passed in during a initialize() function)
-ComponentManager *EntityComponentManager::GetComponentManagerForType(ComponentType type)
+void EntityComponentManager::RemoveComponentManager(ComponentManager *manager)
 {
-	EntityComponentManager::ComponentManagerMapIterator findIt = ComponentManagers.find(type);
-	if (findIt == ComponentManagers.end())
-		return nullptr;
-
-	return findIt->second;
+	for (ComponentManagerListIterator it = ComponentManagers.begin(); it != ComponentManagers.end();)
+	{
+		if ((*it) == manager)
+		{
+			it = ComponentManagers.erase(it);
+		}
+		else
+			++it;
+	}
 }
 
 void EntityComponentManager::GetNewEntities(EntityList &list, int count)
@@ -91,13 +63,9 @@ void EntityComponentManager::UnsubscribeEntitiesFromAllManagers(EntityList &enti
 	// Unsubscribe all of the entities from all ComponentManagers
 	// Some component managers will not actually have the Entity being destroyed subscribed, but
 	// that's fine
-	for (EntityComponentManager::ComponentManagerMapIterator it = ComponentManagers.begin();
-	     it != ComponentManagers.end(); ++it)
+	for (ComponentManager *currentComponentManager : ComponentManagers)
 	{
-		ComponentManager *currentComponentManager = it->second;
-
-		if (currentComponentManager)
-			currentComponentManager->UnsubscribeEntities(entitiesToUnsubscribe);
+		currentComponentManager->UnsubscribeEntities(entitiesToUnsubscribe);
 	}
 }
 
@@ -134,13 +102,5 @@ void EntityComponentManager::DestroyAllEntities()
 
 	ActiveEntities.clear();  // this should be empty anyways
 	EntitiesPendingDestruction.clear();
-}
-
-EntityComponentManager *EntityComponentManager::GetSingleton()
-{
-	// If failed, someone is requesting ECM before one has been initialized! Commented due to
-	// Unreal's hotreloading :(
-	// assert(Singleton);
-	return Singleton;
 }
 }

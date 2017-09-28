@@ -1,11 +1,10 @@
 #include <iostream>
 #include <cassert>
 
-#include "../entityComponentSystem/EntityTypes.hpp"
-#include "../entityComponentSystem/EntityComponentManager.hpp"
-#include "../entityComponentSystem/ComponentTypes.hpp"
-#include "../entityComponentSystem/ComponentManager.hpp"
-#include "../entityComponentSystem/PooledComponentManager.hpp"
+#include "entityComponentSystem/EntityTypes.hpp"
+#include "entityComponentSystem/EntityComponentManager.hpp"
+#include "entityComponentSystem/ComponentManager.hpp"
+#include "entityComponentSystem/PooledComponentManager.hpp"
 
 using namespace gv;
 

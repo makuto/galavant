@@ -1,6 +1,8 @@
 #pragma once
 
 #include "NeedTypes.hpp"
+#include "ai/htn/HTNTypes.hpp"
+#include "ai/htn/HTNTasks.hpp"
 
 #include <vector>
 
@@ -9,10 +11,36 @@
 
 namespace gv
 {
+struct AgentGoalDef
+{
+	enum class GoalType
+	{
+		None = 0,
+
+		HtnPlan,
+		GetResource,
+
+		GoalType_Count
+	};
+	GoalType Type;
+
+	// TODO: Some sort of waiting period might be a good idea
+	int NumRetriesIfFailed;
+
+	//
+	// Plan to achieve goal
+	//
+	Htn::TaskCallList Tasks;
+};
+
+extern ResourceDictionary<AgentGoalDef> g_AgentGoalDefDictionary;
+
 struct Need;
 struct NeedLevelTrigger
 {
+	//
 	// Conditions
+	//
 	enum class ConditionType
 	{
 		None = 0,
@@ -26,11 +54,15 @@ struct NeedLevelTrigger
 
 	float Level;
 
+	//
 	// Actions
+	//
 	bool NeedsResource;
 	WorldResourceType WorldResource;
 
 	bool DieNow;
+
+	AgentGoalDef* GoalDef;
 
 	bool ConditionsMet(Need& need) const;
 };

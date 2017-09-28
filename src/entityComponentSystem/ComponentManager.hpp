@@ -1,7 +1,6 @@
 #pragma once
 
 #include "EntityTypes.hpp"
-#include "ComponentTypes.hpp"
 
 namespace gv
 {
@@ -12,14 +11,15 @@ namespace gv
 class ComponentManager
 {
 protected:
-	// You should set this type in your constructor
-	ComponentType Type;
+	const char* DebugName;
 
 	EntityList Subscribers;
 
 	virtual void UnsubscribeEntitiesInternal(const EntityList& entities);
 
 public:
+	ComponentManager();
+	ComponentManager(const char* debugName);
 	virtual ~ComponentManager();
 
 	// Calls UnsubscribeEntitiesInternal on entities actually subscribed (filters out
@@ -27,7 +27,5 @@ public:
 	void UnsubscribeEntities(const EntityList& entities);
 
 	bool IsSubscribed(Entity entity);
-
-	ComponentType GetType();
 };
 };

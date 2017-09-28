@@ -93,7 +93,7 @@
         // Unreal Engine
         //
         {
-            "name": "Unreal Engine Get Latest",
+            "name": "Unreal Engine Get Latest and Build",
             "shell_cmd": "guake -n UnrealLatest -e \"cd /home/macoy/Development/code/3rdParty/repositories/UnrealEngine && git pull && ./Setup.sh && ./GenerateProjectFiles.sh && make\"",
             "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
             "syntax":"JamUnrealBuildOutput.sublime-syntax"
@@ -204,6 +204,20 @@
             //    "workingdir": "../../../bin",
             //    "commandline": "gdb --interpreter=mi ./htnTest"
             //},
+        },
+
+        "SublimeAnarchyDebug": {
+            "debug": {
+                "executable": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/Linux/UE4Editor",
+                "params": [
+                    "/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
+                ],
+                "path": [
+                ],
+                "environment": [
+                ],
+                //"working_dir": "${project_path}"
+            }
         }
     }
 }

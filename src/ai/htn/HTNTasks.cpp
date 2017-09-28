@@ -2,10 +2,12 @@
 
 #include <cassert>
 
-#include "../../util/Logging.hpp"
+#include "util/Logging.hpp"
 
 namespace Htn
 {
+gv::ResourceDictionary<Task> g_TaskDictionary;
+
 int GoalTask::GetNumMethods()
 {
 	return Methods ? Methods->size() : 0;
