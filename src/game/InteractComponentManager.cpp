@@ -1,6 +1,6 @@
 #include "InteractComponentManager.hpp"
 
-#include "../entityComponentSystem/EntityComponentManager.hpp"
+#include "entityComponentSystem/EntityComponentManager.hpp"
 #include "agent/AgentComponentManager.hpp"
 
 namespace gv
@@ -49,7 +49,7 @@ void InteractComponentManager::CreatePickups(const EntityList& entities, PickupR
 		newPickups.push_back(newPickup);
 	}
 
-	EntityListAppendList(entitiesToSubscribe, Subscribers);
+	EntityListAppendList(Subscribers, entitiesToSubscribe);
 }
 
 Pickup* InteractComponentManager::GetPickup(Entity pickupEntity)

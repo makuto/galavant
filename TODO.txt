@@ -24,9 +24,6 @@ Some sort of resource system
 	Could be something like ResourceDictionary<key, ResourceType> resources
 	 then things could stuff in things from load or even hard coded (via resources["new thing"] = {})
 
-Put HTN Tasks etc. in resource dictionaries? Who owns them?
-
-
 Position vs GlobalPosition
 	As soon as possible, I need to decide if I need Chunk XYZ with Position XYZ
 	This depends on whether I ever want to support really large worlds
@@ -77,6 +74,7 @@ Spawning very, very broken
 	Actually important: Put Entity integration into AActor!
 		Finish lifetime management
 		Only call ActorOnDestroy if it wasn't previously marked for destruction (in Actor.h)
+		Current lifetime management doesn't prevent segfault. Wait until agents all group up for repro
 
 Combat
 
@@ -88,6 +86,7 @@ Remember to put Galavant-specific UE code into a patch or something
 ------------------
 Done
 ------------------
+Put HTN Tasks etc. in resource dictionaries? Who owns them?
 
 Spawning very, very broken
 	Segfault every time you replay in editor on scene component thing

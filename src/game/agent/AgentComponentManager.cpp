@@ -134,6 +134,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 					{
 						AgentGoal newGoal;
 						newGoal.Def = needLevelTrigger.GoalDef;
+						newGoal.Status = AgentGoal::GoalStatus::StartGoal;
 						AddGoalIfUniqueType(goals, newGoal);
 					}
 					else if (needLevelTrigger.NeedsResource && needLevelTrigger.WorldResource)
@@ -142,6 +143,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 						newNeedResourceGoal.Def =
 						    gv::g_AgentGoalDefDictionary.GetResource(RESKEY("GetResource"));
 						newNeedResourceGoal.WorldResource = needLevelTrigger.WorldResource;
+						newNeedResourceGoal.Status = AgentGoal::GoalStatus::StartGoal;
 						AddGoalIfUniqueType(goals, newNeedResourceGoal);
 					}
 				}
@@ -208,15 +210,12 @@ void AgentComponentManager::Update(float deltaSeconds)
 				case AgentGoal::GoalStatus::InProgress:
 				{
 					// While goal is in progress, watch planner events for a conclusive status
-					bool entityConcludedPlan = false;
 					for (PlanExecutionEvent planEvent : planConclusiveExecutionEvents)
 					{
 						if (planEvent.entity != currentEntity)
 							continue;
 
 						// If we got this far we received a relevant conclusive event
-						entityConcludedPlan = true;
-
 						if (planEvent.status == PlanExecuteStatus::Failed)
 						{
 							if (goal.Def->NumRetriesIfFailed &&
@@ -229,7 +228,6 @@ void AgentComponentManager::Update(float deltaSeconds)
 
 								goal.NumFailureRetries++;
 								goal.Status = AgentGoal::GoalStatus::StartGoal;
-								entityConcludedPlan = false;
 							}
 							else
 								goal.Status = AgentGoal::GoalStatus::Failed;
@@ -240,15 +238,21 @@ void AgentComponentManager::Update(float deltaSeconds)
 						break;
 					}
 
-					// Fall through if we finished the plan (failed or otherwise)
-					if (!entityConcludedPlan)
-						break;
-				}
-				case AgentGoal::GoalStatus::Failed:
-				case AgentGoal::GoalStatus::Succeeded:
-				default:
-					goals.erase(headGoalIt);
 					break;
+				}
+				case AgentGoal::GoalStatus::None:
+					LOGE << "Goal added with no status; it should be GoalStatus::StartGoal if it's "
+					        "new";
+					break;
+				default:
+					break;
+			}
+
+			if (goal.Status != AgentGoal::GoalStatus::InProgress &&
+			    goal.Status != AgentGoal::GoalStatus::StartGoal)
+			{
+				LOGD_IF(DebugPrint) << "Agent Goal concluded with status " << (int)goal.Status;
+				goals.erase(headGoalIt);
 			}
 		}
 	}

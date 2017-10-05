@@ -167,12 +167,15 @@ void PlanComponentManager::Update(float deltaSeconds)
 
 				if (status < Htn::Planner::Status::Running_EnumBegin)
 				{
-					LOGD_IF(DebugPrint) << "Failed plan for Entity " << currentComponent->entity
-					                    << " with code " << int(status) << "! Initial Call List:";
-					Htn::PrintTaskCallList(componentPlanner.InitialCallList);
+					if (DebugPrint)
+					{
+						LOGD << "Failed plan for Entity " << currentComponent->entity
+						     << " with code " << int(status) << "! Initial Call List:";
+						Htn::PrintTaskCallList(componentPlanner.InitialCallList);
 
-					// Plan failed, remove entity
-					LOGD_IF(DebugPrint) << "Plan not running/failed";
+						// Plan failed, remove entity
+						LOGD << "Plan not running/failed";
+					}
 					planStatus = PlanExecuteStatus::Failed;
 					entitiesToUnsubscribe.push_back(currentEntity);
 				}

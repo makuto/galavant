@@ -57,7 +57,7 @@ void CombatComponentManager::CreateCombatants(const EntityList& entities,
 	}
 
 	// We've already made sure all entities in the list are unique
-	EntityListAppendList(entitiesToSubscribe, Subscribers);
+	EntityListAppendList(Subscribers, entitiesToSubscribe);
 }
 
 Combatant* CombatComponentManager::GetCombatant(Entity combatantEntity)
