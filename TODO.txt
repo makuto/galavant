@@ -53,30 +53,45 @@ Combat System
 		Goal #2: Minecraft but with strategy (this can be the stopping point for now)
 		Goal #3: Something closer to Chivalry instead of Minecraft
 
-Seemed to see multiple actors spawned for a single berry
 
 Massive convenience feature: Fuck, totally forgot as I was writing this. Fuck! 
 	Was it Entity Actor integration?
 
 Add player HUD UI - Only needs Minimap, Need bars
 
-Actually important: Put Entity integration into AActor!
+Save Jamfile documentation to repository
+
+Cereal integration
+
+Fix debug text over AgentCharacter for combat test
 
 ------------------
 Doing
 ------------------
 
+Spawning very, very broken
+	Seemed to see multiple actors spawned for a single berry
+		Actor cloning issue; see ActorEntityLifetimeManagement error. Walk back and forth to 
+		spawn/despawn entities
+
+	Actually important: Put Entity integration into AActor!
+		Finish lifetime management
+		Only call ActorOnDestroy if it wasn't previously marked for destruction (in Actor.h)
+
 Combat
 
 Agent goals are broken after refactor
-
-Segfault every time you replay in editor on scene component thing
+	May be fixed by actually hooking in HTNPlan to FindFood goal def (update: not fixed)
 
 Remember to put Galavant-specific UE code into a patch or something
 
 ------------------
 Done
 ------------------
+
+Spawning very, very broken
+	Segfault every time you replay in editor on scene component thing
+	Oh god, now too many things spawned! Forgot to add new AActor pointers to tracking...
 
 Sublime "syntax" tag for build systems
 

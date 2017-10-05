@@ -95,7 +95,7 @@ protected:
 	virtual void UnsubscribeEntitiesInternal(const EntityList& entities);
 
 public:
-	CombatComponentManager() = default;
+	CombatComponentManager();
 	virtual ~CombatComponentManager() = default;
 
 	void Initialize(CombatFxHandler* fxHandler);

@@ -51,8 +51,8 @@ void EntityCreatePositions(const EntityList& entities, PositionRefList& position
 
 void EntityDestroyPositions(const EntityList& entities)
 {
-	// TODO: This is a bit bad: loop through all positions for each entity to remove approaches N
-	// squared
+	// TODO: @Performance This is a bit bad: loop through all positions for each entity to remove
+	// approaches N squared
 	for (EntityPositionRefMap::iterator it = s_Data.EntityPositionRefs.begin();
 	     it != s_Data.EntityPositionRefs.end();)
 	{

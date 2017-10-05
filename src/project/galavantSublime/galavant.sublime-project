@@ -84,6 +84,12 @@
         },
 
         {
+            "name": "GalavantUnreal Fix 'Game Module Could Not Be Loaded'",
+            "shell_cmd": "rm -r Binaries/Linux",
+            "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"
+        },
+
+        {
             "name": "GalavantUnreal Generate Project Files",
             "shell_cmd": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/GenerateProjectFiles.sh -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -game -editor",
             "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"

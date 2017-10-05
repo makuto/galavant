@@ -80,11 +80,6 @@
 
 namespace gv
 {
-void InitializeConsoleOnlyLogging();
-
-// Feel free to pass in NULL to get the default log file
-void InitializeFileOnlyLogging(const char* filename);
-
 namespace Logging
 {
 enum class Severity

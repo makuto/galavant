@@ -118,27 +118,30 @@ void AgentComponentManager::Update(float deltaSeconds)
 					LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
 					                    << " has hit need trigger for need " << need.Def->Name;
 
-					if (needLevelTrigger.DieNow)
+					if (needLevelTrigger.SetConsciousState != AgentConsciousState::None)
 					{
-						currentComponent->data.IsAlive = false;
-						currentComponent->data.ConsciousState = AgentConsciousState::Dead;
-						LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
-						                    << " has died from need " << need.Def->Name;
+						currentComponent->data.ConsciousState = needLevelTrigger.SetConsciousState;
+
+						if (currentComponent->data.ConsciousState == AgentConsciousState::Dead)
+						{
+							currentComponent->data.IsAlive = false;
+							LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
+							                    << " has died from need " << need.Def->Name;
+						}
 					}
+
 					if (needLevelTrigger.GoalDef)
 					{
-						AgentGoal newGoal{AgentGoal::GoalStatus::StartGoal,
-						                  /*NumFailureRetries=*/0, needLevelTrigger.GoalDef,
-						                  gv::WorldResourceType::None};
+						AgentGoal newGoal;
+						newGoal.Def = needLevelTrigger.GoalDef;
 						AddGoalIfUniqueType(goals, newGoal);
 					}
 					else if (needLevelTrigger.NeedsResource && needLevelTrigger.WorldResource)
 					{
-						AgentGoal newNeedResourceGoal{
-						    AgentGoal::GoalStatus::StartGoal,
-						    /*NumFailureRetries=*/0,
-						    gv::g_AgentGoalDefDictionary.GetResource(RESKEY("GetResource")),
-						    needLevelTrigger.WorldResource};
+						AgentGoal newNeedResourceGoal;
+						newNeedResourceGoal.Def =
+						    gv::g_AgentGoalDefDictionary.GetResource(RESKEY("GetResource"));
+						newNeedResourceGoal.WorldResource = needLevelTrigger.WorldResource;
 						AddGoalIfUniqueType(goals, newNeedResourceGoal);
 					}
 				}
@@ -160,6 +163,10 @@ void AgentComponentManager::Update(float deltaSeconds)
 					{
 						if (goal.Def->Type == AgentGoalDef::GoalType::HtnPlan)
 						{
+							// TODO: @Purity Move validation to somewhere cleaner
+							if (goal.Def->Tasks.empty())
+								LOGE << "AgentGoalDef marked as a plan but has no Tasks!";
+
 							gv::PooledComponent<PlanComponentData> newPlanComponent;
 							newPlanComponent.entity = currentEntity;
 							newPlanComponent.data.Tasks.insert(newPlanComponent.data.Tasks.end(),

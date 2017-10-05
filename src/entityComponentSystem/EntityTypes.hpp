@@ -29,6 +29,6 @@ void EntityListRemoveNonUniqueEntitiesInSuspect(const EntityList& list, EntityLi
 void EntityListRemoveUniqueEntitiesInSuspect(const EntityList& list, EntityList& suspectList);
 
 // Linear search for entity.
-// TODO: Add binary search (need to figure out when to sort these lists)
+// TODO: @Performance Add binary search (need to figure out when to sort these lists)
 bool EntityListFindEntity(const EntityList& list, Entity entity);
 };

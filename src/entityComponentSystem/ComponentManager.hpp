@@ -11,13 +11,13 @@ namespace gv
 class ComponentManager
 {
 protected:
-	const char* DebugName;
-
 	EntityList Subscribers;
 
 	virtual void UnsubscribeEntitiesInternal(const EntityList& entities);
 
 public:
+	const char* DebugName;
+
 	ComponentManager();
 	ComponentManager(const char* debugName);
 	virtual ~ComponentManager();

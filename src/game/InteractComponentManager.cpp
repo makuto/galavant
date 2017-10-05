@@ -79,7 +79,7 @@ bool InteractComponentManager::PickupDirect(Entity pickupEntity, Entity claimer)
 			Need* needPickupAffects =
 			    g_AgentComponentManager.GetAgentNeed(claimer, pickup->AffectsNeed);
 
-			// TODO: For testing only
+			// TODO: For testing only; Directly contribute to need on pickup
 			if (needPickupAffects)
 			{
 				needPickupAffects->Level -= 100;

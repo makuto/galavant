@@ -7,6 +7,11 @@ namespace gv
 ResourceDictionary<CombatActionDef> g_CombatActionDefDictionary;
 CombatComponentManager g_CombatComponentManager;
 
+CombatComponentManager::CombatComponentManager()
+{
+	DebugName = "CombatComponentManager";
+}
+
 void CombatComponentManager::Initialize(CombatFxHandler* fxHandler)
 {
 	FxHandler = fxHandler;

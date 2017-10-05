@@ -25,7 +25,7 @@ class EntityComponentManager
 private:
 	typedef ComponentManagerList::iterator ComponentManagerListIterator;
 
-	static ComponentManagerList ComponentManagers;
+	ComponentManagerList ComponentManagers;
 
 	EntityList ActiveEntities;
 	EntityList EntitiesPendingDestruction;
@@ -42,8 +42,8 @@ public:
 	EntityComponentManager();
 	~EntityComponentManager();
 
-	static void AddComponentManager(ComponentManager *manager);
-	static void RemoveComponentManager(ComponentManager *manager);
+	void AddComponentManager(ComponentManager *manager);
+	void RemoveComponentManager(ComponentManager *manager);
 
 	// Creates the given number of entities, adds them to the ActiveEntities list, and appends them
 	// to the provided list
@@ -51,7 +51,7 @@ public:
 
 	// Mark Entities for destruction. They are not destroyed immediately; rather, they is destroyed
 	// when DestroyEntitiesPendingDestruction() is called.
-	void MarkDestroyEntities(EntityList &entities);
+	void MarkDestroyEntities(const EntityList &entities);
 
 	// Destroy all entities which have been marked for destruction. Because an entity is just an ID
 	// and a collection of components, this function must notify all ComponentManagers that the

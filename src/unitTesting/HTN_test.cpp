@@ -122,8 +122,6 @@ public:
 
 TEST_CASE("Hierarchical Task Networks Planner")
 {
-	gv::InitializeConsoleOnlyLogging();
-
 	Htn::Parameter testParam;
 	testParam.Type = Htn::Parameter::ParamType::Int;
 	testParam.IntValue = 123;

@@ -19,30 +19,15 @@ struct AgentGoal
 		Failed,
 		Succeeded
 	};
-	GoalStatus Status;
+	GoalStatus Status = GoalStatus::None;
 
-	int NumFailureRetries;
+	int NumFailureRetries = 0;
 
-	AgentGoalDef* Def;
+	AgentGoalDef* Def = nullptr;
 
-	WorldResourceType WorldResource;
+	WorldResourceType WorldResource = WorldResourceType::None;
 };
 typedef std::vector<AgentGoal> AgentGoalList;
-
-// An agent can only be one of these at a time
-enum class AgentConsciousState
-{
-	None = 0,
-
-	Conscious,
-	Unconscious,
-	Sleeping,
-	Dead,
-
-	AgentState_count
-};
-
-typedef std::vector<AgentConsciousState> AgentConsciousStateList;
 
 struct AgentComponentData
 {

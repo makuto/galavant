@@ -34,7 +34,6 @@ void TestEntityCreationAndDestruction()
 	public:
 		TestComponentManager()
 		{
-			Type = ComponentType::Test;
 		}
 		virtual ~TestComponentManager()
 		{
@@ -113,9 +112,6 @@ void TestEntityCreationAndDestruction()
 	TestComponentManager testComponentManager;
 
 	std::cout << "Testing Entity Creation and Destruction...\n";
-
-	entityComponentManager.AddComponentManagerOfType(testComponentManager.GetType(),
-	                                                 &testComponentManager);
 
 	EntityList newEntities;
 

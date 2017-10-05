@@ -7,7 +7,6 @@
 namespace gv
 {
 Entity EntityComponentManager::NextNewEntity = 1;
-ComponentManagerList EntityComponentManager::ComponentManagers;
 EntityComponentManager g_EntityComponentManager;
 
 EntityComponentManager::EntityComponentManager()
@@ -29,7 +28,8 @@ void EntityComponentManager::AddComponentManager(ComponentManager *manager)
 
 void EntityComponentManager::RemoveComponentManager(ComponentManager *manager)
 {
-	for (ComponentManagerListIterator it = ComponentManagers.begin(); it != ComponentManagers.end();)
+	for (ComponentManagerListIterator it = ComponentManagers.begin();
+	     it != ComponentManagers.end();)
 	{
 		if ((*it) == manager)
 		{
@@ -52,7 +52,7 @@ void EntityComponentManager::GetNewEntities(EntityList &list, int count)
 
 // Mark an Entity for destruction. It is not destroyed immediately; rather, it is destroyed when
 // DestroyEntitiesPendingDestruction() is called.
-void EntityComponentManager::MarkDestroyEntities(EntityList &entities)
+void EntityComponentManager::MarkDestroyEntities(const EntityList &entities)
 {
 	EntitiesPendingDestruction.insert(EntitiesPendingDestruction.end(), entities.begin(),
 	                                  entities.end());
@@ -65,6 +65,8 @@ void EntityComponentManager::UnsubscribeEntitiesFromAllManagers(EntityList &enti
 	// that's fine
 	for (ComponentManager *currentComponentManager : ComponentManagers)
 	{
+		LOGD << "Destroying " << entitiesToUnsubscribe.size() << " entities from "
+		     << currentComponentManager->DebugName << " (they might not all be subscribed)";
 		currentComponentManager->UnsubscribeEntities(entitiesToUnsubscribe);
 	}
 }

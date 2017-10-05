@@ -6,17 +6,14 @@ namespace gv
 {
 ComponentManager::ComponentManager()
 {
-	EntityComponentManager::AddComponentManager(this);
 }
 
 ComponentManager::ComponentManager(const char* debugName) : DebugName(debugName)
 {
-	EntityComponentManager::AddComponentManager(this);
 }
 
 ComponentManager::~ComponentManager()
 {
-	EntityComponentManager::RemoveComponentManager(this);
 }
 
 void ComponentManager::UnsubscribeEntitiesInternal(const EntityList& entities)
