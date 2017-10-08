@@ -1,0 +1,5 @@
+SubDir . src frontends ;
+
+SubDirC++Flags $(TESTSC++FLAGS) ;
+
+SubInclude . src frontends consoleOnly ;

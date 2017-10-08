@@ -62,9 +62,15 @@ Cereal integration
 
 Fix debug text over AgentCharacter for combat test
 
+Automatic apply UEngine patch script
+
 ------------------
 Doing
 ------------------
+
+UnrealMovementComponent segfault
+	https://wiki.unrealengine.com/How_To_Prevent_Crashes_Due_To_Dangling_Actor_Pointers
+	https://docs.unrealengine.com/latest/INT/Programming/UnrealArchitecture/SmartPointerLibrary/WeakPointer/
 
 Spawning very, very broken
 	Seemed to see multiple actors spawned for a single berry
@@ -78,14 +84,19 @@ Spawning very, very broken
 
 Combat
 
-Agent goals are broken after refactor
-	May be fixed by actually hooking in HTNPlan to FindFood goal def (update: not fixed)
+After extended period of time, PlanComponentManager is constantly trying to unsubscribe things
 
-Remember to put Galavant-specific UE code into a patch or something
+Goal retrying needs rethinking (goal retry status is forgotten once goal completely fails)
+
 
 ------------------
 Done
 ------------------
+Remember to put Galavant-specific UE code into a patch or something
+
+Agent goals are broken after refactor
+	May be fixed by actually hooking in HTNPlan to FindFood goal def (update: not fixed)
+
 Put HTN Tasks etc. in resource dictionaries? Who owns them?
 
 Spawning very, very broken

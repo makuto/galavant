@@ -99,7 +99,7 @@ void CombatComponentManager::Update(float deltaSeconds)
 				    combatant.CurrentAction.ActivateTime + combatant.CurrentAction.Def->Duration;
 				if (gv::GetWorldTime() < actionEndTime)
 				{
-					combatant.CurrentAction = {0};
+					combatant.CurrentAction = {nullptr, nullptr, 0.f};
 				}
 			}
 		}

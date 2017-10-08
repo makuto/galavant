@@ -13,6 +13,7 @@ SubInclude . src ai ;
 SubInclude . src world ;
 SubInclude . src game ;
 
-# Experiments and Testing (feel free to remove these if you don't want them built)
+# Experiments, testing, and frontends (feel free to remove these if you don't want them built)
 SubInclude . src experiments ;
 SubInclude . src unitTesting ;
+SubInclude . src frontends ;

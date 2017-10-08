@@ -95,3 +95,7 @@ AR = ar cr ;
 #              frustratingly
 # -dx       : print commands being used
 # -n        : don't actually run commands
+
+# Note: When creating ConsoleOnly frontend, I had to reverse the lib link order. This is probably 
+#  just because I didn't understand link order when making GalavantPseudotarget. I've since updated 
+#  GalavantPseudotarget with the proper order
