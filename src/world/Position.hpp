@@ -27,6 +27,10 @@ struct Position
 
 	float ManhattanTo(const Position& otherPosition) const;
 
+	Position GetSafeNormal(float tolerance) const;
+
+	void Scale(float scale);
+
 	// Returns true if the Position is exactly zero
 	explicit operator bool() const;
 

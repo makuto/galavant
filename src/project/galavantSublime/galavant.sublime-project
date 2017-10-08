@@ -211,19 +211,5 @@
             //    "commandline": "gdb --interpreter=mi ./htnTest"
             //},
         },
-
-        "SublimeAnarchyDebug": {
-            "debug": {
-                "executable": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/Linux/UE4Editor",
-                "params": [
-                    "/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
-                ],
-                "path": [
-                ],
-                "environment": [
-                ],
-                //"working_dir": "${project_path}"
-            }
-        }
     }
 }

@@ -39,7 +39,7 @@ void ConsoleOnlyLogOutput(const gv::Logging::Record& record)
 
 	if (IsError)
 	{
-		std::cout << "Error: " << buffer << "\n";
+		std::cout << "Error:   " << buffer << "\n";
 	}
 	else if (IsWarning)
 	{
@@ -47,7 +47,7 @@ void ConsoleOnlyLogOutput(const gv::Logging::Record& record)
 	}
 	else
 	{
-		std::cout << "Log: " << buffer << "\n";
+		std::cout << "Log:     " << buffer << "\n";
 	}
 }
 
@@ -171,26 +171,22 @@ void InitializeEntityTests()
 	gv::g_EntityComponentManager.GetNewEntities(testEntities, numTestEntities);
 
 	// Add Movement components to all of them
-	/*{
-	    UnrealMovementComponent::UnrealMovementComponentList newEntityMovementComponents(
-	        numTestEntities);
+	{
+		MovementComponentRefList newMovementComponents;
+		newMovementComponents.reserve(numTestEntities);
+		g_ConsoleMovementComponentManager.CreateMovementComponents(testEntities,
+		                                                           newMovementComponents);
 
-	    float spacing = 500.f;
-	    int i = 0;
-	    for (gv::EntityListIterator it = testEntities.begin(); it != testEntities.end(); ++it, i++)
-	    {
-	        newEntityMovementComponents[i].entity = (*it);
-	        newEntityMovementComponents[i].data.ResourceType = gv::WorldResourceType::Agent;
-	        newEntityMovementComponents[i].data.SpawnParams.CharacterToSpawn =
-	            DefaultAgentCharacter;
-	        newEntityMovementComponents[i].data.WorldPosition.Set(0.f, i * spacing,
-	                                                              TestEntityCreationZ);
-	        newEntityMovementComponents[i].data.GoalManDistanceTolerance = 600.f;
-	        newEntityMovementComponents[i].data.MaxSpeed = 500.f;
-	    }
-
-	    g_ConsoleMovementComponentManager.SubscribeEntities(newEntityMovementComponents);
-	}*/
+		float spacing = 500.f;
+		int i = 0;
+		for (MovementComponent* newAgentMovementComponent : newMovementComponents)
+		{
+			newAgentMovementComponent->ResourceType = gv::WorldResourceType::Agent;
+			newAgentMovementComponent->Position.Set(0.f, i++ * spacing, 0.f);
+			newAgentMovementComponent->GoalManDistanceTolerance = 600.f;
+			newAgentMovementComponent->MaxSpeed = 500.f;
+		}
+	}
 
 	// Setup agent components for all of them and give them a need
 	{
@@ -222,36 +218,32 @@ void InitializeEntityTests()
 		testFoodEntities.reserve(numFood);
 		gv::g_EntityComponentManager.GetNewEntities(testFoodEntities, numFood);
 
-		// UnrealMovementComponent::UnrealMovementComponentList newFood(numFood);
+		MovementComponentRefList newMovementComponents;
+		newMovementComponents.reserve(numFood);
+		g_ConsoleMovementComponentManager.CreateMovementComponents(testFoodEntities,
+		                                                           newMovementComponents);
+
 		gv::PickupRefList newPickups;
 		newPickups.reserve(numFood);
 		gv::g_InteractComponentManager.CreatePickups(testFoodEntities, newPickups);
 
-		//float spacing = 2000.f;
+		// Movement components
+		float spacing = 2000.f;
 		int i = 0;
-		for (gv::EntityListIterator it = testFoodEntities.begin(); it != testFoodEntities.end();
-		     ++it, i++)
+		for (MovementComponent* newFoodMovementComponent : newMovementComponents)
 		{
-			// Movement component
-			/*{
-			    FVector location(-2000.f, i * spacing, TestEntityCreationZ);
-
-			    newFood[i].entity = (*it);
-			    newFood[i].data.WorldPosition.Set(location.X, location.Y, location.Z);
-			    newFood[i].data.ResourceType = gv::WorldResourceType::Food;
-
-			    newFood[i].data.SpawnParams.ActorToSpawn = TestFoodActor;
-			}*/
-
-			// Pickup component
-			if (i < (int)newPickups.size())
-			{
-				newPickups[i]->AffectsNeed = gv::NeedType::Hunger;
-				newPickups[i]->DestroySelfOnPickup = true;
-			}
+			newFoodMovementComponent->ResourceType = gv::WorldResourceType::Food;
+			newFoodMovementComponent->Position.Set(-2000.f, i++ * spacing, 0.f);
+			// Food doesn't move
+			newFoodMovementComponent->MaxSpeed = 0.f;
 		}
 
-		// g_ConsoleMovementComponentManager.SubscribeEntities(newFood);
+		// Pickup components
+		for (gv::Pickup* newPickup : newPickups)
+		{
+			newPickup->AffectsNeed = gv::NeedType::Hunger;
+			newPickup->DestroySelfOnPickup = true;
+		}
 	}
 }
 
@@ -304,7 +296,7 @@ void InitializeGalavant()
 		{
 			static gv::WorldStateManager WorldStateManager;
 			gv::g_PlanComponentManager.Initialize(&WorldStateManager, &TaskEventCallbacks);
-			gv::g_PlanComponentManager.DebugPrint = true;
+			//gv::g_PlanComponentManager.DebugPrint = true;
 		}
 
 		{
@@ -312,7 +304,7 @@ void InitializeGalavant()
 			gv::g_AgentComponentManager.DebugPrint = true;
 		}
 
-		//gv::g_CombatComponentManager.Initialize(&CombatFxHandler);
+		// gv::g_CombatComponentManager.Initialize(&CombatFxHandler);
 		gv::g_CombatComponentManager.Initialize(nullptr);
 	}
 
@@ -369,7 +361,7 @@ int main()
 
 		gv::g_EntityComponentManager.DestroyEntitiesPendingDestruction();
 
-		//GalavantMain.Update(deltaTime);
+		// GalavantMain.Update(deltaTime);
 
 		gv::g_CombatComponentManager.Update(deltaTime);
 		gv::g_AgentComponentManager.Update(deltaTime);
@@ -379,7 +371,7 @@ int main()
 		numTicks++;
 	}
 
-	LOGI << "******** Finished; cleaning up... (ticked "<< numTicks << " times) ********";
+	LOGI << "******** Finished; cleaning up... (ticked " << numTicks << " times) ********";
 
 	// Cleanup
 	{
