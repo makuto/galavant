@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../entityComponentSystem/EntityTypes.hpp"
-#include "../world/Position.hpp"
+#include "entityComponentSystem/EntityTypes.hpp"
+#include "world/Position.hpp"
 
 namespace Htn
 {

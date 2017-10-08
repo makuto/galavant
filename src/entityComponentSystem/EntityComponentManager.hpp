@@ -3,7 +3,6 @@
 #include <map>
 
 #include "EntityTypes.hpp"
-#include "ComponentTypes.hpp"
 #include "ComponentManager.hpp"
 
 namespace gv
@@ -18,15 +17,15 @@ destroyed, the EntityComponentManager must send the entire list of all unsubscri
 every ComponentManager which is registered with this ECM. This is less than optimal, but
 permissable.
 */
+
+typedef std::vector<ComponentManager *> ComponentManagerList;
+
 class EntityComponentManager
 {
 private:
-	typedef std::map<ComponentType, ComponentManager *> ComponentManagerMap;
-	typedef ComponentManagerMap::iterator ComponentManagerMapIterator;
+	typedef ComponentManagerList::iterator ComponentManagerListIterator;
 
-	static EntityComponentManager *Singleton;
-
-	ComponentManagerMap ComponentManagers;
+	ComponentManagerList ComponentManagers;
 
 	EntityList ActiveEntities;
 	EntityList EntitiesPendingDestruction;
@@ -43,16 +42,8 @@ public:
 	EntityComponentManager();
 	~EntityComponentManager();
 
-	// Sets the ComponentManager for a ComponentType. Returns false if there is already a manager
-	// for that type (it will not be set)
-	bool AddComponentManagerOfType(ComponentType type, ComponentManager *manager);
-
-	bool AddComponentManager(ComponentManager *manager);
-
-	// Returns the ComponentManager assigned to the provided type, or nullptr if there isn't one
-	// assigned. If your ComponentManager needs another, it is preferable to get its dependencies
-	// directly (i.e. passed in during a initialize() function) rather than using this function
-	ComponentManager *GetComponentManagerForType(ComponentType type);
+	void AddComponentManager(ComponentManager *manager);
+	void RemoveComponentManager(ComponentManager *manager);
 
 	// Creates the given number of entities, adds them to the ActiveEntities list, and appends them
 	// to the provided list
@@ -60,7 +51,7 @@ public:
 
 	// Mark Entities for destruction. They are not destroyed immediately; rather, they is destroyed
 	// when DestroyEntitiesPendingDestruction() is called.
-	void MarkDestroyEntities(EntityList &entities);
+	void MarkDestroyEntities(const EntityList &entities);
 
 	// Destroy all entities which have been marked for destruction. Because an entity is just an ID
 	// and a collection of components, this function must notify all ComponentManagers that the
@@ -70,24 +61,7 @@ public:
 	// Destroys all entities that were created by this EntityComponentManager (i.e. all entities in
 	// the ActiveEntities list)
 	void DestroyAllEntities();
-
-	static EntityComponentManager *GetSingleton();
 };
 
-// Convenience function
-// TODO: Make it so ComponentManagers can just be functions instead of singletons
-template <class T>
-T *GetComponentManagerForType(ComponentType type)
-{
-	EntityComponentManager *entityComponentManager = EntityComponentManager::GetSingleton();
-	if (entityComponentManager)
-	{
-		T *componentManager =
-		    static_cast<T *>(entityComponentManager->GetComponentManagerForType(type));
-
-		return componentManager;
-	}
-
-	return nullptr;
+extern EntityComponentManager g_EntityComponentManager;
 }
-};

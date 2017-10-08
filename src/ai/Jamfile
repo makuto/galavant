@@ -2,7 +2,7 @@ SubDir . src ai ;
 
 SubDirC++Flags $(ALLLIBSC++FLAGS) ;
 
-Library libGalaAi : htn/HTNTasks.cpp htn/HTNPlanner.cpp htn/HTNTaskDb.cpp WorldState.cpp ;
+Library libGalaAi : htn/HTNTasks.cpp htn/HTNPlanner.cpp WorldState.cpp ;
 
 LinkLibraries LibGalaAi : LibGalaWorld ;
 

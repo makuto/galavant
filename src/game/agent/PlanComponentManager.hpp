@@ -76,4 +76,6 @@ public:
 
 	Htn::TaskEventList ReceivedEvents;
 };
+
+extern PlanComponentManager g_PlanComponentManager;
 };

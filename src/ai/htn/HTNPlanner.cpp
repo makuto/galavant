@@ -216,7 +216,7 @@ Planner::Status Planner::PlanStep_StackFrame()
 				LOGD_IF(DebugPrint) << "Goal";
 				GoalTask* goalTask = currentTask->GetGoal();
 
-				// TODO erase ahead of time because fuck
+				// TODO: erase ahead of time because fuck
 				// Strange things are afoot when we push to stack
 				currentStackFrame.CallList.erase(currentTaskCallIter);
 
@@ -379,9 +379,9 @@ Planner::Status Planner::PlanStep_StackFrame()
 	return Status::PlanComplete;
 }
 
-// TODO: Pool various task lists?
-// TODO: Pull more things out into functions, if possible. It's bad that whenever I make a change to
-// something I have to change it in two places
+// TODO: @Performance Pool various task lists?
+// TODO: @Purity Put shared code from BottomLevel/StackFrame into shared functions. It's bad that
+// whenever I make a change to something I have to change it in two places
 Planner::Status Planner::PlanStep()
 {
 	Status status = Status::Failed_NoPossiblePlan;

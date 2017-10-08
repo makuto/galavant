@@ -1,11 +1,10 @@
 #include <iostream>
 #include <cassert>
 
-#include "../entityComponentSystem/EntityTypes.hpp"
-#include "../entityComponentSystem/EntityComponentManager.hpp"
-#include "../entityComponentSystem/ComponentTypes.hpp"
-#include "../entityComponentSystem/ComponentManager.hpp"
-#include "../entityComponentSystem/PooledComponentManager.hpp"
+#include "entityComponentSystem/EntityTypes.hpp"
+#include "entityComponentSystem/EntityComponentManager.hpp"
+#include "entityComponentSystem/ComponentManager.hpp"
+#include "entityComponentSystem/PooledComponentManager.hpp"
 
 using namespace gv;
 
@@ -35,7 +34,6 @@ void TestEntityCreationAndDestruction()
 	public:
 		TestComponentManager()
 		{
-			Type = ComponentType::Test;
 		}
 		virtual ~TestComponentManager()
 		{
@@ -114,9 +112,6 @@ void TestEntityCreationAndDestruction()
 	TestComponentManager testComponentManager;
 
 	std::cout << "Testing Entity Creation and Destruction...\n";
-
-	entityComponentManager.AddComponentManagerOfType(testComponentManager.GetType(),
-	                                                 &testComponentManager);
 
 	EntityList newEntities;
 

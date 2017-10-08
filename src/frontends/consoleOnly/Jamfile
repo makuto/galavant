@@ -1,0 +1,15 @@
+SubDir . src frontends consoleOnly ;
+
+SubDirC++Flags $(TESTSC++FLAGS) ;
+
+Main consoleOnlyFrontend : ConsoleOnlyMain.cpp ConsoleMovementComponentManager.cpp ;
+
+LinkLibraries consoleOnlyFrontend : libGalaGame
+                                    libGalaWorld
+                                    libGalaAi
+                                    libGalaEntityComponent
+                                    libGalaThirdPartyWrapper 
+                                    libGalavant 
+                                    libGalaUtil ;
+
+MakeLocate consoleOnlyFrontend : bin ;

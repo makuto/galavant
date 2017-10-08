@@ -36,6 +36,26 @@ float Position::ManhattanTo(const Position& otherPosition) const
 	return fabs(X - otherPosition.X) + fabs(Y - otherPosition.Y) + fabs(Z - otherPosition.Z);
 }
 
+Position Position::GetSafeNormal(float tolerance) const
+{
+	float squareSum = X * X + Y * Y + Z * Z;
+
+	if (squareSum == 1.f)
+		return Position(X, Y, Z);
+	else if (squareSum < tolerance)
+		return Position(0.f, 0.f, 0.f);
+
+	float scale = std::sqrt(squareSum);
+	return Position(X * scale, Y * scale, Z * scale);
+}
+
+void Position::Scale(float scale)
+{
+	X *= scale;
+	Y *= scale;
+	Z *= scale;
+}
+
 Position::operator bool() const
 {
 	// Only return false if we're exactly zero (don't use tolerances)

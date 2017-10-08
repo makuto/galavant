@@ -3,19 +3,18 @@
 #include "util/Logging.hpp"
 
 #include "entityComponentSystem/PooledComponentManager.hpp"
-#include "entityComponentSystem/ComponentTypes.hpp"
 #include "entityComponentSystem/EntityComponentManager.hpp"
-#include "ai/htn/HTNTaskDb.hpp"
 
 #include "util/Math.hpp"
 
 namespace gv
 {
 ResourceDictionary<AgentGoalDef> g_AgentGoalDefDictionary;
+AgentComponentManager g_AgentComponentManager;
 
 AgentComponentManager::AgentComponentManager() : gv::PooledComponentManager<AgentComponentData>(100)
 {
-	Type = gv::ComponentType::Agent;
+	DebugName = "AgentComponentManager";
 }
 
 AgentComponentManager::~AgentComponentManager()
@@ -116,23 +115,36 @@ void AgentComponentManager::Update(float deltaSeconds)
 					if (!needLevelTrigger.ConditionsMet(need))
 						continue;
 
-					if (needLevelTrigger.NeedsResource && needLevelTrigger.WorldResource)
+					LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
+					                    << " has hit need trigger for need " << need.Def->Name;
+
+					if (needLevelTrigger.SetConsciousState != AgentConsciousState::None)
 					{
-						AgentGoal newNeedResourceGoal{
-						    AgentGoal::GoalStatus::StartGoal,
-						    /*NumFailureRetries=*/0,
-						    gv::g_AgentGoalDefDictionary.GetResource(RESKEY("GetResource")),
-						    needLevelTrigger.WorldResource};
-						AddGoalIfUniqueType(goals, newNeedResourceGoal);
-						LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
-						                    << " has hit need trigger for need " << need.Def->Name;
+						currentComponent->data.ConsciousState = needLevelTrigger.SetConsciousState;
+
+						if (currentComponent->data.ConsciousState == AgentConsciousState::Dead)
+						{
+							currentComponent->data.IsAlive = false;
+							LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
+							                    << " has died from need " << need.Def->Name;
+						}
 					}
-					else if (needLevelTrigger.DieNow)
+
+					if (needLevelTrigger.GoalDef)
 					{
-						currentComponent->data.IsAlive = false;
-						currentComponent->data.ConsciousState = AgentConsciousState::Dead;
-						LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
-						                    << " has died from need " << need.Def->Name;
+						AgentGoal newGoal;
+						newGoal.Def = needLevelTrigger.GoalDef;
+						newGoal.Status = AgentGoal::GoalStatus::StartGoal;
+						AddGoalIfUniqueType(goals, newGoal);
+					}
+					else if (needLevelTrigger.NeedsResource && needLevelTrigger.WorldResource)
+					{
+						AgentGoal newNeedResourceGoal;
+						newNeedResourceGoal.Def =
+						    gv::g_AgentGoalDefDictionary.GetResource(RESKEY("GetResource"));
+						newNeedResourceGoal.WorldResource = needLevelTrigger.WorldResource;
+						newNeedResourceGoal.Status = AgentGoal::GoalStatus::StartGoal;
+						AddGoalIfUniqueType(goals, newNeedResourceGoal);
 					}
 				}
 			}
@@ -151,16 +163,32 @@ void AgentComponentManager::Update(float deltaSeconds)
 					// longer subscribed before adding our goal
 					if (!PlanManager->IsSubscribed(currentEntity))
 					{
-						if (goal.Def->Type == AgentGoalDef::GoalType::GetResource)
+						if (goal.Def->Type == AgentGoalDef::GoalType::HtnPlan)
+						{
+							// TODO: @Purity Move validation to somewhere cleaner
+							if (goal.Def->Tasks.empty())
+								LOGE << "AgentGoalDef marked as a plan but has no Tasks!";
+
+							gv::PooledComponent<PlanComponentData> newPlanComponent;
+							newPlanComponent.entity = currentEntity;
+							newPlanComponent.data.Tasks.insert(newPlanComponent.data.Tasks.end(),
+							                                   goal.Def->Tasks.begin(),
+							                                   goal.Def->Tasks.end());
+
+							newPlans.push_back(newPlanComponent);
+						}
+						else if (goal.Def->Type == AgentGoalDef::GoalType::GetResource)
 						{
 							Htn::Parameter resourceToFind;
 							resourceToFind.IntValue = goal.WorldResource;
 							resourceToFind.Type = Htn::Parameter::ParamType::Int;
 							Htn::ParameterList parameters = {resourceToFind};
 							Htn::TaskCall getResourceCall{
-							    Htn::TaskDb::GetTask(Htn::TaskName::GetResource), parameters};
+							    Htn::g_TaskDictionary.GetResource(RESKEY("GetResource")),
+							    parameters};
 							Htn::TaskCall pickupResourceCall{
-							    Htn::TaskDb::GetTask(Htn::TaskName::InteractPickup), parameters};
+							    Htn::g_TaskDictionary.GetResource(RESKEY("InteractPickup")),
+							    parameters};
 							Htn::TaskCallList getResourceTasks = {getResourceCall,
 							                                      pickupResourceCall};
 
@@ -176,19 +204,18 @@ void AgentComponentManager::Update(float deltaSeconds)
 							goal.Status = AgentGoal::GoalStatus::InProgress;
 						}
 					}
+					else
+						LOGE << "Agent tried to start goal when already Planning!";
 					break;
 				case AgentGoal::GoalStatus::InProgress:
 				{
 					// While goal is in progress, watch planner events for a conclusive status
-					bool entityConcludedPlan = false;
 					for (PlanExecutionEvent planEvent : planConclusiveExecutionEvents)
 					{
 						if (planEvent.entity != currentEntity)
 							continue;
 
 						// If we got this far we received a relevant conclusive event
-						entityConcludedPlan = true;
-
 						if (planEvent.status == PlanExecuteStatus::Failed)
 						{
 							if (goal.Def->NumRetriesIfFailed &&
@@ -201,7 +228,6 @@ void AgentComponentManager::Update(float deltaSeconds)
 
 								goal.NumFailureRetries++;
 								goal.Status = AgentGoal::GoalStatus::StartGoal;
-								entityConcludedPlan = false;
 							}
 							else
 								goal.Status = AgentGoal::GoalStatus::Failed;
@@ -212,15 +238,21 @@ void AgentComponentManager::Update(float deltaSeconds)
 						break;
 					}
 
-					// Fall through if we finished the plan (failed or otherwise)
-					if (!entityConcludedPlan)
-						break;
-				}
-				case AgentGoal::GoalStatus::Failed:
-				case AgentGoal::GoalStatus::Succeeded:
-				default:
-					goals.erase(headGoalIt);
 					break;
+				}
+				case AgentGoal::GoalStatus::None:
+					LOGE << "Goal added with no status; it should be GoalStatus::StartGoal if it's "
+					        "new";
+					break;
+				default:
+					break;
+			}
+
+			if (goal.Status != AgentGoal::GoalStatus::InProgress &&
+			    goal.Status != AgentGoal::GoalStatus::StartGoal)
+			{
+				LOGD_IF(DebugPrint) << "Agent Goal concluded with status " << (int)goal.Status;
+				goals.erase(headGoalIt);
 			}
 		}
 	}
@@ -233,9 +265,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 
 	if (!entitiesToDestroy.empty())
 	{
-		EntityComponentManager* entityComponentManager = EntityComponentManager::GetSingleton();
-		if (entityComponentManager)
-			entityComponentManager->MarkDestroyEntities(entitiesToDestroy);
+		g_EntityComponentManager.MarkDestroyEntities(entitiesToDestroy);
 	}
 }
 

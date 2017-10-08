@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../entityComponentSystem/ComponentManager.hpp"
-#include "../entityComponentSystem/ComponentTypes.hpp"
-#include "../world/WorldResourceLocator.hpp"
+#include "entityComponentSystem/ComponentManager.hpp"
+#include "world/WorldResourceLocator.hpp"
 #include "agent/NeedTypes.hpp"
 
 namespace gv
@@ -24,12 +23,10 @@ private:
 	PickupList Pickups;
 
 protected:
-	ComponentType Type = ComponentType::Interact;
-
 	virtual void UnsubscribeEntitiesInternal(const EntityList& entities);
 
 public:
-	InteractComponentManager() = default;
+	InteractComponentManager();
 	virtual ~InteractComponentManager() = default;
 
 	void CreatePickups(const EntityList& entities, PickupRefList& newPickups);
@@ -38,4 +35,6 @@ public:
 
 	Pickup* GetPickup(Entity pickupEntity);
 };
+
+extern InteractComponentManager g_InteractComponentManager;
 }

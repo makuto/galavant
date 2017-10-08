@@ -2,7 +2,7 @@
 
 #include "HTNTypes.hpp"
 #include "HTNTasks.hpp"
-#include "../WorldState.hpp"
+#include "ai/WorldState.hpp"
 
 namespace Htn
 {

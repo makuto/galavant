@@ -3,6 +3,7 @@ SubDir . src util ;
 SubDirC++Flags $(ALLLIBSC++FLAGS) ;
 
 Library libGalaUtil : Logging.cpp
-                      StringHashing.cpp ;
+                      StringHashing.cpp
+                      ResourceDictionary.cpp ;
 
 MakeLocate libGalaUtil.a : lib ;

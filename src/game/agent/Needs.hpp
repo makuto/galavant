@@ -1,6 +1,8 @@
 #pragma once
 
 #include "NeedTypes.hpp"
+#include "ai/htn/HTNTypes.hpp"
+#include "ai/htn/HTNTasks.hpp"
 
 #include <vector>
 
@@ -9,10 +11,51 @@
 
 namespace gv
 {
+struct AgentGoalDef
+{
+	enum class GoalType
+	{
+		None = 0,
+
+		HtnPlan,
+		GetResource,
+
+		GoalType_Count
+	};
+	GoalType Type = GoalType::None;
+
+	// TODO: Some sort of waiting period might be a good idea
+	int NumRetriesIfFailed = 0;
+
+	//
+	// Plan to achieve goal
+	//
+	Htn::TaskCallList Tasks;
+};
+
+extern ResourceDictionary<AgentGoalDef> g_AgentGoalDefDictionary;
+
+// An agent can only be one of these at a time
+enum class AgentConsciousState
+{
+	None = 0,
+
+	Conscious,
+	Unconscious,
+	Sleeping,
+	Dead,
+
+	AgentState_count
+};
+
+typedef std::vector<AgentConsciousState> AgentConsciousStateList;
+
 struct Need;
 struct NeedLevelTrigger
 {
+	//
 	// Conditions
+	//
 	enum class ConditionType
 	{
 		None = 0,
@@ -22,15 +65,19 @@ struct NeedLevelTrigger
 		LessThanLevel
 	};
 
-	ConditionType Condition;
+	ConditionType Condition = ConditionType::None;
 
-	float Level;
+	float Level = 0.f;
 
+	//
 	// Actions
-	bool NeedsResource;
-	WorldResourceType WorldResource;
+	//
+	bool NeedsResource = false;
+	WorldResourceType WorldResource = WorldResourceType::None;
 
-	bool DieNow;
+	AgentConsciousState SetConsciousState = AgentConsciousState::None;
+
+	AgentGoalDef* GoalDef = nullptr;
 
 	bool ConditionsMet(Need& need) const;
 };

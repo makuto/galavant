@@ -2,30 +2,13 @@
 
 #include <vector>
 
-#include "../../entityComponentSystem/PooledComponentManager.hpp"
-#include "../../entityComponentSystem/EntityTypes.hpp"
+#include "entityComponentSystem/PooledComponentManager.hpp"
+#include "entityComponentSystem/EntityTypes.hpp"
 #include "PlanComponentManager.hpp"
 #include "Needs.hpp"
 
 namespace gv
 {
-struct AgentGoalDef
-{
-	enum class GoalType
-	{
-		None = 0,
-		GetResource,
-
-		GoalType_Count
-	};
-	GoalType Type;
-
-	// TODO: Some sort of waiting period might be a good idea
-	int NumRetriesIfFailed;
-};
-
-extern ResourceDictionary<AgentGoalDef> g_AgentGoalDefDictionary;
-
 struct AgentGoal
 {
 	enum class GoalStatus
@@ -36,30 +19,15 @@ struct AgentGoal
 		Failed,
 		Succeeded
 	};
-	GoalStatus Status;
+	GoalStatus Status = GoalStatus::None;
 
-	int NumFailureRetries;
+	int NumFailureRetries = 0;
 
-	AgentGoalDef* Def;
+	AgentGoalDef* Def = nullptr;
 
-	WorldResourceType WorldResource;
+	WorldResourceType WorldResource = WorldResourceType::None;
 };
 typedef std::vector<AgentGoal> AgentGoalList;
-
-// An agent can only be one of these at a time
-enum class AgentConsciousState
-{
-	None = 0,
-
-	Conscious,
-	Unconscious,
-	Sleeping,
-	Dead,
-
-	AgentState_count
-};
-
-typedef std::vector<AgentConsciousState> AgentConsciousStateList;
 
 struct AgentComponentData
 {
@@ -102,4 +70,6 @@ public:
 
 	Need* GetAgentNeed(Entity entity, NeedType needType);
 };
+
+extern AgentComponentManager g_AgentComponentManager;
 };

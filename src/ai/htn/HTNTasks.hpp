@@ -1,11 +1,9 @@
 #pragma once
 
 #include "HTNTypes.hpp"
-#include "../WorldState.hpp"
-#include "../../util/CallbackContainer.hpp"
-
-// For std::ostream
-#include <iostream>
+#include "ai/WorldState.hpp"
+#include "util/CallbackContainer.hpp"
+#include "util/ResourceDictionary.hpp"
 
 namespace Htn
 {
@@ -136,6 +134,8 @@ public:
 
 void PrintTaskList(const TaskList& tasks);
 void PrintTaskCallList(const TaskCallList& tasks);
+
+extern gv::ResourceDictionary<Task> g_TaskDictionary;
 }
 
 template <>
