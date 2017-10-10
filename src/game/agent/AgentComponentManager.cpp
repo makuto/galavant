@@ -4,6 +4,7 @@
 
 #include "entityComponentSystem/PooledComponentManager.hpp"
 #include "entityComponentSystem/EntityComponentManager.hpp"
+#include "game/agent/combat/CombatComponentManager.hpp"
 
 #include "util/Math.hpp"
 
@@ -78,7 +79,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 		if (!currentComponent->data.IsAlive)
 		{
 			// TODO: Figure out what to do about dead agents/bodies
-			entitiesToDestroy.push_back(currentEntity);
+			// entitiesToDestroy.push_back(currentEntity);
 			continue;
 		}
 
@@ -127,6 +128,12 @@ void AgentComponentManager::Update(float deltaSeconds)
 							currentComponent->data.IsAlive = false;
 							LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
 							                    << " has died from need " << need.Def->Name;
+							// temporary
+							static CombatActionDef deathActionDef;
+							deathActionDef.Die = true;
+							CombatAction deathAction{&deathActionDef, nullptr, 0.f};
+							g_CombatComponentManager.ActivateCombatAction(currentComponent->entity,
+							                                              deathAction);
 						}
 					}
 

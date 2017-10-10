@@ -16,3 +16,4 @@ you get the latest Galavant changes when using Unreal's hot reloading
 - @Performance: Not justifiable as a TODO, but could be looked at when thinking about performance
 - @Purity: Look into changing the code for code purity/cleanliness' sake
 - @Callback: The marked function is used as a callback. Preferably @Callback [Callback type name]
+- @Stability: Should be changed in order to make the code more stable (segfault protection etc.)

@@ -15,13 +15,17 @@ typedef int ResourceKey;
 // This base is required because we want to store pointers to many types of ResourceDictionary
 struct ResourceDictionaryBase
 {
-	static std::vector<ResourceDictionaryBase*> s_AllResourceDictionaries;
+	typedef std::vector<ResourceDictionaryBase*> ResourceDictionaryList;
+	static ResourceDictionaryList* s_AllResourceDictionaries;
 	virtual ~ResourceDictionaryBase() = default;
 	virtual void ClearResources() = 0;
 
 	static void ClearAllDictionaries()
 	{
-		for (ResourceDictionaryBase* dictionary : s_AllResourceDictionaries)
+		if (!s_AllResourceDictionaries)
+			return;
+
+		for (ResourceDictionaryBase* dictionary : (*s_AllResourceDictionaries))
 			dictionary->ClearResources();
 	}
 };
@@ -33,7 +37,10 @@ struct ResourceDictionary : public ResourceDictionaryBase
 
 	ResourceDictionary()
 	{
-		s_AllResourceDictionaries.push_back(this);
+		// Lazy initialize for static initialization support
+		if (!s_AllResourceDictionaries)
+			s_AllResourceDictionaries = new ResourceDictionaryList;
+		s_AllResourceDictionaries->push_back(this);
 	}
 
 	virtual ~ResourceDictionary() = default;

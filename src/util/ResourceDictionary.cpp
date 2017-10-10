@@ -2,5 +2,6 @@
 
 namespace gv
 {
-std::vector<ResourceDictionaryBase*> ResourceDictionaryBase::s_AllResourceDictionaries;
+ResourceDictionaryBase::ResourceDictionaryList* ResourceDictionaryBase::s_AllResourceDictionaries =
+    nullptr;
 }

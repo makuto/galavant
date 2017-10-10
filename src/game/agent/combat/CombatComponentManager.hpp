@@ -38,6 +38,8 @@ struct CombatActionDef
 	};
 
 	CombatActionKnockback Knockback;
+
+	bool Die;
 };
 
 extern ResourceDictionary<CombatActionDef> g_CombatActionDefDictionary;

@@ -30,9 +30,6 @@ Position vs GlobalPosition
 		How large? I'd have to do the math (yes, the monster math)
 
 Combat System
-	Input
-		Make callbacks in player character which talk to combat system/do things. For now, maybe
-	     make this step control timing and pull it out into combat later
 	Animations
 		This is going to be tricky. Procedural would be cool, but difficult. At least shoot for
 		 procedural impact effects
@@ -64,13 +61,25 @@ Fix debug text over AgentCharacter for combat test
 
 Automatic apply UEngine patch script
 
+Goal retrying needs rethinking (goal retry status is forgotten once goal completely fails)
+
+After extended period of time, PlanComponentManager is constantly trying to unsubscribe things
+
+Replaying in editor seems to do strange things with needs/timers. Are things being reset properly?
+
 ------------------
 Doing
 ------------------
 
-UnrealMovementComponent segfault
-	https://wiki.unrealengine.com/How_To_Prevent_Crashes_Due_To_Dangling_Actor_Pointers
-	https://docs.unrealengine.com/latest/INT/Programming/UnrealArchitecture/SmartPointerLibrary/WeakPointer/
+Combat System
+
+------------------
+Done
+------------------
+Combat System
+	Input
+		Make callbacks in player character which talk to combat system/do things. For now, maybe
+	     make this step control timing and pull it out into combat later
 
 Spawning very, very broken
 	Seemed to see multiple actors spawned for a single berry
@@ -82,16 +91,10 @@ Spawning very, very broken
 		Only call ActorOnDestroy if it wasn't previously marked for destruction (in Actor.h)
 		Current lifetime management doesn't prevent segfault. Wait until agents all group up for repro
 
-Combat
+UnrealMovementComponent segfault
+	https://wiki.unrealengine.com/How_To_Prevent_Crashes_Due_To_Dangling_Actor_Pointers
+	https://docs.unrealengine.com/latest/INT/Programming/UnrealArchitecture/SmartPointerLibrary/WeakPointer/
 
-After extended period of time, PlanComponentManager is constantly trying to unsubscribe things
-
-Goal retrying needs rethinking (goal retry status is forgotten once goal completely fails)
-
-
-------------------
-Done
-------------------
 Remember to put Galavant-specific UE code into a patch or something
 
 Agent goals are broken after refactor
