@@ -97,7 +97,7 @@ void CombatComponentManager::Update(float deltaSeconds)
 			{
 				float actionEndTime =
 				    combatant.CurrentAction.ActivateTime + combatant.CurrentAction.Def->Duration;
-				if (gv::GetWorldTime() < actionEndTime)
+				if (gv::GetGameplayTime() < actionEndTime)
 				{
 					combatant.CurrentAction = {nullptr, nullptr, 0.f};
 				}

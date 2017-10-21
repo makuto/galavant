@@ -7,12 +7,17 @@ int main()
 	return 0;
 }
 
-// Latelinked things
+// @LatelinkDef Latelinked things
 namespace gv
 {
 class CombatFx
 {
 };
+
+float GetGameplayTime()
+{
+	return 0.f;
+}
 
 float GetWorldTime()
 {

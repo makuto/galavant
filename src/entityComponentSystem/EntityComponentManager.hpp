@@ -18,14 +18,20 @@ every ComponentManager which is registered with this ECM. This is less than opti
 permissable.
 */
 
-typedef std::vector<ComponentManager *> ComponentManagerList;
+// Circumvent the class rigamaroll and just give the ECM a way to tell you to delete dead shit
+typedef void (*UnsubscribeEntitiesFunc)(const EntityList &entities);
 
 class EntityComponentManager
 {
 private:
+	typedef std::vector<ComponentManager *> ComponentManagerList;
 	typedef ComponentManagerList::iterator ComponentManagerListIterator;
 
 	ComponentManagerList ComponentManagers;
+
+	typedef std::vector<UnsubscribeEntitiesFunc> UnsubscribeOnlyManagerList;
+
+	UnsubscribeOnlyManagerList UnsubscribeOnlyManagers;
 
 	EntityList ActiveEntities;
 	EntityList EntitiesPendingDestruction;
@@ -39,11 +45,16 @@ private:
 	void UnsubscribeEntitiesFromAllManagers(EntityList &entitiesToUnsubscribe);
 
 public:
+	bool DebugPrint = false;
+
 	EntityComponentManager();
 	~EntityComponentManager();
 
 	void AddComponentManager(ComponentManager *manager);
 	void RemoveComponentManager(ComponentManager *manager);
+
+	void AddUnsubscribeOnlyManager(UnsubscribeEntitiesFunc unsubscribeFunc);
+	void ClearUnsubscribeOnlyManagers();
 
 	// Creates the given number of entities, adds them to the ActiveEntities list, and appends them
 	// to the provided list

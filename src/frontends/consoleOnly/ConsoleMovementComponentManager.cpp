@@ -1,5 +1,7 @@
 #include "ConsoleMovementComponentManager.hpp"
 
+#include "util/Math.hpp"
+
 #include <algorithm>
 
 ConsoleMovementComponentManager g_ConsoleMovementComponentManager;
@@ -142,6 +144,19 @@ void ConsoleMovementComponentManager::PathEntitiesTo(const gv::EntityList& entit
 			{
 				component.GoalWorldPosition = targetPosition;
 			}
+		}
+	}
+}
+
+void ConsoleMovementComponentManager::SetEntitySpeeds(const gv::EntityList& entities,
+                                                      const std::vector<float>& speeds)
+{
+	for (MovementComponent& currentComponent : MovementComponents)
+	{
+		for (size_t i = 0; i < MIN(entities.size(), speeds.size()); i++)
+		{
+			if (currentComponent.entity == entities[i])
+				currentComponent.MaxSpeed = speeds[i];
 		}
 	}
 }

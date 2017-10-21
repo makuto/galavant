@@ -4,6 +4,7 @@
 
 #include "entityComponentSystem/PooledComponentManager.hpp"
 #include "entityComponentSystem/EntityTypes.hpp"
+#include "MovementManager.hpp"
 #include "PlanComponentManager.hpp"
 #include "Needs.hpp"
 
@@ -46,6 +47,8 @@ private:
 
 	PlanComponentManager* PlanManager;
 
+	MovementManager* MovementComponentManager;
+
 protected:
 	typedef std::vector<PooledComponent<AgentComponentData>*> AgentComponentRefList;
 
@@ -62,7 +65,8 @@ public:
 	AgentComponentManager();
 	virtual ~AgentComponentManager();
 
-	void Initialize(PlanComponentManager* newPlanComponentManager);
+	void Initialize(PlanComponentManager* newPlanComponentManager,
+	                MovementManager* newMovementComponentManager);
 
 	virtual void Update(float deltaSeconds);
 

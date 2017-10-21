@@ -5,6 +5,8 @@
 
 namespace gv
 {
+// @Latelink: CombatFx is a frontend-specific structure which will be provided to
+// CombatFxHandler::OnActivateCombatAction() for frontend handling
 typedef struct CombatFx CombatFx;
 
 struct CombatActionDef

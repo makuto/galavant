@@ -40,6 +40,23 @@ void EntityComponentManager::RemoveComponentManager(ComponentManager *manager)
 	}
 }
 
+void EntityComponentManager::AddUnsubscribeOnlyManager(UnsubscribeEntitiesFunc unsubscribeFunc)
+{
+	for (UnsubscribeEntitiesFunc currentFunc : UnsubscribeOnlyManagers)
+	{
+		// Already added
+		if (currentFunc == unsubscribeFunc)
+			return;
+	}
+
+	UnsubscribeOnlyManagers.push_back(unsubscribeFunc);
+}
+
+void EntityComponentManager::ClearUnsubscribeOnlyManagers()
+{
+	UnsubscribeOnlyManagers.clear();
+}
+
 void EntityComponentManager::GetNewEntities(EntityList &list, int count)
 {
 	for (int i = 0; i < count; i++)
@@ -65,9 +82,15 @@ void EntityComponentManager::UnsubscribeEntitiesFromAllManagers(EntityList &enti
 	// that's fine
 	for (ComponentManager *currentComponentManager : ComponentManagers)
 	{
-		LOGD << "Destroying " << entitiesToUnsubscribe.size() << " entities from "
-		     << currentComponentManager->DebugName << " (they might not all be subscribed)";
+		LOGD_IF(DebugPrint) << "Destroying " << entitiesToUnsubscribe.size() << " entities from "
+		                    << currentComponentManager->DebugName
+		                    << " (they might not all be subscribed)";
 		currentComponentManager->UnsubscribeEntities(entitiesToUnsubscribe);
+	}
+
+	for (UnsubscribeEntitiesFunc currentUnsubscribeEntities : UnsubscribeOnlyManagers)
+	{
+		currentUnsubscribeEntities(entitiesToUnsubscribe);
 	}
 }
 

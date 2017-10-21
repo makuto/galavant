@@ -51,6 +51,7 @@ public:
 
 	// TODO: This should return whether it was actually successful (i.e. the entity exists)
 	virtual void PathEntitiesTo(const gv::EntityList& entities, const gv::PositionList& positions);
+	virtual void SetEntitySpeeds(const gv::EntityList& entities, const std::vector<float>& speeds);
 };
 
 extern ConsoleMovementComponentManager g_ConsoleMovementComponentManager;

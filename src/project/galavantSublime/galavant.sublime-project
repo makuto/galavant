@@ -9,7 +9,7 @@
             "path": "../../../../galavant",
             "name": "Galavant",
             "folder_exclude_patterns": ["project", "thirdParty"],
-            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "Jam*", "*.md"]
+            "file_include_patterns": ["*.c", "*.cpp", "*.h", "*.hpp", "*.txt", "Jam*", "*.md", "*.tasks"]
         },
         {
             "path": "../../../../galavant-unreal/GalavantUnreal/Source",
@@ -66,6 +66,14 @@
             "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
 
+        {
+            "name": "Full Build Debug (build Galavant lib and Unreal)",
+            "shell_cmd": "cd galavant && jam -j4 -q -sUNREAL=true GalavantPseudotarget && cd ../galavant-unreal/GalavantUnreal && make GalavantUnreal-Linux-Debug",
+            "working_dir": "$project_path/../../../..",
+            "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
         //
         // Galavant Unreal
         //
@@ -77,6 +85,15 @@
             "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
 
+        {
+            "name": "GalavantUnreal Build Debug",
+            "shell_cmd": "make GalavantUnreal-Linux-Debug",
+            "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal",
+            "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
+        // This is useful when it complains that Linux headers have changed
         {
             "name": "GalavantUnreal Quick Clean",
             "shell_cmd": "rm -r Intermediate/Build",
@@ -92,7 +109,36 @@
         {
             "name": "GalavantUnreal Generate Project Files",
             "shell_cmd": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/GenerateProjectFiles.sh -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -game -editor",
-            "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"
+            "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
+        //
+        // GalavantUnreal Standalone
+        //
+
+        {
+            "name": "GalavantUnreal Standalone Package",
+            "shell_cmd": "mono AutomationTool.exe -ScriptsForProject=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject BuildCookRun -nocompile -nocompileeditor -nop4 -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -cook -stage -archive -archivedirectory=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/LOCAL_package/package/ -package -clientconfig=Development -ue4exe=UE4Editor-Linux-Debug -pak -prereqs -nodebuginfo -nativizeAssets -targetplatform=Linux -build -utf8output",
+            // "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal",
+            "working_dir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/DotNET",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
+        {
+            "name": "GalavantUnreal Standalone Package Debug",
+            "shell_cmd": "mono AutomationTool.exe -ScriptsForProject=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject BuildCookRun -nocompile -nocompileeditor -nop4 -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -cook -stage -archive -archivedirectory=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/LOCAL_package/package/ -package -clientconfig=Debug -ue4exe=UE4Editor-Linux-Debug -pak -prereqs -nativizeAssets -targetplatform=Linux -build -utf8output",
+            // "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal",
+            "working_dir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/DotNET",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
+        {
+            "name": "Standalone Full Build Debug (build Galavant lib and Unreal)",
+            "shell_cmd": "cd galavant && jam -j4 -q -sUNREAL=true GalavantPseudotarget && cd ../galavant-unreal/GalavantUnreal && make GalavantUnreal-Linux-Debug && cp -r -u -v Binaries/ LOCAL_package/package/LinuxNoEditor/GalavantUnreal/",
+            "working_dir": "$project_path/../../../..",
+            "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
 
         //
@@ -108,6 +154,14 @@
         {
             "name": "Unreal Engine Build",
             "shell_cmd": "make",
+            "working_dir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine",
+            "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
+        {
+            "name": "Unreal Engine Build Debug",
+            "shell_cmd": "make UE4Editor-Linux-Debug",
             "working_dir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine",
             "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
             "syntax":"JamUnrealBuildOutput.sublime-syntax"
@@ -199,11 +253,17 @@
                 "commandline": "gdb --interpreter=mi ./UE4Editor /home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
             },
 
-            //"UnrealEditor Debug":
-            //{
-            //    "workingdir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/Linux",
-            //    "commandline": "gdb --interpreter=mi ./UE4Editor-Linux-Debug /home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
-            //},
+            "UnrealEditor Debug":
+            {
+               "workingdir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/Linux",
+               "commandline": "gdb --interpreter=mi ./UE4Editor-Linux-Debug /home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject"
+            },
+
+            "GalavantUnreal Standalone":
+            {
+               "workingdir": "/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal",
+               "commandline": "gdb --interpreter=mi --args ./LOCAL_package/package/LinuxNoEditor/GalavantUnreal/Binaries/Linux/GalavantUnreal -windowed -resx=1920 -resy=1080"
+            },
 
             //"htnTest":
             //{

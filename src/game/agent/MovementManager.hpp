@@ -1,7 +1,9 @@
 #pragma once
 
-#include "../../entityComponentSystem/EntityTypes.hpp"
-#include "../../world/Position.hpp"
+#include "entityComponentSystem/EntityTypes.hpp"
+#include "world/Position.hpp"
+
+#include <vector>
 
 namespace gv
 {
@@ -15,5 +17,6 @@ class MovementManager
 public:
 	virtual ~MovementManager() = default;
 	virtual void PathEntitiesTo(const EntityList& entities, const PositionList& positions) = 0;
+	virtual void SetEntitySpeeds(const EntityList& entities, const std::vector<float>& speeds) = 0;
 };
 }

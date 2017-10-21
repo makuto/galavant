@@ -20,10 +20,6 @@ Minimap
 		Scaling is completely wrong between WorldResource position and noise sample
 			Actually, this doesn't seem to be the problem
 
-Some sort of resource system
-	Could be something like ResourceDictionary<key, ResourceType> resources
-	 then things could stuff in things from load or even hard coded (via resources["new thing"] = {})
-
 Position vs GlobalPosition
 	As soon as possible, I need to decide if I need Chunk XYZ with Position XYZ
 	This depends on whether I ever want to support really large worlds
@@ -47,19 +43,11 @@ Combat System
 		Goal #2: Minecraft but with strategy (this can be the stopping point for now)
 		Goal #3: Something closer to Chivalry instead of Minecraft
 
-
-Massive convenience feature: Fuck, totally forgot as I was writing this. Fuck! 
-	Was it Entity Actor integration?
-
 Add player HUD UI - Only needs Minimap, Need bars
-
-Save Jamfile documentation to repository
-
-Cereal integration
 
 Fix debug text over AgentCharacter for combat test
 
-Automatic apply UEngine patch script
+Cereal integration
 
 Goal retrying needs rethinking (goal retry status is forgotten once goal completely fails)
 
@@ -67,15 +55,29 @@ After extended period of time, PlanComponentManager is constantly trying to unsu
 
 Replaying in editor seems to do strange things with needs/timers. Are things being reset properly?
 
+Development
+	Save Jamfile documentation to repository
+	Automatic apply UEngine patch script
+
 ------------------
 Doing
 ------------------
 
 Combat System
 
+Pause/play might not work (component managers / agents behaving strangely, maybe after resume)
+
+Get standalone full debug game working
+
+Clean way to manage Galavant -> Character interactions (e.g. how to properly handle ragdoll)
+
 ------------------
 Done
 ------------------
+Some sort of resource system
+	Could be something like ResourceDictionary<key, ResourceType> resources
+	 then things could stuff in things from load or even hard coded (via resources["new thing"] = {})
+
 Combat System
 	Input
 		Make callbacks in player character which talk to combat system/do things. For now, maybe

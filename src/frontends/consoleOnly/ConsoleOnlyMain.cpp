@@ -2,6 +2,7 @@
 
 #include "world/WorldResourceLocator.hpp"
 #include "world/ProceduralWorld.hpp"
+
 #include "entityComponentSystem/EntityTypes.hpp"
 #include "entityComponentSystem/EntityComponentManager.hpp"
 #include "game/agent/PlanComponentManager.hpp"
@@ -12,9 +13,11 @@
 #include "ai/htn/HTNTasks.hpp"
 #include "game/agent/htnTasks/MovementTasks.hpp"
 #include "game/agent/htnTasks/InteractTasks.hpp"
-#include "util/CallbackContainer.hpp"
 #include "game/EntityLevelOfDetail.hpp"
+
+#include "util/CallbackContainer.hpp"
 #include "util/StringHashing.hpp"
+#include "util/Time.hpp"
 
 #include "ConsoleMovementComponentManager.hpp"
 
@@ -273,6 +276,8 @@ void InitializeGalavant()
 {
 	LOGI << "Initializing Galavant...";
 
+	gv::ResetGameplayTime();
+
 	InitializeProceduralWorld();
 
 	gv::WorldResourceLocator::ClearResources();
@@ -296,11 +301,12 @@ void InitializeGalavant()
 		{
 			static gv::WorldStateManager WorldStateManager;
 			gv::g_PlanComponentManager.Initialize(&WorldStateManager, &TaskEventCallbacks);
-			//gv::g_PlanComponentManager.DebugPrint = true;
+			// gv::g_PlanComponentManager.DebugPrint = true;
 		}
 
 		{
-			gv::g_AgentComponentManager.Initialize(&gv::g_PlanComponentManager);
+			gv::g_AgentComponentManager.Initialize(&gv::g_PlanComponentManager,
+			                                       &g_ConsoleMovementComponentManager);
 			gv::g_AgentComponentManager.DebugPrint = true;
 		}
 
@@ -389,6 +395,7 @@ int main()
 // Latelinked functions
 namespace gv
 {
+// @LatelinkDef
 float GetWorldTime()
 {
 	return s_currentWorldTime;

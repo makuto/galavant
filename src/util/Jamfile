@@ -4,6 +4,7 @@ SubDirC++Flags $(ALLLIBSC++FLAGS) ;
 
 Library libGalaUtil : Logging.cpp
                       StringHashing.cpp
-                      ResourceDictionary.cpp ;
+                      ResourceDictionary.cpp
+                      Time.cpp ;
 
 MakeLocate libGalaUtil.a : lib ;

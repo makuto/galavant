@@ -89,7 +89,7 @@ Logger::Logger(Severity maxSeverity, CustomLogOutputFunc customOutputFunc)
     : MaxSeverity(maxSeverity), CustomOutputFunc(customOutputFunc)
 {
 	Singleton = this;
-	std::cout << "Logger initialized at " << Singleton << "\n";
+	// std::cout << "Logger initialized at " << Singleton << "\n";
 }
 bool Logger::checkSeverity(Severity severity) const
 {
@@ -110,9 +110,10 @@ void Logger::operator+=(const Record& record)
 }
 Logger* Logger::GetSingleton()
 {
-	if (!Singleton)
-		std::cout << "Warning: something tried to access Logger before any Logger had been "
-		             "initialized!\n";
+	// TODO: @Stability: This could be a problem. We can't print yet though...
+	// if (!Singleton)
+	// 	std::cout << "Warning: something tried to access Logger before any Logger had been "
+	// 	             "initialized!\n";
 	return Singleton;
 }
 

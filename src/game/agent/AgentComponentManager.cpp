@@ -22,9 +22,11 @@ AgentComponentManager::~AgentComponentManager()
 {
 }
 
-void AgentComponentManager::Initialize(PlanComponentManager* newPlanComponentManager)
+void AgentComponentManager::Initialize(PlanComponentManager* newPlanComponentManager,
+                                       MovementManager* newMovementComponentManager)
 {
 	PlanManager = newPlanComponentManager;
+	MovementComponentManager = newMovementComponentManager;
 }
 
 void AddGoalIfUniqueType(AgentGoalList& goals, AgentGoal& goalToAdd)
@@ -49,6 +51,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 	EntityList entitiesToUnsubscribe;
 	EntityList entitiesToDestroy;
 	PlanComponentManager::PlanComponentList newPlans;
+	std::vector<gv::PooledComponent<AgentComponentData>*> newlyDeadAgents;
 
 	if (!PlanManager)
 	{
@@ -119,7 +122,8 @@ void AgentComponentManager::Update(float deltaSeconds)
 					LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
 					                    << " has hit need trigger for need " << need.Def->Name;
 
-					if (needLevelTrigger.SetConsciousState != AgentConsciousState::None)
+					if (needLevelTrigger.SetConsciousState != AgentConsciousState::None &&
+					    currentComponent->data.ConsciousState != needLevelTrigger.SetConsciousState)
 					{
 						currentComponent->data.ConsciousState = needLevelTrigger.SetConsciousState;
 
@@ -128,12 +132,7 @@ void AgentComponentManager::Update(float deltaSeconds)
 							currentComponent->data.IsAlive = false;
 							LOGD_IF(DebugPrint) << "Agent Entity " << currentEntity
 							                    << " has died from need " << need.Def->Name;
-							// temporary
-							static CombatActionDef deathActionDef;
-							deathActionDef.Die = true;
-							CombatAction deathAction{&deathActionDef, nullptr, 0.f};
-							g_CombatComponentManager.ActivateCombatAction(currentComponent->entity,
-							                                              deathAction);
+							newlyDeadAgents.push_back(currentComponent);
 						}
 					}
 
@@ -267,13 +266,32 @@ void AgentComponentManager::Update(float deltaSeconds)
 	if (!newPlans.empty())
 		PlanManager->SubscribeEntities(newPlans);
 
+	if (!newlyDeadAgents.empty())
+	{
+		EntityList deadEntities;
+		std::vector<float> deadEntitySpeeds;
+		for (gv::PooledComponent<AgentComponentData>* currentComponent : newlyDeadAgents)
+		{
+			// temporary
+			static CombatActionDef deathActionDef;
+			deathActionDef.Die = true;
+			CombatAction deathAction{&deathActionDef, nullptr, 0.f};
+			g_CombatComponentManager.ActivateCombatAction(currentComponent->entity, deathAction);
+
+			deadEntities.push_back(currentComponent->entity);
+			deadEntitySpeeds.push_back(0.f);
+		}
+
+		// TODO: @Purity: How do I want other systems to interact? Is this dirty, or fine?
+		if (MovementComponentManager)
+			MovementComponentManager->SetEntitySpeeds(deadEntities, deadEntitySpeeds);
+	}
+
 	if (!entitiesToUnsubscribe.empty())
 		UnsubscribeEntities(entitiesToUnsubscribe);
 
 	if (!entitiesToDestroy.empty())
-	{
 		g_EntityComponentManager.MarkDestroyEntities(entitiesToDestroy);
-	}
 }
 
 void AgentComponentManager::SubscribeEntitiesInternal(const EntityList& subscribers,
