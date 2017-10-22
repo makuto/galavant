@@ -49,6 +49,11 @@ private:
 
 	MovementManager* MovementComponentManager;
 
+	EntityList UnconsciousAgents;
+
+	void SetAgentConsciousState(PooledComponent<AgentComponentData>* agent,
+	                            AgentConsciousState newState);
+
 protected:
 	typedef std::vector<PooledComponent<AgentComponentData>*> AgentComponentRefList;
 
@@ -71,6 +76,7 @@ public:
 	virtual void Update(float deltaSeconds);
 
 	void GetAgentConsciousStates(const EntityList& entities, AgentConsciousStateList& stateListOut);
+	const EntityList& GetUnconsciousAgents();
 
 	Need* GetAgentNeed(Entity entity, NeedType needType);
 };

@@ -2,6 +2,8 @@
 
 #include "EntityTypes.hpp"
 
+#include "util/CppHelperMacros.hpp"
+
 namespace gv
 {
 const Entity NullEntity = 0;
@@ -108,12 +110,6 @@ void EntityListRemoveUniqueEntitiesInSuspect(const EntityList& list, EntityList&
 
 bool EntityListFindEntity(const EntityList& list, Entity entity)
 {
-	for (EntityListConstIterator it = list.begin(); it != list.end(); ++it)
-	{
-		Entity currentEntity = (*it);
-		if (currentEntity == entity)
-			return true;
-	}
-	return false;
+	return IS_IN_LIST(list, entity);
 }
 }

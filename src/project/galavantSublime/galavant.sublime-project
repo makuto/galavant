@@ -120,15 +120,13 @@
         {
             "name": "GalavantUnreal Standalone Package",
             "shell_cmd": "mono AutomationTool.exe -ScriptsForProject=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject BuildCookRun -nocompile -nocompileeditor -nop4 -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -cook -stage -archive -archivedirectory=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/LOCAL_package/package/ -package -clientconfig=Development -ue4exe=UE4Editor-Linux-Debug -pak -prereqs -nodebuginfo -nativizeAssets -targetplatform=Linux -build -utf8output",
-            // "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal",
             "working_dir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/DotNET",
             "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
 
         {
             "name": "GalavantUnreal Standalone Package Debug",
-            "shell_cmd": "mono AutomationTool.exe -ScriptsForProject=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject BuildCookRun -nocompile -nocompileeditor -nop4 -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -cook -stage -archive -archivedirectory=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/LOCAL_package/package/ -package -clientconfig=Debug -ue4exe=UE4Editor-Linux-Debug -pak -prereqs -nativizeAssets -targetplatform=Linux -build -utf8output",
-            // "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal",
+            "shell_cmd": "mono AutomationTool.exe -ScriptsForProject=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject BuildCookRun -nocompile -nocompileeditor -nop4 -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -cook -stage -archive -archivedirectory=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/LOCAL_package/package/ -package -clientconfig=DebugGame -ue4exe=UE4Editor-Linux-Debug -pak -prereqs -nodebuginfo -nativizeAssets -targetplatform=Linux -build -utf8output",
             "working_dir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/DotNET",
             "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
@@ -263,6 +261,12 @@
             {
                "workingdir": "/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal",
                "commandline": "gdb --interpreter=mi --args ./LOCAL_package/package/LinuxNoEditor/GalavantUnreal/Binaries/Linux/GalavantUnreal -windowed -resx=1920 -resy=1080"
+            },
+
+            "GalavantUnreal Standalone Debug":
+            {
+               "workingdir": "/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal",
+               "commandline": "gdb --interpreter=mi --args ./LOCAL_package/package/LinuxNoEditor/GalavantUnreal/Binaries/Linux/GalavantUnreal-Linux-Debug -windowed -resx=1920 -resy=1080"
             },
 
             //"htnTest":
