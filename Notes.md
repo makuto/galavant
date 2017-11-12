@@ -8,12 +8,16 @@ Miscellaneous notes regarding working on Galavant, the code, and other random sh
 you get the latest Galavant changes when using Unreal's hot reloading
 - After rebuilding Unreal, you may need to delete GalavantUnreal/Binaries/* if you get 'Game Module Could Not Be Loaded' error on startup
 - Even if you `make` the project, you'll still need to hit the Compile button in the editor to get Unreal to compile and hotreload your code
-- I added a hack which makes the engine auto scale to my desired DPI settings. You'll probably want to change these to fit your preferences. Change the value of `FSlateApplication::Get().SetApplicationScale(1.53f)` in `AGalavantUnrealMain::AGalavantUnrealMain()` to your desired DPI (1.f is the engine default).
+- I added a hack which makes the editor auto scale to my desired DPI settings. I run the command `HighDPI` in game and it'll make the editor scale for the rest of the runtime
+- When exporting .FBX Skeletal meshes from Blender, ensure `Forward` is `Y Forward`, `Up` is `Z Up`, and in `Armature` settings, uncheck `Add Leaf Bones`.
 
 ### Useful Unreal Commands
+- I set my standalone builds to run with these options: `-windowed -resx=1920 -resy=1080`. I have a 4K monitor which is too performance intensive in game at native, and prefer windowed while working
 - `r.setRes 1920x1080f`: Set screen resolution (w = windowed, f = fullscreen, wf = windowed fullscreen)
 - `'`: (Hit apostrophe in gameplay): Debug gameplay interface. Use NumPad for various views
 - `stat fps`: Show FPS in corner
+- `t.MaxFps`: Set max FPS (default seems to be 60)
+- `stat StartFile`, `stat StopFile`: Record profiling data. Goes to the nearest `Saved` folder to the executable. Open Window > Developer Tools > Session Frontend and go to the Profiler tab to do anything useful with this data
 
 ## Comment Tags
 

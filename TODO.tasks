@@ -2,15 +2,9 @@
 Todo
 ------------------
 
-Soak test editor - after ~1 hour it was looking pretty glitchy
-
-statics don't work well with hot reloading
-	Need some sort of system which makes it easy to tell static shit to reload?
-
-What does agent component manager do with triggers once plan is done? How to know plan is done?
-
 Pickups sort of working, sometimes they aren't picked up, Actors are being destroyed strangely
-	Possibility that pickup actor is falling through the floor (invisible other component hitting KillZ?) YES, it's KillZ
+	Possibility that pickup actor is falling through the floor 
+	(invisible other component hitting KillZ?) YES, it's KillZ
 
 Minimap
 	HUD Minimap is difficult to use with regards to rotation (needs better view cone)
@@ -43,9 +37,11 @@ Combat System
 		Goal #2: Minecraft but with strategy (this can be the stopping point for now)
 		Goal #3: Something closer to Chivalry instead of Minecraft
 
-Add player HUD UI - Only needs Minimap, Need bars
+Debugging
+	Fix debug text over AgentCharacter for combat test
+	Make it possible to e.g. hover over agents and inspect their values as soon as the game starts up.
 
-Fix debug text over AgentCharacter for combat test
+Add player HUD UI - Only needs Minimap, Need bars
 
 Cereal integration
 
@@ -53,27 +49,68 @@ Goal retrying needs rethinking (goal retry status is forgotten once goal complet
 
 After extended period of time, PlanComponentManager is constantly trying to unsubscribe things
 
-Replaying in editor seems to do strange things with needs/timers. Are things being reset properly?
-
 Development
-	Save Jamfile documentation to repository
 	Automatic apply UEngine patch script
+
+Fix Agents having unpredictable Need levels on second Play In Editor (I'm guessing the above Pause
+	Galavant loop will help with this)
+	Replaying in editor seems to do strange things with needs/timers. Are things being reset properly?
+
+Consider spawning Game Logic-only colliders which anchor to Unreal bones for combat. These colliders
+	could be made into ragdoll colliders on true impact or somehow tell the thing it collided what the
+	force and direction is so the animation can react. Here's a perfect feature for this:
+	https://docs.unrealengine.com/latest/INT/Engine/Animation/PhysicallyDrivenAnimation/
+
+Need something to free mouse
+	AGalavantUnrealFPCharacter::ToggleMouseLock() doesn't work
 
 ------------------
 Doing
 ------------------
 
-Combat System
+Collision detection for combat
+	Need to delete Galavant editor build due to assert from FPCharacter
+	May need to repackage due to blueprint no longer matching code
 
-Pause/play might not work (component managers / agents behaving strangely, maybe after resume)
-
-Get standalone full debug game working
-
-Clean way to manage Galavant -> Character interactions (e.g. how to properly handle ragdoll)
 
 ------------------
 Done
 ------------------
+Add game control keybinds
+	Escape closes
+	P toggles Galavant pause/play game time
+	
+Pause/play might not work (component managers / agents behaving strangely, maybe after resume)
+
+What does agent component manager do with triggers once plan is done? How to know plan is done?
+
+statics don't work well with hot reloading
+	Need some sort of system which makes it easy to tell static shit to reload?
+	Just be careful, don't do static initialization without making it lazy initialization
+
+Soak test editor - after ~1 hour it was looking pretty glitchy
+	This is an Ubuntu/Nvidia driver issue, I think, so I wouldn't worry about it
+
+Save Jamfile documentation to repository
+
+Clean way to manage Galavant -> Character interactions (e.g. how to properly handle ragdoll)
+	UnrealCharacterComponentManager (make something which can do Unreal character stuff via 
+		observing Agents etc.; this also would be where debug text on hover etc. could go instead 
+		of inside AgentCharacter)
+
+Compile Unreal in Full Debug and see if it's usable
+	or, figure out how to compile the engine but not editor and run the game standalone in full debug
+	or just compile the GalavantUnrealLib in full debug and see if that does the trick
+	The best option should be Editor is compiled in development and full debug and GalavantUnrealLib 
+		is compiled in full debug. Use regular development editor when things are going fine. Either
+		 way, I should get the game standalone version working (if it has faster startup than unreal
+		  engine and comparable times to hot-reloading, it'd be valuable)
+	For certain normal Editor GenerateProjectFiles should be DebugGame instead of Development 
+		(development has no/shitty symbols) 
+		https://forums.unrealengine.com/development-discussion/c-gameplay-programming/37587-debug-game-editor-and-devlopemt-editor-difference
+
+Get standalone full debug game working
+
 Some sort of resource system
 	Could be something like ResourceDictionary<key, ResourceType> resources
 	 then things could stuff in things from load or even hard coded (via resources["new thing"] = {})

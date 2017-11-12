@@ -143,8 +143,15 @@
         // Unreal Engine
         //
         {
-            "name": "Unreal Engine Get Latest and Build",
+            "name": "Unreal Engine Get Latest and Build (No debug)",
             "shell_cmd": "guake -n UnrealLatest -e \"cd /home/macoy/Development/code/3rdParty/repositories/UnrealEngine && git pull && ./Setup.sh && ./GenerateProjectFiles.sh && make\"",
+            "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
+        {
+            "name": "Unreal Engine Get Latest and Build (Also debug)",
+            "shell_cmd": "guake -n UnrealLatest -e \"cd /home/macoy/Development/code/3rdParty/repositories/UnrealEngine && git pull && ./Setup.sh && ./GenerateProjectFiles.sh && make UE4Editor UE4Editor-Linux-Debug\"",
             "file_regex": "^([a-zA-Z\/][^:\n]*):([0-9]+):?([0-9]+)?:? (.*)$",
             "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
