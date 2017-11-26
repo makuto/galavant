@@ -2,8 +2,8 @@
 
 #include "util/Logging.hpp"
 
-#include "entityComponentSystem/PooledComponentManager.hpp"
 #include "entityComponentSystem/EntityComponentManager.hpp"
+#include "entityComponentSystem/PooledComponentManager.hpp"
 #include "game/agent/combat/CombatComponentManager.hpp"
 
 #include "util/Math.hpp"
@@ -12,6 +12,25 @@ namespace gv
 {
 ResourceDictionary<AgentGoalDef> g_AgentGoalDefDictionary;
 AgentComponentManager g_AgentComponentManager;
+
+const char* GetGoalStatusString(AgentGoal::GoalStatus status)
+{
+	switch (status)
+	{
+		case AgentGoal::GoalStatus::None:
+			return "None";
+		case AgentGoal::GoalStatus::StartGoal:
+			return "Start Goal";
+		case AgentGoal::GoalStatus::InProgress:
+			return "In Progress";
+		case AgentGoal::GoalStatus::Failed:
+			return "Failed";
+		case AgentGoal::GoalStatus::Succeeded:
+			return "Succeeded";
+		default:
+			return "[Status string not added]";
+	}
+}
 
 AgentComponentManager::AgentComponentManager() : gv::PooledComponentManager<AgentComponentData>(100)
 {
@@ -276,7 +295,8 @@ void AgentComponentManager::Update(float deltaSeconds)
 			if (goal.Status != AgentGoal::GoalStatus::InProgress &&
 			    goal.Status != AgentGoal::GoalStatus::StartGoal)
 			{
-				LOGD_IF(DebugPrint) << "Agent Goal concluded with status " << (int)goal.Status;
+				LOGD_IF(DebugPrint) << "Agent Goal concluded with status "
+				                    << GetGoalStatusString(goal.Status);
 				goals.erase(headGoalIt);
 			}
 		}

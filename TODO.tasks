@@ -1,11 +1,6 @@
 ------------------
 Todo
 ------------------
-
-Pickups sort of working, sometimes they aren't picked up, Actors are being destroyed strangely
-	Possibility that pickup actor is falling through the floor 
-	(invisible other component hitting KillZ?) YES, it's KillZ
-
 Minimap
 	HUD Minimap is difficult to use with regards to rotation (needs better view cone)
 		Instead of doing this weird shit, just render the world and have UI create icons for player 
@@ -13,69 +8,83 @@ Minimap
 	Minimap noise doesn't match world
 		Scaling is completely wrong between WorldResource position and noise sample
 			Actually, this doesn't seem to be the problem
+	Minimap is extremely slow
 
-Position vs GlobalPosition
-	As soon as possible, I need to decide if I need Chunk XYZ with Position XYZ
-	This depends on whether I ever want to support really large worlds
-		How large? I'd have to do the math (yes, the monster math)
+Player Movement
+	Get full body instead of floating arms
 
 Combat System
 	Animations
 		This is going to be tricky. Procedural would be cool, but difficult. At least shoot for
 		 procedural impact effects
-		Figure out how to actually make animations in Blender (try Unreal .fbx export/import)
-			Note on .fbx import/export: I had to add the following to SSlateFileOpenDlg::GetFilterExtension:
-				if (!FilterExt)
-					return false;
-				(this is fixed on 4.17 now)
 		Could do UI only for now to experiment with timing
-		Hook up ragdoll physics for deaths/unconscious
 	Sound
 		Can start with simple sounds: blood hit, sword hit/parry, sword swing
 	Milestones
 		Goal #1: Minecraft-quality
 		Goal #2: Minecraft but with strategy (this can be the stopping point for now)
 		Goal #3: Something closer to Chivalry instead of Minecraft
+	Consider spawning Game Logic-only colliders which anchor to Unreal bones for combat. These colliders
+		could be made into ragdoll colliders on true impact or somehow tell the thing it collided what the
+		force and direction is so the animation can react. Here's a perfect feature for this:
+		https://docs.unrealengine.com/latest/INT/Engine/Animation/PhysicallyDrivenAnimation/
+	Add player HUD UI - Only needs Minimap, Need bars
 
 Debugging
 	Fix debug text over AgentCharacter for combat test
 	Make it possible to e.g. hover over agents and inspect their values as soon as the game starts up.
 
-Add player HUD UI - Only needs Minimap, Need bars
+Future Features
+	Cereal integration
+	Position vs GlobalPosition
+		As soon as possible, I need to decide if I need Chunk XYZ with Position XYZ
+		This depends on whether I ever want to support really large worlds
+			How large? I'd have to do the math (yes, the monster math)
 
-Cereal integration
+Agents
+	Goal retrying needs rethinking (goal retry status is forgotten once goal completely fails)
+	After extended period of time, PlanComponentManager is constantly trying to unsubscribe things
+	Fix Agents having unpredictable Need levels on second Play In Editor (I'm guessing the above Pause
+		Galavant loop will help with this)
+		Replaying in editor seems to do strange things with needs/timers. Are things being reset properly?
+		Also noticed manhattan distance for movement doesn't stop them. Resource positions might be borked
+	Pickups sort of working, sometimes they aren't picked up, Actors are being destroyed strangely
+		Possibility that pickup actor is falling through the floor 
+		(invisible other component hitting KillZ?) YES, it's KillZ
 
-Goal retrying needs rethinking (goal retry status is forgotten once goal completely fails)
-
-After extended period of time, PlanComponentManager is constantly trying to unsubscribe things
-
-Development
+Development/workflow improvements
 	Automatic apply UEngine patch script
+	Need something to free mouse
+		AGalavantUnrealFPCharacter::ToggleMouseLock() doesn't work
+	  LogMeshReduction: No automatic skeletal mesh reduction module available
 
-Fix Agents having unpredictable Need levels on second Play In Editor (I'm guessing the above Pause
-	Galavant loop will help with this)
-	Replaying in editor seems to do strange things with needs/timers. Are things being reset properly?
-
-Consider spawning Game Logic-only colliders which anchor to Unreal bones for combat. These colliders
-	could be made into ragdoll colliders on true impact or somehow tell the thing it collided what the
-	force and direction is so the animation can react. Here's a perfect feature for this:
-	https://docs.unrealengine.com/latest/INT/Engine/Animation/PhysicallyDrivenAnimation/
-
-Need something to free mouse
-	AGalavantUnrealFPCharacter::ToggleMouseLock() doesn't work
+Need Projectile impact sound
 
 ------------------
 Doing
 ------------------
 
 Collision detection for combat
-	Need to delete Galavant editor build due to assert from FPCharacter
-	May need to repackage due to blueprint no longer matching code
 
+Projectile impact doesn't harm entity
 
 ------------------
 Done
 ------------------
+Visual Studio Code integration
+
+Finish hooking up sounds
+	Landed sound doesn't trigger
+	Use animation notifications instead to get timing perfect
+
+Hook up ragdoll physics for deaths/unconscious
+
+Figure out how to actually make animations in Blender (try Unreal .fbx export/import)
+	Note on .fbx import/export: I had to add the following to SSlateFileOpenDlg::GetFilterExtension:
+		if (!FilterExt)
+			return false;
+		(this is fixed on 4.17 now)
+
 Add game control keybinds
 	Escape closes
 	P toggles Galavant pause/play game time

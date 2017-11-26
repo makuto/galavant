@@ -111,6 +111,8 @@ public:
 	void ActivateCombatAction(Entity combatant, CombatAction action);
 
 	void Update(float deltaSeconds);
+
+	void DamageDealerHitEntity(Entity hitEntity);
 };
 
 extern CombatComponentManager g_CombatComponentManager;

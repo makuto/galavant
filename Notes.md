@@ -4,6 +4,7 @@ Miscellaneous notes regarding working on Galavant, the code, and other random sh
 
 ## Working With Unreal
 
+- I fucked up Nativized Blueprints on my machine when I updated from 4.17 to 4.18, so they may be broken on your machine too. Either way, I have disabled Blueprint nativization for the time being. I suspect a 100% fresh install of GalavantUnreal will resolve this. *Update:* I had to delete a duplicate of the NativizedAssets plugin from GalavantUnreal/Intermediate/Plugins which was in a folder "LinuxNoEditor" just to compile. Perhaps my workflow created this folder erroneously? This appears to have fixed Nativized Blueprints for me. I'll leave this note here in case it happens again to me or anyone else
 - When making changes to Galavant's libraries, simply touch a GalavantUnreal source file to ensure 
 you get the latest Galavant changes when using Unreal's hot reloading
 - After rebuilding Unreal, you may need to delete GalavantUnreal/Binaries/* if you get 'Game Module Could Not Be Loaded' error on startup

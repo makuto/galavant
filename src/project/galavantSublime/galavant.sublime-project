@@ -1,6 +1,7 @@
 {
     // You'll need to replace all instances of /home/macoy/Development/code/3rdParty/repositories/UnrealEngine
-    //  with your Unreal Engine install location. There may be other folders that need correction
+    //  and /media/macoy/SSD/Development/code/3rdParty/repositories/UnrealEngine with your Unreal 
+    //  Engine install location. There may be other folders that need correction
     // You'll also need to copy JamUnrealBuildOutput.sublime-syntax to your Sublime User folder 
     //  (Preferences -> Browse Packages... -> User) to build using the provided build systems
     "folders":
@@ -95,20 +96,38 @@
 
         // This is useful when it complains that Linux headers have changed
         {
-            "name": "GalavantUnreal Quick Clean",
+            "name": "GalavantUnreal Quick Clean (linux headers changed error fix)",
             "shell_cmd": "rm -r Intermediate/Build",
             "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"
         },
 
         {
-            "name": "GalavantUnreal Fix 'Game Module Could Not Be Loaded'",
+            "name": "GalavantUnreal Fix 'Game Module Could Not Be Loaded' (DOESN'T WORK)",
             "shell_cmd": "rm -r Binaries/Linux",
             "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"
         },
 
+        // TODO: @Hack: Need to figure out why this .so isn't being copied automatically
         {
-            "name": "GalavantUnreal Generate Project Files",
-            "shell_cmd": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/GenerateProjectFiles.sh -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -game -editor",
+            "name": "GalavantUnreal Fix 'Game Module Could Not Be Loaded' (MAYBE WORKS)",
+            "shell_cmd": "cp /media/macoy/SSD/Development/code/3rdParty/repositories/UnrealEngine/Engine/Plugins/Runtime/CustomMeshComponent/Binaries/Linux/libUE4Editor-CustomMeshComponent-Linux-Debug.so Binaries/Linux",
+            "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal"
+        },
+
+        {
+            "name": "GalavantUnreal Generate Project Files (Makefile; No VSCode)",
+            // I don't think I need to build a custom version of the editor
+            // "shell_cmd": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/GenerateProjectFiles.sh -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -game -editor",
+            "shell_cmd": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/GenerateProjectFiles.sh -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -game",
+            "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
+        {
+            "name": "GalavantUnreal Generate Project Files (VSCode; No Makefile)",
+            // I don't think I need to build a custom version of the editor
+            // "shell_cmd": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/GenerateProjectFiles.sh -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -game -editor",
+            "shell_cmd": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/GenerateProjectFiles.sh -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -game -vscode",
             "working_dir": "$project_path/../../../../galavant-unreal/GalavantUnreal",
             "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },
@@ -127,6 +146,13 @@
         {
             "name": "GalavantUnreal Standalone Package Debug",
             "shell_cmd": "mono AutomationTool.exe -ScriptsForProject=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject BuildCookRun -nocompile -nocompileeditor -nop4 -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -cook -stage -archive -archivedirectory=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/LOCAL_package/package/ -package -clientconfig=DebugGame -ue4exe=UE4Editor-Linux-Debug -pak -prereqs -nodebuginfo -nativizeAssets -targetplatform=Linux -build -utf8output",
+            "working_dir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/DotNET",
+            "syntax":"JamUnrealBuildOutput.sublime-syntax"
+        },
+
+        {
+            "name": "GalavantUnreal Cook (Maybe doesn't work)",
+            "shell_cmd": "mono AutomationTool.exe BuildCookRun -nocompileeditor -nop4 -project=/home/macoy/Development/code/repositories/galavant-unreal/GalavantUnreal/GalavantUnreal.uproject -cook -skipstage -ue4exe=UE4Editor -targetplatform=Linux -utf8output",
             "working_dir": "/home/macoy/Development/code/3rdParty/repositories/UnrealEngine/Engine/Binaries/DotNET",
             "syntax":"JamUnrealBuildOutput.sublime-syntax"
         },

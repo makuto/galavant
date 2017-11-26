@@ -1,5 +1,7 @@
 #include "CombatComponentManager.hpp"
 
+#include "game/agent/AgentComponentManager.hpp"
+
 #include "util/Time.hpp"
 
 namespace gv
@@ -102,6 +104,23 @@ void CombatComponentManager::Update(float deltaSeconds)
 					combatant.CurrentAction = {nullptr, nullptr, 0.f};
 				}
 			}
+		}
+	}
+}
+
+void CombatComponentManager::DamageDealerHitEntity(Entity hitEntity)
+{
+	for (Combatant& combatant : Combatants)
+	{
+		if (combatant.entity == hitEntity)
+		{
+			Need* bloodNeed = g_AgentComponentManager.GetAgentNeed(hitEntity, NeedType::Blood);
+			if (!bloodNeed)
+				break;
+
+			bloodNeed->Level -= 20.f;
+
+			break;
 		}
 	}
 }

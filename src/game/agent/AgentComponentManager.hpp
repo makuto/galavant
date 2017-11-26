@@ -30,6 +30,8 @@ struct AgentGoal
 };
 typedef std::vector<AgentGoal> AgentGoalList;
 
+const char* GetGoalStatusString(AgentGoal::GoalStatus status);
+
 struct AgentComponentData
 {
 	bool IsAlive = true;
